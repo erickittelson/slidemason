@@ -16,8 +16,10 @@ Slidemason is a local-first, open-source presentation builder. The monorepo is s
 | `packages/renderer/` | Presentation engine with Framer Motion transitions |
 | `packages/themes/` | 12 CSS themes |
 | `apps/studio/` | Vite-based studio with sidebar workflow |
-| `data/` | User's source documents (PDFs, markdown, text, etc.) |
-| `generated/brief.json` | Brief file produced by the studio |
+| `decks/` | Each deck is a folder (e.g. `decks/my-pitch/`) |
+| `decks/<slug>/data/` | Source documents (PDFs, markdown, text, etc.) |
+| `decks/<slug>/generated/brief.json` | Brief file produced by the studio |
+| `decks/<slug>/slides.tsx` | The deck's slide content |
 
 ---
 
@@ -25,11 +27,11 @@ Slidemason is a local-first, open-source presentation builder. The monorepo is s
 
 ### Step 1: Read All Source Documents
 
-Read **every file** in `data/`. Synthesize key themes, metrics, decisions, quotes, and takeaways. Do not skip any file — the user placed it there for a reason.
+Read **every file** in `decks/<slug>/data/`. Synthesize key themes, metrics, decisions, quotes, and takeaways. Do not skip any file — the user placed it there for a reason.
 
 ### Step 2: Read the Brief
 
-Read `generated/brief.json` for audience, goal, tone, theme, fonts, and constraints. The brief tells you **who** you are presenting to and **what** the deck should accomplish.
+Read `decks/<slug>/generated/brief.json` for audience, goal, tone, theme, fonts, and constraints. The brief tells you **who** you are presenting to and **what** the deck should accomplish.
 
 ### Step 3: Plan the Narrative Arc
 
@@ -48,7 +50,7 @@ Not every deck needs all eight beats. Adapt based on the source material and the
 
 ### Step 4: Write the Slides
 
-Edit `apps/studio/src/slides.tsx`. Import templates from `@slidemason/components`. Export a default array.
+Edit `decks/<slug>/slides.tsx`. Import templates from `@slidemason/components`. Export a default array.
 
 ```tsx
 import {
@@ -846,26 +848,30 @@ interface StatementSlideProps {
 
 ## Design Principles — FOLLOW THESE
 
+**Think like a cinematic director, not a report writer.** Every slide should have visual presence — icons, cards, diagrams, charts, or graphics. A slide with just a title and bullet list is a failure state.
+
 1. **Each slide makes ONE point** — do not overload a slide with multiple ideas.
 2. **8-15 slides per deck** — more than 20 is almost always too many.
-3. **Alternate text-heavy and visual-heavy slides** for rhythm and pacing.
-4. **Use `SectionDividerSlide` between major narrative shifts** to give the audience a mental reset.
-5. **`ContentMediaSlide` should alternate `mediaPosition`** — use `'left'` then `'right'` then `'left'` for visual variety.
-6. **Never use the same slide type twice in a row** — `ContentSlide` is the only exception.
-7. **`FullBleedSlide` max 1-2 per deck** — overuse kills the impact.
-8. **Gradient text appears only on `TitleSlide` and `MetricsSlide` headlines** — do not apply gradients elsewhere.
-9. **Use the brief's theme and fonts** — they are already applied by the renderer. Do not override them.
+3. **NEVER use plain bullet lists.** If you have bullet points, use `FeatureSlide` (icon cards), `ContentMediaSlide` (bullets + visual panel), or `ScoreSlide` (status indicators) instead of `ContentSlide`. Every point should have an icon, card, or visual treatment. `ContentSlide` is a last resort — only use it for two-column text layouts where no other template fits.
+4. **Alternate text-heavy and visual-heavy slides** for rhythm and pacing.
+5. **Use `SectionDividerSlide` between major narrative shifts** to give the audience a mental reset.
+6. **`ContentMediaSlide` should alternate `mediaPosition`** — use `'left'` then `'right'` then `'left'` for visual variety.
+7. **Never use the same slide type twice in a row** — except `ContentMediaSlide` with alternating `mediaPosition`.
+8. **`FullBleedSlide` max 1-2 per deck** — overuse kills the impact.
+9. **Gradient text appears only on `TitleSlide` and `MetricsSlide` headlines** — do not apply gradients elsewhere.
+10. **Use the brief's theme and fonts** — they are already applied by the renderer. Do not override them.
+11. **Prefer visual templates over text templates.** When in doubt, choose: `FeatureSlide` for lists, `ProcessSlide` for sequences, `NetworkSlide` for relationships, `ChartSlide` for data, `FlowSlide` for decisions, `DiagramSlide` for concepts.
 
 ---
 
 ## Critical Rules
 
 1. **NEVER modify files in `packages/renderer/` or `packages/components/`** — these are framework internals.
-2. **ALL presentation content goes in `apps/studio/src/slides.tsx`** — this is the only file you should create or edit.
+2. **ALL presentation content goes in `decks/<slug>/slides.tsx`** — this is the only file you should create or edit per deck.
 3. **Import templates from `@slidemason/components`** — do not import from relative paths into packages.
 4. **Every slide needs a unique `key` prop** — React requires this for arrays.
 5. **Do not add new dependencies** — everything you need is already installed.
-6. **Read ALL files in `data/` before generating** — do not skip any source material.
+6. **Read ALL files in `decks/<slug>/data/` before generating** — do not skip any source material.
 7. **Use TypeScript** — the project is fully typed.
 8. **Icon names are PascalCase Lucide icons** — e.g., `'Database'`, `'Shield'`, `'Zap'`, `'BarChart3'`, `'Globe'`.
 
