@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* Tell Tailwind to scan workspace packages for class names */
+@source "../../../packages/components/src";
+@source "../../../packages/renderer/src";
+
 /* Import theme CSS files */
 @import "@slidemason/themes/slate.css";
 @import "@slidemason/themes/canvas.css";
