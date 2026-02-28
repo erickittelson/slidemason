@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DeckProvider, SlideRenderer } from '@slidemason/renderer';
 import {
   Headline,
@@ -14,7 +14,21 @@ import {
   GradientBg,
 } from '@slidemason/components';
 import { getMode } from './lib/mode';
+import { applyFonts } from './lib/fonts';
 import { Sidebar } from './components/Sidebar';
+import { QuickStartGuide } from './components/QuickStartGuide';
+import { FileUploadZone } from './components/FileUploadZone';
+import { BriefForm } from './components/BriefForm';
+import { ThemePicker } from './components/ThemePicker';
+import { FontPicker } from './components/FontPicker';
+import { AssetLibrary } from './components/AssetLibrary';
+import { FloatingThemePicker } from './components/FloatingThemePicker';
+import { SlideThumbnails } from './components/SlideThumbnails';
+import { TableOfContents } from './components/TableOfContents';
+import { useProjectStatus } from './hooks/useProjectStatus';
+import { useFiles } from './hooks/useFiles';
+import { useBrief } from './hooks/useBrief';
+import { useAssets } from './hooks/useAssets';
 
 const slides = [
   // Slide 1: Hero — gradient HeroText on MeshGradient background
@@ -139,7 +153,46 @@ const slides = [
 
 export function App() {
   const mode = getMode();
-  const [theme] = useState('midnight');
+  const [theme, setTheme] = useState('midnight');
+  const [headingFont, setHeadingFont] = useState('Inter');
+  const [bodyFont, setBodyFont] = useState('Inter');
+
+  // Hooks for dev mode
+  const { status, refresh: refreshStatus } = useProjectStatus();
+  const { files, upload: uploadFiles, remove: removeFile } = useFiles();
+  const { brief, setBrief, save: saveBrief, saved: briefSaved } = useBrief();
+  const { assets, upload: uploadAssets, remove: removeAsset } = useAssets();
+
+  // Apply fonts when they change
+  useEffect(() => {
+    applyFonts(headingFont, bodyFont);
+  }, [headingFont, bodyFont]);
+
+  // Sync theme from brief on load
+  useEffect(() => {
+    if (brief.theme) setTheme(brief.theme);
+    if (brief.fonts?.heading) setHeadingFont(brief.fonts.heading);
+    if (brief.fonts?.body) setBodyFont(brief.fonts.body);
+  }, [brief.theme, brief.fonts?.heading, brief.fonts?.body]);
+
+  const handleThemeChange = (newTheme: string) => {
+    setTheme(newTheme);
+    saveBrief({ theme: newTheme });
+  };
+
+  const handleHeadingFontChange = (font: string) => {
+    setHeadingFont(font);
+    saveBrief({ fonts: { heading: font, body: bodyFont } });
+  };
+
+  const handleBodyFontChange = (font: string) => {
+    setBodyFont(font);
+    saveBrief({ fonts: { heading: headingFont, body: font } });
+  };
+
+  const handleFilesChanged = () => {
+    refreshStatus();
+  };
 
   // PDF mode: just slides, no chrome
   if (mode === 'pdf') {
@@ -155,7 +208,40 @@ export function App() {
     return (
       <div style={{ display: 'flex', width: '100vw', height: '100vh', overflow: 'hidden' }}>
         <Sidebar>
-          <p style={{ color: '#888', fontSize: '0.85rem' }}>Sidebar sections coming soon...</p>
+          <QuickStartGuide status={status} />
+
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', margin: '8px 0' }} />
+          <FileUploadZone
+            files={files}
+            onUpload={(fl) => { uploadFiles(fl).then(handleFilesChanged); }}
+            onRemove={(name) => { removeFile(name).then(handleFilesChanged); }}
+          />
+
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', margin: '8px 0' }} />
+          <BriefForm
+            brief={brief}
+            onChange={setBrief}
+            onSave={() => saveBrief()}
+            saved={briefSaved}
+          />
+
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', margin: '8px 0' }} />
+          <ThemePicker activeTheme={theme} onSelectTheme={handleThemeChange} />
+
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', margin: '8px 0' }} />
+          <FontPicker
+            headingFont={headingFont}
+            bodyFont={bodyFont}
+            onChangeHeading={handleHeadingFontChange}
+            onChangeBody={handleBodyFontChange}
+          />
+
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', margin: '8px 0' }} />
+          <AssetLibrary
+            assets={assets}
+            onUpload={uploadAssets}
+            onRemove={removeAsset}
+          />
         </Sidebar>
         <main style={{ flex: 1, overflow: 'hidden' }}>
           <DeckProvider slideCount={slides.length} theme={theme}>
@@ -166,10 +252,13 @@ export function App() {
     );
   }
 
-  // Web mode: full-width viewer (floating features added later)
+  // Web mode: full-width viewer with floating UI
   return (
     <DeckProvider slideCount={slides.length} theme={theme}>
       <SlideRenderer slides={slides} />
+      <FloatingThemePicker activeTheme={theme} onSelectTheme={setTheme} />
+      <SlideThumbnails />
+      <TableOfContents />
     </DeckProvider>
   );
 }
