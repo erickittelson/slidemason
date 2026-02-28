@@ -27,7 +27,7 @@ export function RecommendationBox({
   animate,
 }: RecommendationBoxProps) {
   const IconComponent = icon
-    ? (icons as Record<string, React.ComponentType<{ size?: number; style?: CSSProperties }>>)[icon]
+    ? (icons as unknown as Record<string, React.ComponentType<{ size?: number; style?: CSSProperties }>>)[icon]
     : undefined;
   const animClass = animate ? (animate === 'stagger' ? 'sm-stagger' : 'sm-fade-up') : '';
   const borderColor = priorityBorderColor[priority] ?? 'var(--sm-primary)';

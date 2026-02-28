@@ -25,7 +25,7 @@ export function IconMosaic({ icons, columns = 6, opacity = 0.05, className = '',
       }}
     >
       {icons.map((name, i) => {
-        const IconComponent = (lucideIcons as Record<string, React.ComponentType<{ size?: number }>>)[name];
+        const IconComponent = (lucideIcons as unknown as Record<string, React.ComponentType<{ size?: number }>>)[name];
         if (!IconComponent || typeof IconComponent !== 'function') return null;
         return (
           <div

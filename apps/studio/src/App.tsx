@@ -1,74 +1,142 @@
 import { DeckProvider, SlideRenderer } from '@slidemason/renderer';
 import {
   Headline,
-  Subheadline,
-  NumberedSteps,
-  BulletGroup,
-  FooterMark,
+  HeroText,
+  MeshGradient,
+  FeatureGrid,
+  ProcessFlow,
+  StatCallout,
+  Flywheel,
+  ProsCons,
+  TestimonialCard,
+  EndSlide,
+  GradientBg,
 } from '@slidemason/components';
 
 const slides = [
-  // Slide 1: Welcome — centered hero
-  <div key="s1" className="flex flex-1 flex-col items-center justify-center text-center gap-[3vh]">
-    <Headline style={{ fontSize: 'clamp(2.5rem, 7vw, 6rem)' }}>Welcome to Slidemason</Headline>
-    <Subheadline style={{ fontSize: 'clamp(1.25rem, 2.8vw, 2.5rem)' }}>
-      Local-first presentations, built with your coding agent
-    </Subheadline>
-    <p className="text-[var(--sm-muted)]" style={{ fontSize: 'clamp(1rem, 1.8vw, 1.5rem)' }}>
-      Use arrow keys to navigate →
+  // Slide 1: Hero — gradient HeroText on MeshGradient background
+  <MeshGradient
+    key="s1"
+    className="flex flex-1 flex-col items-center justify-center text-center gap-[2vh]"
+  >
+    <HeroText gradient>Slidemason V2</HeroText>
+    <p
+      className="text-[var(--sm-muted)]"
+      style={{ fontSize: 'clamp(1.1rem, 2.5vw, 2rem)' }}
+    >
+      116 Components. 12 Themes. Cinematic Presentations.
     </p>
-  </div>,
+  </MeshGradient>,
 
-  // Slide 2: How it works — heading pinned top, steps fill remaining space
+  // Slide 2: Features — 6-feature grid with icons
   <div key="s2" className="flex flex-1 flex-col">
-    <Headline>How It Works</Headline>
-    <NumberedSteps
-      className="flex-1 justify-evenly py-[2vh]"
-      steps={[
-        'Drop source material (PDFs, notes, URLs) into the /data folder',
-        'Run "pnpm ingest" to extract and structure your content',
-        'Your coding agent uses the prompt files to build slides',
-        'Preview here in the studio, then export to PDF',
+    <Headline>Everything You Need</Headline>
+    <FeatureGrid
+      className="flex-1 content-center py-[2vh]"
+      columns={3}
+      features={[
+        { icon: 'LayoutGrid', title: 'Layout', description: '40 slide templates for any narrative' },
+        { icon: 'Palette', title: 'Palette', description: '12 cinematic themes from boardroom to neon' },
+        { icon: 'BarChart3', title: 'BarChart3', description: 'Pure SVG data visualization' },
+        { icon: 'GitBranch', title: 'Workflow', description: 'Diagrams: flywheels, funnels, flowcharts' },
+        { icon: 'Sparkles', title: 'Sparkles', description: 'CSS animations and transitions' },
+        { icon: 'Shield', title: 'Shield', description: '100% local — no cloud dependencies' },
       ]}
     />
   </div>,
 
-  // Slide 3: Quick start — heading pinned top, bullets fill remaining space
+  // Slide 3: Process — horizontal flow showing the Slidemason workflow
   <div key="s3" className="flex flex-1 flex-col">
-    <Headline>Quick Start</Headline>
-    <BulletGroup
-      className="flex-1 justify-evenly py-[2vh]"
-      items={[
-        'Copy your source files into data/',
-        'Run: pnpm ingest',
-        'Give your agent the prompt from prompts/02-outline.md',
-        'Agent generates slides — preview updates live',
-        'Run: pnpm export to get a PDF',
-      ]}
-    />
-    <FooterMark text="See README.md for the full guide" />
+    <Headline>How It Works</Headline>
+    <div className="flex flex-1 items-center justify-center py-[2vh]">
+      <ProcessFlow
+        steps={[
+          { label: 'Drop files' },
+          { label: 'Ingest' },
+          { label: 'Agent builds' },
+          { label: 'Preview' },
+          { label: 'Export PDF' },
+        ]}
+      />
+    </div>
   </div>,
 
-  // Slide 4: What's inside — heading top, grid fills remaining space
+  // Slide 4: Data Dashboard — three stat callouts in a row
   <div key="s4" className="flex flex-1 flex-col">
-    <Headline>What's Inside</Headline>
-    <div className="flex-1 grid grid-cols-2 content-evenly text-[var(--sm-text)]" style={{ gap: 'clamp(1rem, 2.5vw, 2.5rem)', fontSize: 'clamp(1rem, 2vw, 1.875rem)' }}>
-      <div><span className="font-bold text-[var(--sm-primary)]" style={{ fontSize: 'clamp(1.5rem, 3.5vw, 3rem)' }}>16</span> <span className="ml-1">slide components</span></div>
-      <div><span className="font-bold text-[var(--sm-primary)]" style={{ fontSize: 'clamp(1.5rem, 3.5vw, 3rem)' }}>12</span> <span className="ml-1">ready-made templates</span></div>
-      <div><span className="font-bold text-[var(--sm-primary)]" style={{ fontSize: 'clamp(1.5rem, 3.5vw, 3rem)' }}>3</span> <span className="ml-1">built-in themes</span></div>
-      <div><span className="font-bold text-[var(--sm-primary)]" style={{ fontSize: 'clamp(1.5rem, 3.5vw, 3rem)' }}>9</span> <span className="ml-1">agent prompt files</span></div>
-      <div><span className="font-bold text-[var(--sm-primary)]" style={{ fontSize: 'clamp(1.5rem, 3.5vw, 3rem)' }}>PDF</span> <span className="ml-1">export via CLI</span></div>
-      <div><span className="font-bold text-[var(--sm-primary)]" style={{ fontSize: 'clamp(1.5rem, 3.5vw, 3rem)' }}>0</span> <span className="ml-1">cloud dependencies</span></div>
+    <Headline>By the Numbers</Headline>
+    <div
+      className="flex flex-1 items-center justify-evenly"
+      style={{ gap: 'clamp(1rem, 3vw, 3rem)' }}
+    >
+      <StatCallout value="116" label="Components" />
+      <StatCallout value="40" label="Templates" />
+      <StatCallout value="12" label="Themes" />
     </div>
-    <p className="text-[var(--sm-muted)]" style={{ fontSize: 'clamp(0.9rem, 1.5vw, 1.25rem)' }}>
-      Start building → drop files in /data and run pnpm ingest
-    </p>
   </div>,
+
+  // Slide 5: Flywheel — the content loop
+  <div key="s5" className="flex flex-1 flex-col">
+    <Headline>The Content Loop</Headline>
+    <div className="flex flex-1 items-center justify-center py-[2vh]">
+      <Flywheel
+        segments={[
+          { label: 'Create Content' },
+          { label: 'Build Slides' },
+          { label: 'Present' },
+          { label: 'Iterate' },
+          { label: 'Improve' },
+        ]}
+        style={{ width: 'min(80%, 400px)', height: 'auto' }}
+      />
+    </div>
+  </div>,
+
+  // Slide 6: Pros/Cons — Slidemason vs traditional tools
+  <div key="s6" className="flex flex-1 flex-col">
+    <Headline>Slidemason vs Traditional Tools</Headline>
+    <div className="flex flex-1 items-center py-[2vh]">
+      <ProsCons
+        pros={[
+          'Local-first, no subscriptions',
+          'Full creative control',
+          'Agent-powered generation',
+          'Export to PDF',
+        ]}
+        cons={[
+          'Requires terminal setup',
+          'No drag-and-drop (yet)',
+          'Text-first workflow',
+        ]}
+        className="w-full"
+      />
+    </div>
+  </div>,
+
+  // Slide 7: Testimonial — centered card
+  <div key="s7" className="flex flex-1 flex-col items-center justify-center">
+    <TestimonialCard
+      quote="Finally, presentations that look like they were designed by a human, built at machine speed."
+      name="Your AI Agent"
+      title="Coding Assistant"
+      style={{ maxWidth: 'min(90%, 600px)' }}
+    />
+  </div>,
+
+  // Slide 8: End — thank you with gradient background
+  <GradientBg
+    key="s8"
+    className="flex flex-1 flex-col items-center justify-center"
+  >
+    <EndSlide
+      variant="thankyou"
+      message="Start building → drop files in /data and run pnpm ingest"
+    />
+  </GradientBg>,
 ];
 
 export function App() {
   return (
-    <DeckProvider slideCount={slides.length} theme="slate">
+    <DeckProvider slideCount={slides.length} theme="midnight">
       <SlideRenderer slides={slides} />
     </DeckProvider>
   );

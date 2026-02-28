@@ -11,7 +11,7 @@ export interface IconCardProps {
 }
 
 export function IconCard({ icon, title, description, className = '', style, animate }: IconCardProps) {
-  const IconComponent = (icons as Record<string, React.ComponentType<{ size?: number; style?: CSSProperties }>>)[icon];
+  const IconComponent = (icons as unknown as Record<string, React.ComponentType<{ size?: number; style?: CSSProperties }>>)[icon];
   const animClass = animate ? 'sm-fade-up' : '';
 
   return (

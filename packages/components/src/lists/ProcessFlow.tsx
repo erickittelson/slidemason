@@ -16,7 +16,7 @@ export function ProcessFlow({ steps, className = '', style, animate }: ProcessFl
     >
       {steps.map((step, i) => {
         const IconComponent = step.icon
-          ? (icons as Record<string, React.ComponentType<{ size?: number; style?: CSSProperties }>>)[step.icon]
+          ? (icons as unknown as Record<string, React.ComponentType<{ size?: number; style?: CSSProperties }>>)[step.icon]
           : undefined;
         const animClass = animate
           ? `sm-fade-up${animate === 'stagger' ? ` sm-stagger-${i + 1}` : ''}`

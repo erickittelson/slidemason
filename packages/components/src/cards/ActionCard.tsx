@@ -12,7 +12,7 @@ export interface ActionCardProps {
 }
 
 export function ActionCard({ icon, title, description, action, className = '', style, animate }: ActionCardProps) {
-  const IconComponent = (icons as Record<string, React.ComponentType<{ size?: number; style?: CSSProperties }>>)[icon];
+  const IconComponent = (icons as unknown as Record<string, React.ComponentType<{ size?: number; style?: CSSProperties }>>)[icon];
   const animClass = animate ? 'sm-fade-up' : '';
 
   return (
