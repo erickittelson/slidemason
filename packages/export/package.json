@@ -13,5 +13,12 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "pdf-lib": "^1.17.1",
+    "playwright": "^1.58.2"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.2"
   }
 }
