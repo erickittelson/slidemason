@@ -7,7 +7,12 @@ export interface Brief {
   audience: string;
   goal: string;
   tone: string;
-  constraints: string;
+  slideCount: string;
+  duration: string;
+  dataStyle: string;
+  visualStyle: string;
+  contentFocus: string;
+  extraConstraints: string;
   infoCutoff: string;
   fonts?: { heading: string; body: string };
   theme?: string;
@@ -15,7 +20,8 @@ export interface Brief {
 
 const DEFAULT_BRIEF: Brief = {
   title: '', subtitle: '', presenter: '', audience: '', goal: '',
-  tone: 'professional', constraints: '', infoCutoff: '',
+  tone: 'professional', slideCount: '', duration: '', dataStyle: '',
+  visualStyle: '', contentFocus: '', extraConstraints: '', infoCutoff: '',
 };
 
 export function useBrief() {

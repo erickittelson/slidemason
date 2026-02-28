@@ -43,10 +43,39 @@ const GOALS = [
   'Pitch for investment',
 ];
 
-const CONSTRAINT_PRESETS = [
-  '5 slides max', '10 slides max', '15 slides max', '20 slides max',
-  '5-minute presentation', '10-minute presentation', '20-minute presentation',
-  'No charts or data', 'Data-heavy with charts', 'Include appendix',
+const SLIDE_COUNTS = [
+  '5 slides', '10 slides', '15 slides', '20 slides', '25+ slides',
+];
+
+const DURATIONS = [
+  '5 minutes', '10 minutes', '15 minutes', '20 minutes', '30 minutes', '45 minutes', '60 minutes',
+];
+
+const DATA_STYLES = [
+  'Data-heavy — lots of charts & numbers',
+  'Balanced — mix of data and narrative',
+  'Light on data — mostly concepts & ideas',
+  'No data — pure narrative / storytelling',
+  'Case-study driven — examples over raw data',
+];
+
+const VISUAL_STYLES = [
+  'Minimal & clean — lots of whitespace',
+  'Image-heavy — photos and visuals',
+  'Diagram-focused — flows and architecture',
+  'Icon-driven — icons illustrate each point',
+  'Text-forward — content-dense slides',
+  'Infographic style — visual data storytelling',
+];
+
+const CONTENT_FOCUSES = [
+  'Strategic — high-level direction & vision',
+  'Tactical — specific plans & action items',
+  'Educational — teach concepts step by step',
+  'Persuasive — build a compelling argument',
+  'Status update — progress & metrics',
+  'Comparative — evaluate options side by side',
+  'Narrative — tell a story arc',
 ];
 
 // Field config
@@ -93,10 +122,39 @@ const FIELDS: {
     options: ['professional', 'casual', 'inspirational', 'technical', 'storytelling', 'data-driven'],
   },
   {
-    key: 'constraints', label: 'Constraints', type: 'dropdown-or-text', maxLength: 300,
-    tooltip: 'Slide count limits, time constraints, or content requirements.',
-    placeholder: 'e.g. Keep under 10 slides, include ROI data',
-    options: CONSTRAINT_PRESETS,
+    key: 'slideCount', label: 'Slide count', type: 'select', maxLength: 0,
+    tooltip: 'Target number of slides. The AI will structure content to fit.',
+    placeholder: '',
+    options: SLIDE_COUNTS,
+  },
+  {
+    key: 'duration', label: 'Duration', type: 'select', maxLength: 0,
+    tooltip: 'How long is the presentation? Affects pacing and detail level.',
+    placeholder: '',
+    options: DURATIONS,
+  },
+  {
+    key: 'dataStyle', label: 'Data density', type: 'select', maxLength: 0,
+    tooltip: 'How much data, charts, and numbers should appear vs. narrative.',
+    placeholder: '',
+    options: DATA_STYLES,
+  },
+  {
+    key: 'visualStyle', label: 'Visual style', type: 'select', maxLength: 0,
+    tooltip: 'Guides the layout and visual approach for each slide.',
+    placeholder: '',
+    options: VISUAL_STYLES,
+  },
+  {
+    key: 'contentFocus', label: 'Content focus', type: 'select', maxLength: 0,
+    tooltip: 'The overall narrative approach — strategic, tactical, persuasive, etc.',
+    placeholder: '',
+    options: CONTENT_FOCUSES,
+  },
+  {
+    key: 'extraConstraints', label: 'Other constraints', type: 'text', maxLength: 300,
+    tooltip: 'Anything else the AI should know — brand rules, must-include topics, etc.',
+    placeholder: 'e.g. Include ROI section, no competitor names',
   },
   {
     key: 'infoCutoff', label: 'Information cutoff', type: 'date', maxLength: 0,
@@ -221,6 +279,7 @@ export function BriefForm({ brief, onChange, onSave, saved }: BriefFormProps) {
               value={(brief[f.key] as string) ?? ''}
               onChange={e => update(f.key, e.target.value)}
             >
+              {f.key !== 'tone' && <option value="">Select...</option>}
               {f.options.map(o => (
                 <option key={o} value={o}>
                   {o.charAt(0).toUpperCase() + o.slice(1)}
