@@ -33,14 +33,48 @@ const charCountStyle: React.CSSProperties = {
 
 // Dropdown presets
 const AUDIENCES = [
-  'Executive leadership', 'Board of directors', 'Internal team', 'Investors / VCs',
-  'Clients / customers', 'Conference attendees', 'General public',
+  // Internal — leadership
+  'Executive leadership (C-suite)',
+  'Board of directors',
+  'Skip-level / senior leadership',
+  'Project sponsors & stakeholders',
+  // Internal — teams
+  'Your direct team',
+  'Cross-functional partners',
+  'Engineering peers',
+  'Product & design review',
+  'Sales & account team',
+  'All-hands / company-wide',
+  'New hires / onboarding',
+  // External
+  'Investors / VCs',
+  'Clients / customers',
+  'Prospects / leads',
+  'External partners / vendors',
+  'Conference attendees',
+  'General public',
 ];
 
 const GOALS = [
-  'Get budget approval', 'Align team on strategy', 'Close a deal',
-  'Educate / train', 'Inspire action', 'Share progress / results',
+  // Decision & approval
+  'Get budget or resource approval',
+  'Get sign-off on a proposal',
   'Pitch for investment',
+  'Close a deal',
+  // Alignment & communication
+  'Align team on strategy or direction',
+  'Share progress, results, or metrics',
+  'Kick off a new project or initiative',
+  'Wrap up / close out a project',
+  // Knowledge & enablement
+  'Demo a product or feature',
+  'Educate or train the audience',
+  'Onboard new team members',
+  'Run a retrospective or post-mortem',
+  // Influence & inspiration
+  'Inspire action or rally the team',
+  'Propose a new idea or POC',
+  'Compare options and recommend one',
 ];
 
 const SLIDE_COUNTS = [
