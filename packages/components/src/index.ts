@@ -51,3 +51,6 @@ export * from './dataviz';
 
 // Comparison & Analysis
 export * from './comparison';
+
+// Media & Visual
+export * from './media';
