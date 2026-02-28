@@ -20,9 +20,7 @@ export function FileUploadZone({ files, onUpload, onRemove }: FileUploadZoneProp
   const handleDragLeave = () => setDragging(false);
 
   return (
-    <div style={{ marginBottom: '16px' }}>
-      <h4 style={{ color: '#fff', fontSize: '0.85rem', fontWeight: 600, margin: '0 0 8px' }}>Source Files</h4>
-
+    <div>
       {/* Drop zone */}
       <div
         onDrop={handleDrop}

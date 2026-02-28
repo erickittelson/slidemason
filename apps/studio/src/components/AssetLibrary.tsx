@@ -17,9 +17,7 @@ export function AssetLibrary({ assets, onUpload, onRemove }: AssetLibraryProps) 
   };
 
   return (
-    <div style={{ marginBottom: '16px' }}>
-      <h4 style={{ color: '#fff', fontSize: '0.85rem', fontWeight: 600, margin: '0 0 8px' }}>Assets</h4>
-
+    <div>
       {/* Upload button */}
       <button
         onClick={() => inputRef.current?.click()}

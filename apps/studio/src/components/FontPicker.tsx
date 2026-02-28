@@ -22,9 +22,7 @@ export function FontPicker({ headingFont, bodyFont, onChangeHeading, onChangeBod
   const activePairing = FONT_PAIRINGS.find(p => p.heading === headingFont && p.body === bodyFont);
 
   return (
-    <div style={{ marginBottom: '16px' }}>
-      <h4 style={{ color: '#fff', fontSize: '0.85rem', fontWeight: 600, margin: '0 0 8px' }}>Fonts</h4>
-
+    <div>
       {/* Recommended pairings */}
       <label style={labelStyle}>Recommended Pairings</label>
       <div style={{

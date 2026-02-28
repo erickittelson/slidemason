@@ -16,7 +16,7 @@ import {
 import { getMode } from './lib/mode';
 import { applyFonts } from './lib/fonts';
 import { Sidebar } from './components/Sidebar';
-import { QuickStartGuide } from './components/QuickStartGuide';
+import { CollapsibleSection } from './components/CollapsibleSection';
 import { FileUploadZone } from './components/FileUploadZone';
 import { BriefForm } from './components/BriefForm';
 import { ThemePicker } from './components/ThemePicker';
@@ -26,7 +26,6 @@ import { FloatingThemePicker } from './components/FloatingThemePicker';
 import { SlideThumbnails } from './components/SlideThumbnails';
 import { TableOfContents } from './components/TableOfContents';
 import { NextStepsModal } from './components/NextStepsModal';
-import { useProjectStatus } from './hooks/useProjectStatus';
 import { useFiles } from './hooks/useFiles';
 import { useBrief } from './hooks/useBrief';
 import { useAssets } from './hooks/useAssets';
@@ -160,9 +159,8 @@ export function App() {
   const [showNextSteps, setShowNextSteps] = useState(false);
 
   // Hooks for dev mode
-  const { status, refresh: refreshStatus } = useProjectStatus();
   const { files, upload: uploadFiles, remove: removeFile } = useFiles();
-  const { brief, setBrief, save: saveBrief, saved: briefSaved } = useBrief();
+  const { brief, setBrief, save: saveBrief } = useBrief();
   const { assets, upload: uploadAssets, remove: removeAsset } = useAssets();
 
   // Apply fonts when they change
@@ -203,9 +201,6 @@ export function App() {
     setShowNextSteps(true);
   };
 
-  const handleFilesChanged = () => {
-    refreshStatus();
-  };
 
   // PDF mode: just slides, no chrome
   if (mode === 'pdf') {
@@ -221,55 +216,53 @@ export function App() {
     return (
       <div style={{ display: 'flex', width: '100vw', height: '100vh', overflow: 'hidden' }}>
         <Sidebar>
-          <QuickStartGuide
-            status={status}
-            fileUpload={
-              <FileUploadZone
-                files={files}
-                onUpload={(fl) => { uploadFiles(fl).then(handleFilesChanged); }}
-                onRemove={(name) => { removeFile(name).then(handleFilesChanged); }}
-              />
-            }
-            briefForm={
-              <BriefForm
-                brief={brief}
-                onChange={setBrief}
-              />
-            }
-          />
+          <CollapsibleSection title="Source Files" defaultOpen>
+            <FileUploadZone
+              files={files}
+              onUpload={uploadFiles}
+              onRemove={removeFile}
+            />
+          </CollapsibleSection>
 
-          <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', margin: '12px 0' }} />
-          <ThemePicker activeTheme={theme} onSelectTheme={handleThemeChange} />
+          <CollapsibleSection title="Brief" defaultOpen>
+            <BriefForm brief={brief} onChange={setBrief} />
+          </CollapsibleSection>
 
-          <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', margin: '12px 0' }} />
-          <FontPicker
-            headingFont={headingFont}
-            bodyFont={bodyFont}
-            onChangeHeading={handleHeadingFontChange}
-            onChangeBody={handleBodyFontChange}
-            onChangePairing={handleFontPairing}
-          />
+          <CollapsibleSection title="Theme">
+            <ThemePicker activeTheme={theme} onSelectTheme={handleThemeChange} />
+          </CollapsibleSection>
 
-          <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', margin: '12px 0' }} />
-          <AssetLibrary
-            assets={assets}
-            onUpload={uploadAssets}
-            onRemove={removeAsset}
-          />
+          <CollapsibleSection title="Fonts">
+            <FontPicker
+              headingFont={headingFont}
+              bodyFont={bodyFont}
+              onChangeHeading={handleHeadingFontChange}
+              onChangeBody={handleBodyFontChange}
+              onChangePairing={handleFontPairing}
+            />
+          </CollapsibleSection>
 
-          <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', margin: '12px 0' }} />
-          <button
-            onClick={handleSaveAll}
-            style={{
-              width: '100%', padding: '10px', fontSize: '0.85rem', fontWeight: 600,
-              backgroundColor: briefSaved ? 'rgba(34,197,94,0.3)' : 'rgba(139,92,246,0.3)',
-              color: briefSaved ? '#86efac' : '#c4b5fd',
-              border: `1px solid ${briefSaved ? 'rgba(34,197,94,0.4)' : 'rgba(139,92,246,0.4)'}`,
-              borderRadius: '8px', cursor: 'pointer',
-            }}
-          >
-            {briefSaved ? '✓ Saved' : 'Save & Next Steps'}
-          </button>
+          <CollapsibleSection title="Assets">
+            <AssetLibrary
+              assets={assets}
+              onUpload={uploadAssets}
+              onRemove={removeAsset}
+            />
+          </CollapsibleSection>
+
+          <div style={{ padding: '12px 0' }}>
+            <button
+              onClick={handleSaveAll}
+              style={{
+                width: '100%', padding: '12px', fontSize: '0.85rem', fontWeight: 600,
+                backgroundColor: 'rgba(139,92,246,0.3)', color: '#c4b5fd',
+                border: '1px solid rgba(139,92,246,0.4)',
+                borderRadius: '8px', cursor: 'pointer',
+              }}
+            >
+              Build Deck
+            </button>
+          </div>
         </Sidebar>
 
         {showNextSteps && <NextStepsModal onClose={() => setShowNextSteps(false)} />}

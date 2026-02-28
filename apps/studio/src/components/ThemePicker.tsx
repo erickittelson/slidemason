@@ -20,8 +20,7 @@ interface ThemePickerProps {
 
 export function ThemePicker({ activeTheme, onSelectTheme }: ThemePickerProps) {
   return (
-    <div style={{ marginBottom: '16px' }}>
-      <h4 style={{ color: '#fff', fontSize: '0.85rem', fontWeight: 600, margin: '0 0 8px' }}>Theme</h4>
+    <div>
       <div style={{
         display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px',
       }}>
