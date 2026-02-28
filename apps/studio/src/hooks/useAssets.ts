@@ -12,7 +12,11 @@ export function useAssets() {
     try {
       const res = await fetch('/__api/assets');
       const data = await res.json();
-      setAssets(data.files ?? []);
+      const raw: string[] = data.assets ?? [];
+      setAssets(raw.map(name => ({
+        name,
+        ext: name.includes('.') ? name.slice(name.lastIndexOf('.')) : '',
+      })));
     } catch {
       setAssets([]);
     }

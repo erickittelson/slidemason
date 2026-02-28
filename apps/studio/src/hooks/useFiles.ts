@@ -12,7 +12,11 @@ export function useFiles() {
     try {
       const res = await fetch('/__api/files');
       const data = await res.json();
-      setFiles(data.files ?? []);
+      const raw: string[] = data.files ?? [];
+      setFiles(raw.map(name => ({
+        name,
+        ext: name.includes('.') ? name.slice(name.lastIndexOf('.')) : '',
+      })));
     } catch {
       setFiles([]);
     }
