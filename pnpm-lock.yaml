@@ -24,6 +24,20 @@ importers:
         specifier: ^4.0.18
         version: 4.0.18
 
+  apps/studio: {}
+
+  packages/cli: {}
+
+  packages/components: {}
+
+  packages/core: {}
+
+  packages/export: {}
+
+  packages/renderer: {}
+
+  packages/themes: {}
+
 packages:
 
   '@esbuild/aix-ppc64@0.27.3':
