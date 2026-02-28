@@ -38,6 +38,18 @@ describe('OutlineSchema', () => {
     };
     expect(OutlineSchema.parse(outline)).toBeDefined();
   });
+
+  it('validates new slide types', () => {
+    const outline = {
+      theme: 'midnight',
+      slides: [
+        { id: 's1', type: 'icon-features', intent: 'show features', headline: 'Features' },
+        { id: 's2', type: 'flywheel', intent: 'show cycle', headline: 'Our Process' },
+        { id: 's3', type: 'data-dashboard', intent: 'show metrics', headline: 'KPIs' },
+      ],
+    };
+    expect(OutlineSchema.parse(outline)).toBeDefined();
+  });
 });
 
 describe('ManifestSchema', () => {

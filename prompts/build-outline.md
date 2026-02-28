@@ -19,9 +19,18 @@ The outline must validate against `OutlineSchema` from `packages/core/src/schema
 
 ```typescript
 const SlideTypes = z.enum([
+  // Original 12
   'title-hero', 'agenda', 'section-divider', 'two-column-argument',
   'quote-insight', 'stat-grid', 'image-caption', 'comparison-table',
   'timeline', 'roadmap', 'recommendation-ask', 'appendix',
+  // New 28
+  'icon-features', 'data-dashboard', 'process-overview', 'funnel-breakdown',
+  'cycle-explainer', 'flywheel', 'swot-analysis', 'pros-cons',
+  'before-after', 'versus-matchup', 'team-intro', 'testimonial-spotlight',
+  'pricing-overview', 'screenshot-demo', 'image-story', 'data-comparison',
+  'numbers-impact', 'quadrant-analysis', 'org-structure', 'flow-decision',
+  'gap-bridge', 'radar-comparison', 'heatmap-view', 'score-card',
+  'next-steps-action', 'contact-end', 'chapter-opener', 'logo-showcase',
 ]);
 
 SlideEntrySchema = z.object({
@@ -58,6 +67,34 @@ OutlineSchema = z.object({
 | `roadmap` | Phased plan or numbered sequence of steps. |
 | `recommendation-ask` | Call to action, recommendation, or decision request. Usually near the end. |
 | `appendix` | Supplementary material. Always last if present. |
+| `icon-features` | Showcase features with icons in a grid. |
+| `data-dashboard` | Display key metrics and charts together. |
+| `process-overview` | Show a step-by-step process flow. |
+| `funnel-breakdown` | Show conversion funnel stages. |
+| `cycle-explainer` | Illustrate a cyclical process. |
+| `flywheel` | Show a reinforcing feedback loop. |
+| `swot-analysis` | Strengths/Weaknesses/Opportunities/Threats grid. |
+| `pros-cons` | Compare advantages vs disadvantages. |
+| `before-after` | Show transformation or change. |
+| `versus-matchup` | Dramatic head-to-head comparison. |
+| `team-intro` | Introduce team members with roles. |
+| `testimonial-spotlight` | Feature a customer quote prominently. |
+| `pricing-overview` | Display pricing tiers side by side. |
+| `screenshot-demo` | Show product screenshots in a device mockup. |
+| `image-story` | Full-bleed image with text overlay. |
+| `data-comparison` | Feature comparison matrix across products. |
+| `numbers-impact` | Highlight 2-3 big numbers for impact. |
+| `quadrant-analysis` | 2x2 matrix analysis (e.g., effort vs impact). |
+| `org-structure` | Organization chart showing hierarchy. |
+| `flow-decision` | Decision flowchart with branches. |
+| `gap-bridge` | Current state vs desired state gap analysis. |
+| `radar-comparison` | Multi-axis radar/spider chart comparison. |
+| `heatmap-view` | Color-coded data grid for patterns. |
+| `score-card` | Weighted scoring analysis table. |
+| `next-steps-action` | Action items with owners and dates. |
+| `contact-end` | Closing slide with contact info or thank you. |
+| `chapter-opener` | Section chapter break with number and title. |
+| `logo-showcase` | Display partner/client logos in a grid. |
 
 ## Narrative Arc
 

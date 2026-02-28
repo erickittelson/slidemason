@@ -57,8 +57,36 @@ Use direct component imports only when you need a layout that no template provid
 | `roadmap` | `Roadmap` | `headline`, `phases` (string array) |
 | `recommendation-ask` | `RecommendationAsk` | `headline`, `recommendation`, optional `supportingPoints` |
 | `appendix` | `Appendix` | `headline`, optional `items` (string array) |
+| `icon-features` | `IconFeatures` | `headline`, `features` (array of `{icon, title, description}`), optional `columns` (2 or 3) |
+| `data-dashboard` | `DataDashboard` | `headline`, `stats` (array of `{value, label}`), optional `bars` (array of `{label, value}`) |
+| `process-overview` | `ProcessOverview` | `headline`, `steps` (array of `{label, icon?}`) |
+| `funnel-breakdown` | `FunnelBreakdown` | `headline`, `stages` (array of `{label, value?}`), optional `stat` (`{value, label}`) |
+| `cycle-explainer` | `CycleExplainer` | `headline`, `stages` (array of `{label}`), optional `bullets` (string array) |
+| `flywheel` | `FlywheelSlide` | `headline`, `segments` (array of `{label}`) |
+| `swot-analysis` | `SWOTAnalysis` | `headline`, `strengths`, `weaknesses`, `opportunities`, `threats` (all string arrays) |
+| `pros-cons` | `ProsConsSlide` | `headline`, `pros` (string array), `cons` (string array) |
+| `before-after` | `BeforeAfterSlide` | `headline`, `before` (`{title, items}`), `after` (`{title, items}`) |
+| `versus-matchup` | `VersusMatchup` | `left` (`{label, points?}`), `right` (`{label, points?}`) |
+| `team-intro` | `TeamIntro` | `headline`, `members` (array of `{name, role, avatar?}`) |
+| `testimonial-spotlight` | `TestimonialSpotlight` | `quote`, `name`, optional `title`, `company`, `avatar` |
+| `pricing-overview` | `PricingOverview` | `headline`, `tiers` (array of `{name, price, period?, features, highlighted?}`) |
+| `screenshot-demo` | `ScreenshotDemo` | `headline`, `src`, optional `url`, `variant` |
+| `image-story` | `ImageStory` | `src`, `alt`, `text` |
+| `data-comparison` | `DataComparison` | `headline`, `features` (string array), `products` (array of `{name, values}`) |
+| `numbers-impact` | `NumbersImpact` | `stats` (array of `{value, label}`) |
+| `quadrant-analysis` | `QuadrantAnalysis` | `headline`, `xAxis`, `yAxis`, `quadrants` (4-tuple of strings), optional `items` (array of `{label, x, y}`) |
+| `org-structure` | `OrgStructure` | `headline`, `nodes` (array of `{id, label, parentId?}`) |
+| `flow-decision` | `FlowDecision` | `headline`, `nodes` (array of `{id, label, type}`), `edges` (array of `{from, to, label?}`) |
+| `gap-bridge` | `GapBridge` | `headline`, `current` (`{label, value}`), `desired` (`{label, value}`), `gap` (string) |
+| `radar-comparison` | `RadarComparison` | `headline`, `axes` (array of `{label, value, max?}`) |
+| `heatmap-view` | `HeatmapView` | `headline`, `rows` (array of `{label, cells}`), optional `columnLabels` |
+| `score-card` | `ScoreCardSlide` | `headline`, `criteria` (array of `{label, weight, score}`) |
+| `next-steps-action` | `NextStepsAction` | `headline`, `steps` (array of `{action, owner?, date?, status?}`) |
+| `contact-end` | `ContactEnd` | optional `variant` (`'thankyou'`/`'qa'`/`'contact'`), `message`, `contactInfo` (`{email?, website?, social?}`) |
+| `chapter-opener` | `ChapterOpener` | `number`, `title`, optional `subtitle`, `colors` |
+| `logo-showcase` | `LogoShowcase` | `headline`, `logos` (array of `{src, alt}`) |
 
-See `templates.md` for full prop details and examples.
+See `templates.md` and `component-catalog.md` for full prop details and examples.
 
 ## Complete MDX Examples
 
