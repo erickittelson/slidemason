@@ -42,3 +42,6 @@ export * from './lists';
 
 // Cards & Grids
 export * from './cards';
+
+// Diagrams & Frameworks
+export * from './diagrams';
