@@ -48,3 +48,6 @@ export * from './diagrams';
 
 // Data Visualization
 export * from './dataviz';
+
+// Comparison & Analysis
+export * from './comparison';
