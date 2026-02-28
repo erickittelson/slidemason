@@ -5,12 +5,13 @@ interface FileEntry {
   ext: string;
 }
 
-export function useFiles() {
+export function useFiles(slug: string | null) {
   const [files, setFiles] = useState<FileEntry[]>([]);
 
   const refresh = useCallback(async () => {
+    if (!slug) { setFiles([]); return; }
     try {
-      const res = await fetch('/__api/files');
+      const res = await fetch(`/__api/decks/${encodeURIComponent(slug)}/files`);
       const data = await res.json();
       const raw: string[] = data.files ?? [];
       setFiles(raw.map(name => ({
@@ -20,21 +21,23 @@ export function useFiles() {
     } catch {
       setFiles([]);
     }
-  }, []);
+  }, [slug]);
 
   const upload = useCallback(async (fileList: FileList) => {
+    if (!slug) return;
     const formData = new FormData();
     for (const file of fileList) {
       formData.append('files', file);
     }
-    await fetch('/__api/files', { method: 'POST', body: formData });
+    await fetch(`/__api/decks/${encodeURIComponent(slug)}/files`, { method: 'POST', body: formData });
     await refresh();
-  }, [refresh]);
+  }, [slug, refresh]);
 
   const remove = useCallback(async (name: string) => {
-    await fetch(`/__api/files/${encodeURIComponent(name)}`, { method: 'DELETE' });
+    if (!slug) return;
+    await fetch(`/__api/decks/${encodeURIComponent(slug)}/files/${encodeURIComponent(name)}`, { method: 'DELETE' });
     await refresh();
-  }, [refresh]);
+  }, [slug, refresh]);
 
   useEffect(() => { refresh(); }, [refresh]);
 

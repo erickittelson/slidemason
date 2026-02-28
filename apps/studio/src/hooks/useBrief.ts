@@ -24,31 +24,33 @@ const DEFAULT_BRIEF: Brief = {
   visualStyle: '', contentFocus: '', extraConstraints: '', infoCutoff: '',
 };
 
-export function useBrief() {
+export function useBrief(slug: string | null) {
   const [brief, setBrief] = useState<Brief>(DEFAULT_BRIEF);
   const [saved, setSaved] = useState(false);
 
   const load = useCallback(async () => {
+    if (!slug) { setBrief(DEFAULT_BRIEF); return; }
     try {
-      const res = await fetch('/__api/brief');
+      const res = await fetch(`/__api/decks/${encodeURIComponent(slug)}/brief`);
       const data = await res.json();
       if (data && typeof data === 'object' && !data.error && Object.keys(data).length > 0) {
         setBrief({ ...DEFAULT_BRIEF, ...data });
       }
     } catch {}
-  }, []);
+  }, [slug]);
 
   const save = useCallback(async (updates?: Partial<Brief>) => {
+    if (!slug) return;
     const toSave = updates ? { ...brief, ...updates } : brief;
     if (updates) setBrief(toSave as Brief);
-    await fetch('/__api/brief', {
+    await fetch(`/__api/decks/${encodeURIComponent(slug)}/brief`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(toSave),
     });
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
-  }, [brief]);
+  }, [slug, brief]);
 
   useEffect(() => { load(); }, [load]);
 

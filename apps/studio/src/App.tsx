@@ -54,9 +54,9 @@ export function App() {
   };
 
   // Hooks for dev mode
-  const { files, upload: uploadFiles, remove: removeFile } = useFiles();
-  const { brief, setBrief, save: saveBrief } = useBrief();
-  const { assets, upload: uploadAssets, remove: removeAsset } = useAssets();
+  const { files, upload: uploadFiles, remove: removeFile } = useFiles(null);
+  const { brief, setBrief, save: saveBrief } = useBrief(null);
+  const { assets, upload: uploadAssets, remove: removeAsset } = useAssets(null);
 
   // Apply fonts when they change
   useEffect(() => {

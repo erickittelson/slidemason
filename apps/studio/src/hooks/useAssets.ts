@@ -5,12 +5,13 @@ interface AssetEntry {
   ext: string;
 }
 
-export function useAssets() {
+export function useAssets(slug: string | null) {
   const [assets, setAssets] = useState<AssetEntry[]>([]);
 
   const refresh = useCallback(async () => {
+    if (!slug) { setAssets([]); return; }
     try {
-      const res = await fetch('/__api/assets');
+      const res = await fetch(`/__api/decks/${encodeURIComponent(slug)}/assets`);
       const data = await res.json();
       const raw: string[] = data.assets ?? [];
       setAssets(raw.map(name => ({
@@ -20,21 +21,23 @@ export function useAssets() {
     } catch {
       setAssets([]);
     }
-  }, []);
+  }, [slug]);
 
   const upload = useCallback(async (fileList: FileList) => {
+    if (!slug) return;
     const formData = new FormData();
     for (const file of fileList) {
       formData.append('files', file);
     }
-    await fetch('/__api/assets', { method: 'POST', body: formData });
+    await fetch(`/__api/decks/${encodeURIComponent(slug)}/assets`, { method: 'POST', body: formData });
     await refresh();
-  }, [refresh]);
+  }, [slug, refresh]);
 
   const remove = useCallback(async (name: string) => {
-    await fetch(`/__api/assets/${encodeURIComponent(name)}`, { method: 'DELETE' });
+    if (!slug) return;
+    await fetch(`/__api/decks/${encodeURIComponent(slug)}/assets/${encodeURIComponent(name)}`, { method: 'DELETE' });
     await refresh();
-  }, [refresh]);
+  }, [slug, refresh]);
 
   useEffect(() => { refresh(); }, [refresh]);
 
