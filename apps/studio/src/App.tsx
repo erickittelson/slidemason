@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { DeckProvider, SlideRenderer } from '@slidemason/renderer';
 import { getMode } from './lib/mode';
 import slides from './slides';
@@ -14,18 +14,43 @@ import { FloatingThemePicker } from './components/FloatingThemePicker';
 import { SlideThumbnails } from './components/SlideThumbnails';
 import { TableOfContents } from './components/TableOfContents';
 import { NextStepsModal } from './components/NextStepsModal';
+import { DeckGallery } from './components/DeckGallery';
 import { useFiles } from './hooks/useFiles';
 import { useBrief } from './hooks/useBrief';
 import { useAssets } from './hooks/useAssets';
+import { useDecks } from './hooks/useDecks';
+
+function getHashSlug(): string | null {
+  const hash = window.location.hash.replace(/^#\/?/, '');
+  return hash || null;
+}
 
 export function App() {
   const mode = getMode();
+  const [activeDeck, setActiveDeck] = useState<string | null>(getHashSlug);
   const [theme, setTheme] = useState('midnight');
   const [headingFont, setHeadingFont] = useState('Inter');
   const [bodyFont, setBodyFont] = useState('Inter');
   const [showNextSteps, setShowNextSteps] = useState(false);
   const [openStep, setOpenStep] = useState(1); // which step is expanded (1-5, 0=none)
   const [stepError, setStepError] = useState('');
+
+  // Listen for hash changes
+  useEffect(() => {
+    const onHashChange = () => setActiveDeck(getHashSlug());
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
+
+  const openDeck = useCallback((slug: string) => {
+    window.location.hash = slug;
+    setActiveDeck(slug);
+  }, []);
+
+  const closeDeck = useCallback(() => {
+    window.location.hash = '';
+    setActiveDeck(null);
+  }, []);
 
   // Validation for mandatory fields per step
   const validateStep = (step: number): string | null => {
@@ -53,10 +78,13 @@ export function App() {
     setOpenStep(fromStep + 1);
   };
 
-  // Hooks for dev mode
-  const { files, upload: uploadFiles, remove: removeFile } = useFiles(null);
-  const { brief, setBrief, save: saveBrief } = useBrief(null);
-  const { assets, upload: uploadAssets, remove: removeAsset } = useAssets(null);
+  // Deck gallery hook
+  const { decks, loading: decksLoading, create: createDeck, remove: deleteDeck } = useDecks();
+
+  // Hooks for dev mode — pass activeDeck as slug
+  const { files, upload: uploadFiles, remove: removeFile } = useFiles(activeDeck);
+  const { brief, setBrief, save: saveBrief } = useBrief(activeDeck);
+  const { assets, upload: uploadAssets, remove: removeAsset } = useAssets(activeDeck);
 
   // Apply fonts when they change
   useEffect(() => {
@@ -96,6 +124,11 @@ export function App() {
     setShowNextSteps(true);
   };
 
+  const handleCreateDeck = async (name: string) => {
+    const slug = await createDeck(name);
+    openDeck(slug);
+  };
+
 
   // PDF mode: just slides, no chrome
   if (mode === 'pdf') {
@@ -106,11 +139,38 @@ export function App() {
     );
   }
 
-  // Dev mode: sidebar + viewer
+  // Dev mode: gallery or sidebar + viewer
   if (mode === 'dev') {
+    // No active deck → show gallery
+    if (activeDeck === null) {
+      return (
+        <DeckGallery
+          decks={decks}
+          loading={decksLoading}
+          onOpen={openDeck}
+          onCreate={handleCreateDeck}
+          onDelete={deleteDeck}
+        />
+      );
+    }
+
+    // Active deck → sidebar + viewer
     return (
       <div style={{ display: 'flex', width: '100vw', height: '100vh', overflow: 'hidden' }}>
         <Sidebar>
+          <div style={{ padding: '0 0 8px', borderBottom: '1px solid rgba(63,63,70,0.3)', marginBottom: '8px' }}>
+            <button
+              onClick={closeDeck}
+              style={{
+                background: 'none', border: 'none', color: '#a1a1aa',
+                cursor: 'pointer', fontSize: '0.8rem', padding: '4px 0',
+                display: 'flex', alignItems: 'center', gap: '6px',
+              }}
+            >
+              &#x2190; All Decks
+            </button>
+          </div>
+
           <CollapsibleSection
             step={1} title="Source Files"
             open={openStep === 1} done={files.length > 0}
