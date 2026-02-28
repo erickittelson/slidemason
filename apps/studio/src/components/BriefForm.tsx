@@ -67,7 +67,7 @@ const FIELDS: {
   {
     key: 'subtitle', label: 'Subtitle', type: 'text', maxLength: 200,
     tooltip: 'A secondary line shown below the title on the cover slide.',
-    placeholder: 'e.g. Roadmap for the next 6 months',
+    placeholder: 'Optional — AI will generate',
   },
   {
     key: 'presenter', label: 'Presented by', type: 'text', maxLength: 100,
