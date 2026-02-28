@@ -3,6 +3,8 @@
  *
  * Exposes a small REST-ish API under `/__api/` so the browser-based
  * Studio UI can read/write project files without a separate backend.
+ *
+ * All file operations are scoped to decks under `MONO_ROOT/decks/:slug/`.
  */
 
 import { resolve, basename, extname } from 'node:path';
@@ -13,6 +15,7 @@ import {
   unlink,
   mkdir,
   stat,
+  rm,
 } from 'node:fs/promises';
 import type { Plugin, ViteDevServer } from 'vite';
 import type { IncomingMessage, ServerResponse } from 'node:http';
@@ -23,10 +26,27 @@ import Busboy from 'busboy';
 /* ------------------------------------------------------------------ */
 
 const MONO_ROOT = resolve(import.meta.dirname, '../..');
-const DATA_DIR = resolve(MONO_ROOT, 'data');
-const ASSETS_DIR = resolve(MONO_ROOT, 'data/assets');
-const GENERATED_DIR = resolve(MONO_ROOT, 'generated');
-const BRIEF_PATH = resolve(GENERATED_DIR, 'brief.json');
+const DECKS_DIR = resolve(MONO_ROOT, 'decks');
+
+/** Return all relevant paths for a given deck slug. */
+function deckPaths(slug: string) {
+  const root = resolve(DECKS_DIR, slug);
+  const data = resolve(root, 'data');
+  const assets = resolve(root, 'data/assets');
+  const generated = resolve(root, 'generated');
+  const brief = resolve(root, 'generated/brief.json');
+  const slides = resolve(root, 'slides.tsx');
+  return { root, data, assets, generated, brief, slides };
+}
+
+/** Convert a human-readable name into a URL-safe slug. */
+function slugify(name: string): string {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
 
 /* ------------------------------------------------------------------ */
 /*  Utilities                                                          */
@@ -121,29 +141,135 @@ async function exists(p: string): Promise<boolean> {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Route handlers                                                     */
+/*  Deck-level handlers                                                */
 /* ------------------------------------------------------------------ */
 
-async function handleListFiles(res: ServerResponse) {
-  await ensureDir(DATA_DIR);
-  const entries = await readdir(DATA_DIR, { withFileTypes: true });
+async function handleListDecks(res: ServerResponse) {
+  await ensureDir(DECKS_DIR);
+  const entries = await readdir(DECKS_DIR, { withFileTypes: true });
+  const decks = [];
+
+  for (const entry of entries) {
+    if (!entry.isDirectory() || entry.name.startsWith('.')) continue;
+    const slug = entry.name;
+    const paths = deckPaths(slug);
+
+    let title = slug;
+    let theme = 'midnight';
+    if (await exists(paths.brief)) {
+      try {
+        const raw = await readFile(paths.brief, 'utf-8');
+        const data = JSON.parse(raw);
+        if (data.title) title = data.title;
+        if (data.theme) theme = data.theme;
+      } catch {
+        // ignore parse errors
+      }
+    }
+
+    let slideCount = 0;
+    if (await exists(paths.slides)) {
+      try {
+        const content = await readFile(paths.slides, 'utf-8');
+        const matches = content.match(/key="/g);
+        slideCount = matches ? matches.length : 0;
+      } catch {
+        // ignore read errors
+      }
+    }
+
+    let lastModified: string | null = null;
+    try {
+      const s = await stat(paths.root);
+      lastModified = s.mtime.toISOString();
+    } catch {
+      // ignore
+    }
+
+    decks.push({ slug, title, theme, slideCount, lastModified });
+  }
+
+  json(res, decks);
+}
+
+async function handleCreateDeck(req: IncomingMessage, res: ServerResponse) {
+  const body = await collectBody(req);
+  const { name } = JSON.parse(body.toString('utf-8'));
+  if (!name || typeof name !== 'string') {
+    json(res, { error: 'name is required' }, 400);
+    return;
+  }
+
+  const slug = slugify(name);
+  if (!slug) {
+    json(res, { error: 'invalid name' }, 400);
+    return;
+  }
+
+  const paths = deckPaths(slug);
+  await ensureDir(paths.data);
+  await ensureDir(paths.assets);
+  await ensureDir(paths.generated);
+
+  // Default brief
+  const defaultBrief = {
+    title: name,
+    theme: 'midnight',
+    fonts: { heading: 'Inter', body: 'Inter' },
+  };
+  await writeFile(paths.brief, JSON.stringify(defaultBrief, null, 2), 'utf-8');
+
+  // Placeholder slides.tsx
+  const placeholderSlides = `import { TitleSlide } from '@slidemason/components';
+
+const slides = [
+  <TitleSlide key="title" title="${name.replace(/"/g, '\\"')}" subtitle="" gradient="blue-purple" />,
+];
+
+export default slides;
+`;
+  await writeFile(paths.slides, placeholderSlides, 'utf-8');
+
+  json(res, { slug, title: name }, 201);
+}
+
+async function handleDeleteDeck(slug: string, res: ServerResponse) {
+  const paths = deckPaths(slug);
+  if (!(await exists(paths.root))) {
+    json(res, { error: 'not found' }, 404);
+    return;
+  }
+  await rm(paths.root, { recursive: true, force: true });
+  json(res, { deleted: slug });
+}
+
+/* ------------------------------------------------------------------ */
+/*  Deck-scoped file handlers                                          */
+/* ------------------------------------------------------------------ */
+
+async function handleListFiles(slug: string, res: ServerResponse) {
+  const paths = deckPaths(slug);
+  await ensureDir(paths.data);
+  const entries = await readdir(paths.data, { withFileTypes: true });
   const files = entries
     .filter((e) => e.isFile() && !e.name.startsWith('.'))
     .map((e) => e.name);
   json(res, { files });
 }
 
-async function handleUploadFile(req: IncomingMessage, res: ServerResponse) {
-  await ensureDir(DATA_DIR);
+async function handleUploadFile(slug: string, req: IncomingMessage, res: ServerResponse) {
+  const paths = deckPaths(slug);
+  await ensureDir(paths.data);
   const { filename, data } = await parseMultipart(req);
   const safe = sanitize(filename);
-  await writeFile(resolve(DATA_DIR, safe), data);
+  await writeFile(resolve(paths.data, safe), data);
   json(res, { filename: safe }, 201);
 }
 
-async function handleDeleteFile(name: string, res: ServerResponse) {
+async function handleDeleteFile(slug: string, name: string, res: ServerResponse) {
+  const paths = deckPaths(slug);
   const safe = sanitize(name);
-  const target = resolve(DATA_DIR, safe);
+  const target = resolve(paths.data, safe);
   if (!(await exists(target))) {
     json(res, { error: 'not found' }, 404);
     return;
@@ -152,44 +278,49 @@ async function handleDeleteFile(name: string, res: ServerResponse) {
   json(res, { deleted: safe });
 }
 
-async function handleGetBrief(res: ServerResponse) {
-  if (!(await exists(BRIEF_PATH))) {
+async function handleGetBrief(slug: string, res: ServerResponse) {
+  const paths = deckPaths(slug);
+  if (!(await exists(paths.brief))) {
     json(res, { error: 'brief.json not found' }, 404);
     return;
   }
-  const content = await readFile(BRIEF_PATH, 'utf-8');
+  const content = await readFile(paths.brief, 'utf-8');
   json(res, JSON.parse(content));
 }
 
-async function handlePostBrief(req: IncomingMessage, res: ServerResponse) {
-  await ensureDir(GENERATED_DIR);
+async function handlePostBrief(slug: string, req: IncomingMessage, res: ServerResponse) {
+  const paths = deckPaths(slug);
+  await ensureDir(paths.generated);
   const body = await collectBody(req);
   // Validate that it's valid JSON before writing
   const parsed = JSON.parse(body.toString('utf-8'));
-  await writeFile(BRIEF_PATH, JSON.stringify(parsed, null, 2), 'utf-8');
+  await writeFile(paths.brief, JSON.stringify(parsed, null, 2), 'utf-8');
   json(res, { ok: true });
 }
 
-async function handleListAssets(res: ServerResponse) {
-  await ensureDir(ASSETS_DIR);
-  const entries = await readdir(ASSETS_DIR, { withFileTypes: true });
+async function handleListAssets(slug: string, res: ServerResponse) {
+  const paths = deckPaths(slug);
+  await ensureDir(paths.assets);
+  const entries = await readdir(paths.assets, { withFileTypes: true });
   const files = entries
     .filter((e) => e.isFile())
     .map((e) => e.name);
   json(res, { assets: files });
 }
 
-async function handleUploadAsset(req: IncomingMessage, res: ServerResponse) {
-  await ensureDir(ASSETS_DIR);
+async function handleUploadAsset(slug: string, req: IncomingMessage, res: ServerResponse) {
+  const paths = deckPaths(slug);
+  await ensureDir(paths.assets);
   const { filename, data } = await parseMultipart(req);
   const safe = sanitize(filename);
-  await writeFile(resolve(ASSETS_DIR, safe), data);
+  await writeFile(resolve(paths.assets, safe), data);
   json(res, { filename: safe }, 201);
 }
 
-async function handleDeleteAsset(name: string, res: ServerResponse) {
+async function handleDeleteAsset(slug: string, name: string, res: ServerResponse) {
+  const paths = deckPaths(slug);
   const safe = sanitize(name);
-  const target = resolve(ASSETS_DIR, safe);
+  const target = resolve(paths.assets, safe);
   if (!(await exists(target))) {
     json(res, { error: 'not found' }, 404);
     return;
@@ -198,9 +329,10 @@ async function handleDeleteAsset(name: string, res: ServerResponse) {
   json(res, { deleted: safe });
 }
 
-async function handleGetAsset(name: string, res: ServerResponse) {
+async function handleGetAsset(slug: string, name: string, res: ServerResponse) {
+  const paths = deckPaths(slug);
   const safe = sanitize(name);
-  const target = resolve(ASSETS_DIR, safe);
+  const target = resolve(paths.assets, safe);
   if (!(await exists(target))) {
     json(res, { error: 'not found' }, 404);
     return;
@@ -211,20 +343,22 @@ async function handleGetAsset(name: string, res: ServerResponse) {
   res.end(data);
 }
 
-async function handleStatus(res: ServerResponse) {
-  const hasData = await exists(DATA_DIR);
+async function handleStatus(slug: string, res: ServerResponse) {
+  const paths = deckPaths(slug);
+
+  const hasData = await exists(paths.data);
   let hasFiles = false;
   if (hasData) {
-    const entries = await readdir(DATA_DIR, { withFileTypes: true });
+    const entries = await readdir(paths.data, { withFileTypes: true });
     // Ignore hidden files (.gitkeep, .DS_Store, etc.)
     hasFiles = entries.some((e) => e.isFile() && !e.name.startsWith('.'));
   }
 
   // Brief counts as "filled in" only if it has a non-empty title
   let hasBrief = false;
-  if (await exists(BRIEF_PATH)) {
+  if (await exists(paths.brief)) {
     try {
-      const raw = await readFile(BRIEF_PATH, 'utf-8');
+      const raw = await readFile(paths.brief, 'utf-8');
       const data = JSON.parse(raw);
       hasBrief = typeof data.title === 'string' && data.title.trim().length > 0;
     } catch {
@@ -232,16 +366,21 @@ async function handleStatus(res: ServerResponse) {
     }
   }
 
-  // A "deck" exists if there is at least one .mdx file in generated/
-  let hasDeck = false;
-  if (await exists(GENERATED_DIR)) {
-    const genEntries = await readdir(GENERATED_DIR, { withFileTypes: true });
-    hasDeck = genEntries.some(
-      (e) => e.isFile() && e.name.endsWith('.mdx'),
-    );
-  }
+  // A "deck" exists if slides.tsx exists and has content
+  const hasDeck = await exists(paths.slides);
 
   json(res, { hasFiles, hasBrief, hasDeck });
+}
+
+async function handleGetSlides(slug: string, res: ServerResponse) {
+  const paths = deckPaths(slug);
+  if (!(await exists(paths.slides))) {
+    json(res, { error: 'slides.tsx not found' }, 404);
+    return;
+  }
+  const content = await readFile(paths.slides, 'utf-8');
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.end(content);
 }
 
 /* ------------------------------------------------------------------ */
@@ -263,65 +402,96 @@ export function studioApiPlugin(): Plugin {
         }
 
         try {
-          // /__api/status
-          if (url === '/__api/status' && method === 'GET') {
-            await handleStatus(res);
-            return;
-          }
-
-          // /__api/brief
-          if (url === '/__api/brief') {
+          // /__api/decks — list all decks or create a new one
+          if (url === '/__api/decks') {
             if (method === 'GET') {
-              await handleGetBrief(res);
+              await handleListDecks(res);
               return;
             }
             if (method === 'POST') {
-              await handlePostBrief(req, res);
+              await handleCreateDeck(req, res);
               return;
             }
           }
 
-          // /__api/files
-          if (url === '/__api/files') {
-            if (method === 'GET') {
-              await handleListFiles(res);
-              return;
-            }
-            if (method === 'POST') {
-              await handleUploadFile(req, res);
-              return;
-            }
-          }
+          // Deck-scoped routes: /__api/decks/:slug/...
+          const deckMatch = url.match(/^\/__api\/decks\/([^/]+)(\/.*)?$/);
+          if (deckMatch) {
+            const slug = decodeURIComponent(deckMatch[1]);
+            const rest = deckMatch[2] ?? '';
 
-          // /__api/files/:name
-          const filesMatch = url.match(/^\/__api\/files\/(.+)$/);
-          if (filesMatch && method === 'DELETE') {
-            await handleDeleteFile(decodeURIComponent(filesMatch[1]), res);
-            return;
-          }
+            // DELETE /__api/decks/:slug
+            if (!rest && method === 'DELETE') {
+              await handleDeleteDeck(slug, res);
+              return;
+            }
 
-          // /__api/assets (list / upload)
-          if (url === '/__api/assets') {
-            if (method === 'GET') {
-              await handleListAssets(res);
-              return;
+            // /__api/decks/:slug/files
+            if (rest === '/files') {
+              if (method === 'GET') {
+                await handleListFiles(slug, res);
+                return;
+              }
+              if (method === 'POST') {
+                await handleUploadFile(slug, req, res);
+                return;
+              }
             }
-            if (method === 'POST') {
-              await handleUploadAsset(req, res);
-              return;
-            }
-          }
 
-          // /__api/assets/:name
-          const assetsMatch = url.match(/^\/__api\/assets\/(.+)$/);
-          if (assetsMatch) {
-            const name = decodeURIComponent(assetsMatch[1]);
-            if (method === 'GET') {
-              await handleGetAsset(name, res);
+            // /__api/decks/:slug/files/:name
+            const filesMatch = rest.match(/^\/files\/(.+)$/);
+            if (filesMatch && method === 'DELETE') {
+              await handleDeleteFile(slug, decodeURIComponent(filesMatch[1]), res);
               return;
             }
-            if (method === 'DELETE') {
-              await handleDeleteAsset(name, res);
+
+            // /__api/decks/:slug/brief
+            if (rest === '/brief') {
+              if (method === 'GET') {
+                await handleGetBrief(slug, res);
+                return;
+              }
+              if (method === 'POST') {
+                await handlePostBrief(slug, req, res);
+                return;
+              }
+            }
+
+            // /__api/decks/:slug/assets
+            if (rest === '/assets') {
+              if (method === 'GET') {
+                await handleListAssets(slug, res);
+                return;
+              }
+              if (method === 'POST') {
+                await handleUploadAsset(slug, req, res);
+                return;
+              }
+            }
+
+            // /__api/decks/:slug/assets/:name
+            const assetsMatch = rest.match(/^\/assets\/(.+)$/);
+            if (assetsMatch) {
+              const name = decodeURIComponent(assetsMatch[1]);
+              if (method === 'GET') {
+                await handleGetAsset(slug, name, res);
+                return;
+              }
+              if (method === 'DELETE') {
+                await handleDeleteAsset(slug, name, res);
+                return;
+              }
+            }
+
+            // /__api/decks/:slug/status
+            if (rest === '/status' && method === 'GET') {
+              await handleStatus(slug, res);
+              return;
+            }
+
+            // /__api/decks/:slug/slides
+            if (rest === '/slides' && method === 'GET') {
+              await handleGetSlides(slug, res);
               return;
             }
           }
