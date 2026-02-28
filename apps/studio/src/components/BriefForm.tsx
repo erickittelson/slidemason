@@ -20,10 +20,10 @@ const labelStyle: React.CSSProperties = {
 };
 
 const tooltipStyle: React.CSSProperties = {
-  position: 'absolute', bottom: '100%', left: '50%', transform: 'translateX(-50%)',
+  position: 'absolute', top: '100%', left: 0,
   backgroundColor: '#1a1a2e', color: '#ccc', fontSize: '0.7rem', lineHeight: 1.3,
-  padding: '6px 10px', borderRadius: '6px', width: '200px', textAlign: 'center',
-  border: '1px solid rgba(255,255,255,0.15)', marginBottom: '4px',
+  padding: '6px 10px', borderRadius: '6px', width: '200px', textAlign: 'left',
+  border: '1px solid rgba(255,255,255,0.15)', marginTop: '4px',
   pointerEvents: 'none', zIndex: 10,
 };
 
@@ -62,7 +62,7 @@ const FIELDS: {
   {
     key: 'title', label: 'Title', type: 'text', maxLength: 120,
     tooltip: 'Leave blank and the AI will generate a title from your content.',
-    placeholder: 'e.g. Q3 Growth Strategy (optional — AI will generate)',
+    placeholder: 'Optional — AI will generate',
   },
   {
     key: 'subtitle', label: 'Subtitle', type: 'text', maxLength: 200,
