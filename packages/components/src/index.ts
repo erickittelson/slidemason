@@ -63,3 +63,6 @@ export * from './navigation';
 
 // Interactive & CTA
 export * from './interactive';
+
+// Slide Templates
+export * from './templates';
