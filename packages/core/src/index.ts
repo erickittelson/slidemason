@@ -1,3 +1,3 @@
-export * from './schemas';
-export { ingest } from './ingest';
-export { validateBrief, validateOutline } from './validate';
+export * from './schemas/index.js';
+export { ingest } from './ingest.js';
+export { validateBrief, validateOutline } from './validate.js';

@@ -1,5 +1,5 @@
-import { BriefSchema } from './schemas/brief';
-import { OutlineSchema } from './schemas/outline';
+import { BriefSchema } from './schemas/brief.js';
+import { OutlineSchema } from './schemas/outline.js';
 
 type ValidationResult =
   | { success: true; data: unknown }

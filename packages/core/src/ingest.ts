@@ -1,6 +1,6 @@
 import { readdir, stat } from 'node:fs/promises';
 import { join, extname, relative } from 'node:path';
-import type { Manifest } from './schemas/manifest';
+import type { Manifest } from './schemas/manifest.js';
 
 const EXT_TYPE_MAP: Record<string, string> = {
   '.md': 'markdown',

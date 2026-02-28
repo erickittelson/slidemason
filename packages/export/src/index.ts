@@ -1,2 +1,2 @@
-export { exportPdf } from './pdf';
-export { exportStatic } from './static';
+export { exportPdf } from './pdf.js';
+export { exportStatic } from './static.js';
