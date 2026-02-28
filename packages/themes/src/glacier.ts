@@ -1,22 +1,22 @@
 import type { ThemeConfig } from './types';
 
-export const canvas: ThemeConfig = {
-  name: 'canvas',
+export const glacier: ThemeConfig = {
+  name: 'glacier',
   colors: {
-    background: '#fafaf9',
+    background: '#f0f9ff',
     surface: '#ffffff',
-    text: '#1c1917',
-    muted: '#78716c',
-    primary: '#292524',
-    secondary: '#d97706',
-    accent: '#059669',
-    border: '#e7e5e4',
+    text: '#0c4a6e',
+    muted: '#64748b',
+    primary: '#0369a1',
+    secondary: '#0891b2',
+    accent: '#6366f1',
+    border: '#bae6fd',
     success: '#16a34a',
     warning: '#d97706',
     danger: '#dc2626',
-    gradientStart: '#292524',
-    gradientEnd: '#d97706',
-    chart: ['#292524', '#d97706', '#059669', '#dc2626', '#2563eb', '#7c3aed'],
+    gradientStart: '#0369a1',
+    gradientEnd: '#6366f1',
+    chart: ['#0369a1', '#0891b2', '#6366f1', '#d97706', '#16a34a', '#dc2626'],
     glass: 'rgba(255,255,255,0.7)',
   },
   typography: {

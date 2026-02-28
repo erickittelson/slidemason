@@ -11,6 +11,13 @@ export const slate: ThemeConfig = {
     secondary: '#8b5cf6',
     accent: '#06b6d4',
     border: '#334155',
+    success: '#22c55e',
+    warning: '#f59e0b',
+    danger: '#ef4444',
+    gradientStart: '#3b82f6',
+    gradientEnd: '#8b5cf6',
+    chart: ['#3b82f6', '#8b5cf6', '#06b6d4', '#f59e0b', '#22c55e', '#ef4444'],
+    glass: 'rgba(30,41,59,0.7)',
   },
   typography: {
     headingFont: "'Inter', system-ui, sans-serif",

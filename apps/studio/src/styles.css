@@ -9,6 +9,15 @@
 @import "@slidemason/themes/slate.css";
 @import "@slidemason/themes/canvas.css";
 @import "@slidemason/themes/signal.css";
+@import "@slidemason/themes/noir.css";
+@import "@slidemason/themes/dawn.css";
+@import "@slidemason/themes/boardroom.css";
+@import "@slidemason/themes/neon.css";
+@import "@slidemason/themes/forest.css";
+@import "@slidemason/themes/glacier.css";
+@import "@slidemason/themes/sunset.css";
+@import "@slidemason/themes/paper.css";
+@import "@slidemason/themes/midnight.css";
 @import "@slidemason/components/motion.css";
 
 /* Base styles */

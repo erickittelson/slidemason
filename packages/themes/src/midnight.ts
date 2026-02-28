@@ -1,23 +1,23 @@
 import type { ThemeConfig } from './types';
 
-export const signal: ThemeConfig = {
-  name: 'signal',
+export const midnight: ThemeConfig = {
+  name: 'midnight',
   colors: {
-    background: '#020617',
-    surface: '#0f172a',
-    text: '#ffffff',
-    muted: '#64748b',
-    primary: '#e11d48',
-    secondary: '#7c3aed',
-    accent: '#f59e0b',
-    border: '#1e293b',
+    background: '#18181b',
+    surface: '#27272a',
+    text: '#fafafa',
+    muted: '#a1a1aa',
+    primary: '#8b5cf6',
+    secondary: '#06b6d4',
+    accent: '#f43f5e',
+    border: '#3f3f46',
     success: '#22c55e',
     warning: '#f59e0b',
     danger: '#ef4444',
-    gradientStart: '#e11d48',
-    gradientEnd: '#7c3aed',
-    chart: ['#e11d48', '#7c3aed', '#f59e0b', '#06b6d4', '#22c55e', '#3b82f6'],
-    glass: 'rgba(15,23,42,0.7)',
+    gradientStart: '#8b5cf6',
+    gradientEnd: '#06b6d4',
+    chart: ['#8b5cf6', '#06b6d4', '#f43f5e', '#f59e0b', '#22c55e', '#3b82f6'],
+    glass: 'rgba(39,39,42,0.7)',
   },
   typography: {
     headingFont: "'Inter', system-ui, sans-serif",

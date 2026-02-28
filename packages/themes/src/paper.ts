@@ -1,22 +1,22 @@
 import type { ThemeConfig } from './types';
 
-export const canvas: ThemeConfig = {
-  name: 'canvas',
+export const paper: ThemeConfig = {
+  name: 'paper',
   colors: {
-    background: '#fafaf9',
+    background: '#fffbeb',
     surface: '#ffffff',
     text: '#1c1917',
     muted: '#78716c',
-    primary: '#292524',
-    secondary: '#d97706',
-    accent: '#059669',
+    primary: '#1e3a5f',
+    secondary: '#b91c1c',
+    accent: '#047857',
     border: '#e7e5e4',
     success: '#16a34a',
     warning: '#d97706',
     danger: '#dc2626',
-    gradientStart: '#292524',
-    gradientEnd: '#d97706',
-    chart: ['#292524', '#d97706', '#059669', '#dc2626', '#2563eb', '#7c3aed'],
+    gradientStart: '#1e3a5f',
+    gradientEnd: '#b91c1c',
+    chart: ['#1e3a5f', '#b91c1c', '#047857', '#d97706', '#7c3aed', '#0891b2'],
     glass: 'rgba(255,255,255,0.7)',
   },
   typography: {

@@ -1,22 +1,22 @@
 import type { ThemeConfig } from './types';
 
-export const canvas: ThemeConfig = {
-  name: 'canvas',
+export const dawn: ThemeConfig = {
+  name: 'dawn',
   colors: {
-    background: '#fafaf9',
+    background: '#fef3c7',
     surface: '#ffffff',
-    text: '#1c1917',
+    text: '#292524',
     muted: '#78716c',
-    primary: '#292524',
-    secondary: '#d97706',
-    accent: '#059669',
+    primary: '#c2410c',
+    secondary: '#059669',
+    accent: '#7c3aed',
     border: '#e7e5e4',
     success: '#16a34a',
     warning: '#d97706',
     danger: '#dc2626',
-    gradientStart: '#292524',
-    gradientEnd: '#d97706',
-    chart: ['#292524', '#d97706', '#059669', '#dc2626', '#2563eb', '#7c3aed'],
+    gradientStart: '#c2410c',
+    gradientEnd: '#059669',
+    chart: ['#c2410c', '#059669', '#7c3aed', '#2563eb', '#d97706', '#dc2626'],
     glass: 'rgba(255,255,255,0.7)',
   },
   typography: {
@@ -30,8 +30,8 @@ export const canvas: ThemeConfig = {
   },
   radius: '0.5rem',
   shadow: {
-    sm: '0 1px 2px rgba(0,0,0,0.05)',
-    md: '0 4px 6px rgba(0,0,0,0.07)',
+    sm: '0 1px 2px rgba(0,0,0,0.06)',
+    md: '0 4px 6px rgba(0,0,0,0.08)',
     lg: '0 10px 15px rgba(0,0,0,0.1)',
   },
 };

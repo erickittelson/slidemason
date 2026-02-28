@@ -9,6 +9,13 @@ export interface ThemeConfig {
     secondary: string;
     accent: string;
     border: string;
+    success: string;
+    warning: string;
+    danger: string;
+    gradientStart: string;
+    gradientEnd: string;
+    chart: [string, string, string, string, string, string];
+    glass: string;
   };
   typography: {
     headingFont: string;
