@@ -1,526 +1,247 @@
 import {
-  Headline,
-  Subheadline,
-  HeroText,
-  BulletGroup,
-  TwoColumn,
-  MeshGradient,
-  GradientBg,
-  FeatureGrid,
-  ProcessFlow,
-  StatCallout,
-  StepCards,
-  MilestoneTracker,
-  Checklist,
-  IconList,
-  NextStepsGrid,
-  EndSlide,
-  SectionHeader,
-  TimelineVertical,
+  TitleSlide,
+  SectionDividerSlide,
+  ContentMediaSlide,
+  FeatureSlide,
+  ProcessSlide,
+  TimelineSlide,
+  MetricsSlide,
+  TableSlide,
+  ConclusionSlide,
 } from '@slidemason/components';
 
 const slides = [
   // ─── Slide 1: Title ───────────────────────────────────────────────
-  <MeshGradient
+  <TitleSlide
     key="s1"
-    className="flex flex-1 flex-col items-center justify-center text-center gap-[2vh]"
-  >
-    <HeroText gradient>SaberAlert</HeroText>
-    <p
-      className="text-[var(--sm-muted)]"
-      style={{ fontSize: 'clamp(1rem, 2.2vw, 1.8rem)', maxWidth: '80%' }}
-    >
-      Camera-Free Presence Detection for Home Security
-    </p>
-    <p
-      className="text-[var(--sm-muted)]"
-      style={{ fontSize: 'clamp(0.8rem, 1.5vw, 1.2rem)', opacity: 0.6 }}
-    >
-      MVP Strategy &amp; Technical Roadmap
-    </p>
-  </MeshGradient>,
+    title="SaberAlert"
+    subtitle="Camera-Free Presence Detection for Home Security"
+    badge="MVP Strategy & Technical Roadmap"
+    gradient="emerald-blue"
+  />,
 
   // ─── Slide 2: The Problem ─────────────────────────────────────────
-  <div key="s2" className="flex flex-1 flex-col">
-    <Headline>The Problem</Headline>
-    <div className="flex flex-1 items-center py-[2vh]">
-      <TwoColumn
-        className="w-full items-start"
-        left={
-          <div>
-            <Subheadline style={{ marginBottom: '1rem' }}>
-              Traditional home security is broken
-            </Subheadline>
-            <BulletGroup
-              items={[
-                'Cameras raise privacy concerns for families and guests',
-                'Motion sensors flood users with false alarms',
-                'Existing systems require expensive professional installation',
-                'Most alerts arrive too late to act on',
-              ]}
-            />
-          </div>
-        }
-        right={
-          <div className="flex flex-col items-center justify-center h-full gap-[2vh]">
-            <StatCallout value="~5s" label="Target alert latency" />
-            <p
-              className="text-[var(--sm-muted)] text-center"
-              style={{ fontSize: 'clamp(0.8rem, 1.4vw, 1.1rem)' }}
-            >
-              Push notification for untrusted presence — no cameras needed
-            </p>
-          </div>
-        }
-      />
-    </div>
-  </div>,
+  <ContentMediaSlide
+    key="s2"
+    title="The Problem"
+    subtitle="Traditional home security is broken"
+    bullets={[
+      'Cameras raise privacy concerns for families and guests',
+      'Motion sensors flood users with false alarms',
+      'Existing systems require expensive professional installation',
+      'Most alerts arrive too late to act on',
+    ]}
+    mediaPosition="right"
+    visual="icon-grid"
+    visualItems={[
+      { label: '~5s alert latency', icon: 'Zap' },
+      { label: 'No cameras needed', icon: 'ShieldCheck' },
+      { label: 'Push notifications', icon: 'Bell' },
+      { label: 'Passive detection', icon: 'Wifi' },
+    ]}
+  />,
 
   // ─── Slide 3: What Is SaberAlert ─────────────────────────────────
-  <div key="s3" className="flex flex-1 flex-col">
-    <Headline>What Is SaberAlert?</Headline>
-    <Subheadline style={{ margin: '0 0 2vh' }}>
-      Passive Wi-Fi &amp; Bluetooth sniffing to detect who's home — and who shouldn't be
-    </Subheadline>
-    <div className="flex flex-1 items-center">
-      <FeatureGrid
-        columns={3}
-        features={[
-          {
-            icon: 'Wifi',
-            title: 'Passive Scanning',
-            description: 'ESP32 sniffers detect Wi-Fi probe requests and BLE advertisements — no pairing required',
-          },
-          {
-            icon: 'ShieldCheck',
-            title: 'Privacy First',
-            description: 'No cameras, no microphones. Only MAC addresses and signal strength are collected',
-          },
-          {
-            icon: 'Bell',
-            title: 'Instant Alerts',
-            description: 'Push notifications within ~5 seconds when an unknown device is detected',
-          },
-          {
-            icon: 'Brain',
-            title: 'Learns Your Home',
-            description: 'Baseline learning distinguishes trusted household devices from strangers',
-          },
-          {
-            icon: 'Smartphone',
-            title: 'Mobile Control',
-            description: 'Arm, disarm, and manage trusted devices from a React Native app',
-          },
-          {
-            icon: 'Zap',
-            title: 'Low Power',
-            description: 'ESP32 mesh network runs on minimal power with local-first processing',
-          },
-        ]}
-        animate="stagger"
-      />
-    </div>
-  </div>,
+  <FeatureSlide
+    key="s3"
+    title="What Is SaberAlert?"
+    subtitle="Passive Wi-Fi & Bluetooth sniffing to detect who's home — and who shouldn't be"
+    columns={3}
+    features={[
+      { label: 'Passive Scanning', description: 'ESP32 sniffers detect Wi-Fi probe requests and BLE advertisements — no pairing required', icon: 'Wifi' },
+      { label: 'Privacy First', description: 'No cameras, no microphones. Only MAC addresses and signal strength are collected', icon: 'ShieldCheck' },
+      { label: 'Instant Alerts', description: 'Push notifications within ~5 seconds when an unknown device is detected', icon: 'Bell' },
+      { label: 'Learns Your Home', description: 'Baseline learning distinguishes trusted household devices from strangers', icon: 'Brain' },
+      { label: 'Mobile Control', description: 'Arm, disarm, and manage trusted devices from a React Native app', icon: 'Smartphone' },
+      { label: 'Low Power', description: 'ESP32 mesh network runs on minimal power with local-first processing', icon: 'Zap' },
+    ]}
+  />,
 
   // ─── Slide 4: How Detection Works ─────────────────────────────────
-  <div key="s4" className="flex flex-1 flex-col">
-    <Headline>How Detection Works</Headline>
-    <div className="flex flex-1 flex-col items-center justify-center gap-[3vh]">
-      <ProcessFlow
-        steps={[
-          { label: 'ESP32 Sniffs', icon: 'Radio' },
-          { label: 'MQTT Publish', icon: 'Send' },
-          { label: 'Watcher Evaluates', icon: 'Brain' },
-          { label: 'Alert Fires', icon: 'Bell' },
-          { label: 'User Notified', icon: 'Smartphone' },
-        ]}
-        animate="stagger"
-      />
-      <p
-        className="text-[var(--sm-muted)] text-center"
-        style={{ fontSize: 'clamp(0.85rem, 1.5vw, 1.2rem)', maxWidth: '80%' }}
-      >
-        ESP32 gateway aggregates sniffer events, publishes to EMQX via MQTT.
-        Python Watcher compares against Redis baseline, triggers push notification through backend API.
-      </p>
-    </div>
-  </div>,
+  <ProcessSlide
+    key="s4"
+    title="How Detection Works"
+    subtitle="ESP32 gateway aggregates sniffer events, publishes to EMQX via MQTT. Python Watcher compares against Redis baseline, triggers push notification through backend API."
+    steps={[
+      { label: 'ESP32 Sniffs', icon: 'Radio' },
+      { label: 'MQTT Publish', icon: 'Send' },
+      { label: 'Watcher Evaluates', icon: 'Brain' },
+      { label: 'Alert Fires', icon: 'Bell' },
+      { label: 'User Notified', icon: 'Smartphone' },
+    ]}
+  />,
 
-  // ─── Slide 5: Section Divider — Platform ──────────────────────────
-  <SectionHeader
+  // ─── Slide 5: Section — Platform Architecture ─────────────────────
+  <SectionDividerSlide
     key="s5"
-    number={1}
+    number="01"
     title="Platform Architecture"
     subtitle="Eight components working together"
-    animate
+    gradient="blue-purple"
   />,
 
   // ─── Slide 6: Platform Components ─────────────────────────────────
-  <div key="s6" className="flex flex-1 flex-col">
-    <Headline>Platform Components</Headline>
-    <div className="flex flex-1 items-center">
-      <FeatureGrid
-        columns={2}
-        features={[
-          {
-            icon: 'Cpu',
-            title: 'ESP32 Sniffers + Gateway',
-            description: 'Mesh of passive RF listeners with a single gateway bridging to cloud via MQTT',
-          },
-          {
-            icon: 'Cloud',
-            title: 'AWS IoT Core + EMQX',
-            description: 'Managed MQTT broker for device-to-cloud telemetry with TLS and per-device auth',
-          },
-          {
-            icon: 'Eye',
-            title: 'Python Watcher',
-            description: 'Real-time stream processor: evaluates events against baseline, triggers alerts',
-          },
-          {
-            icon: 'Database',
-            title: 'Redis + Neon Postgres',
-            description: 'Redis for hot baseline lookups; Neon Postgres for historical data, users, and config',
-          },
-          {
-            icon: 'Server',
-            title: 'Backend API',
-            description: 'REST/GraphQL API handling auth, device management, alert routing, and push delivery',
-          },
-          {
-            icon: 'Smartphone',
-            title: 'Mobile App (React Native)',
-            description: 'Arm/disarm, trusted device management, alert history, and push notification receiver',
-          },
-        ]}
-        animate="stagger"
-      />
-    </div>
-  </div>,
+  <FeatureSlide
+    key="s6"
+    title="Platform Components"
+    columns={2}
+    features={[
+      { label: 'ESP32 Sniffers + Gateway', description: 'Mesh of passive RF listeners with a single gateway bridging to cloud via MQTT', icon: 'Cpu' },
+      { label: 'AWS IoT Core + EMQX', description: 'Managed MQTT broker for device-to-cloud telemetry with TLS and per-device auth', icon: 'Cloud' },
+      { label: 'Python Watcher', description: 'Real-time stream processor: evaluates events against baseline, triggers alerts', icon: 'Eye' },
+      { label: 'Redis + Neon Postgres', description: 'Redis for hot baseline lookups; Neon Postgres for historical data, users, and config', icon: 'Database' },
+      { label: 'Backend API', description: 'REST/GraphQL API handling auth, device management, alert routing, and push delivery', icon: 'Server' },
+      { label: 'Mobile App (React Native)', description: 'Arm/disarm, trusted device management, alert history, and push notification receiver', icon: 'Smartphone' },
+    ]}
+  />,
 
-  // ─── Slide 7: Section Divider — MVP Roadmap ───────────────────────
-  <SectionHeader
+  // ─── Slide 7: Section — MVP Roadmap ───────────────────────────────
+  <SectionDividerSlide
     key="s7"
-    number={2}
+    number="02"
     title="MVP Roadmap"
     subtitle="Five gates from lab to launch"
-    animate
+    gradient="emerald-blue"
   />,
 
-  // ─── Slide 8: MVP Gates Overview ──────────────────────────────────
-  <div key="s8" className="flex flex-1 flex-col">
-    <Headline>Five MVP Gates</Headline>
-    <div className="flex flex-1 items-center py-[2vh]">
-      <MilestoneTracker
-        milestones={[
-          { label: 'Gate 1\nLab Validation', status: 'current' },
-          { label: 'Gate 2\nMobile Provisioning', status: 'upcoming' },
-          { label: 'Gate 3\nBaseline Learning', status: 'upcoming' },
-          { label: 'Gate 4\nReal-Time Alert', status: 'upcoming' },
-          { label: 'Gate 5\nPost-MVP Intel', status: 'upcoming' },
-        ]}
-        className="w-full"
-        animate="stagger"
-      />
-    </div>
-  </div>,
+  // ─── Slide 8: Five MVP Gates ──────────────────────────────────────
+  <TimelineSlide
+    key="s8"
+    title="Five MVP Gates"
+    variant="horizontal"
+    items={[
+      { phase: 'Gate 1', title: 'Lab Validation', description: 'Prove hardware can reliably detect and report device presence', status: 'in-progress' },
+      { phase: 'Gate 2', title: 'Mobile Provisioning', description: 'Users set up hardware and create an account from the mobile app', status: 'upcoming' },
+      { phase: 'Gate 3', title: 'Baseline Learning', description: 'System learns which devices are trusted household members', status: 'upcoming' },
+      { phase: 'Gate 4', title: 'Real-Time Alert', description: 'Push notifications for unknown presence — the core MVP value', status: 'upcoming' },
+      { phase: 'Gate 5', title: 'Post-MVP Intel', description: 'Smart features that improve accuracy and reduce noise over time', status: 'upcoming' },
+    ]}
+  />,
 
-  // ─── Slide 9: Gate 1 — Lab Validation ─────────────────────────────
-  <div key="s9" className="flex flex-1 flex-col">
-    <Headline>Gate 1: Lab Validation</Headline>
-    <Subheadline style={{ margin: '0 0 2vh' }}>
-      Prove the hardware can reliably detect and report device presence
-    </Subheadline>
-    <div className="flex flex-1 items-center">
-      <TwoColumn
-        className="w-full items-start"
-        left={
-          <Checklist
-            items={[
-              { text: 'ESP32 sniffer captures Wi-Fi probes + BLE beacons', checked: false },
-              { text: 'Gateway aggregates and publishes to MQTT broker', checked: false },
-              { text: 'Watcher ingests events from MQTT stream', checked: false },
-              { text: 'End-to-end latency under 5 seconds in lab', checked: false },
-            ]}
-            animate="stagger"
-          />
-        }
-        right={
-          <div>
-            <p style={{ color: 'var(--sm-muted)', fontSize: 'clamp(0.85rem, 1.4vw, 1.1rem)', marginBottom: '1rem' }}>
-              <strong style={{ color: 'var(--sm-text)' }}>Exit criteria:</strong> A phone walks into range → event appears in Watcher logs within 5 seconds.
-            </p>
-            <IconList
-              items={[
-                { icon: 'Wrench', text: 'Firmware: sniffer + gateway sketches' },
-                { icon: 'Cloud', text: 'Infra: EMQX broker deployed' },
-                { icon: 'Terminal', text: 'Watcher: basic MQTT consumer' },
-              ]}
-              animate="stagger"
-            />
-          </div>
-        }
-      />
-    </div>
-  </div>,
+  // ─── Slide 9: Gates 1 & 2 Detail ─────────────────────────────────
+  <ContentMediaSlide
+    key="s9"
+    title="Gates 1–2: Foundation"
+    subtitle="Lab validation and mobile provisioning"
+    bullets={[
+      'ESP32 sniffer captures Wi-Fi probes + BLE beacons',
+      'Gateway aggregates and publishes to MQTT broker',
+      'End-to-end latency under 5 seconds in lab',
+      'BLE-based Wi-Fi provisioning for ESP32 gateway',
+      'User signup/login via mobile app',
+      'Gateway registered to user account in backend',
+    ]}
+    mediaPosition="left"
+    visual="checklist"
+    visualItems={[
+      { label: 'Firmware: sniffer + gateway sketches', icon: 'Wrench' },
+      { label: 'Infra: EMQX broker deployed', icon: 'Cloud' },
+      { label: 'Watcher: basic MQTT consumer', icon: 'Terminal' },
+      { label: 'Mobile: onboarding + BLE provisioning', icon: 'Smartphone' },
+      { label: 'Backend: auth, device registration API', icon: 'Server' },
+      { label: 'Database: users, properties, devices schema', icon: 'Database' },
+    ]}
+  />,
 
-  // ─── Slide 10: Gate 2 — Mobile Provisioning ───────────────────────
-  <div key="s10" className="flex flex-1 flex-col">
-    <Headline>Gate 2: Mobile Provisioning</Headline>
-    <Subheadline style={{ margin: '0 0 2vh' }}>
-      Users can set up hardware and create an account from the mobile app
-    </Subheadline>
-    <div className="flex flex-1 items-center">
-      <TwoColumn
-        className="w-full items-start"
-        left={
-          <Checklist
-            items={[
-              { text: 'BLE-based Wi-Fi provisioning for ESP32 gateway', checked: false },
-              { text: 'User signup / login via mobile app', checked: false },
-              { text: 'Gateway registered to user account in backend', checked: false },
-              { text: 'Device appears in app dashboard', checked: false },
-            ]}
-            animate="stagger"
-          />
-        }
-        right={
-          <div>
-            <p style={{ color: 'var(--sm-muted)', fontSize: 'clamp(0.85rem, 1.4vw, 1.1rem)', marginBottom: '1rem' }}>
-              <strong style={{ color: 'var(--sm-text)' }}>Exit criteria:</strong> New user downloads app → provisions gateway → sees it online in dashboard.
-            </p>
-            <IconList
-              items={[
-                { icon: 'Smartphone', text: 'Mobile: onboarding + BLE provisioning flow' },
-                { icon: 'Server', text: 'Backend: auth, device registration API' },
-                { icon: 'Database', text: 'Database: users, properties, devices schema' },
-              ]}
-              animate="stagger"
-            />
-          </div>
-        }
-      />
-    </div>
-  </div>,
+  // ─── Slide 10: Gates 3 & 4 Detail ────────────────────────────────
+  <ContentMediaSlide
+    key="s10"
+    title="Gates 3–4: Core MVP"
+    subtitle="Baseline learning and real-time alerts"
+    bullets={[
+      'Watcher builds baseline from initial observation window',
+      'Redis stores hot baseline for sub-second lookups',
+      'Users label devices as trusted/ignored in mobile app',
+      'Watcher fires alert when unknown device detected',
+      'Backend delivers push notification to mobile app',
+      'User can arm/disarm the system from the app',
+    ]}
+    mediaPosition="right"
+    visual="checklist"
+    visualItems={[
+      { label: 'Watcher: baseline algorithm + Redis sync', icon: 'Brain' },
+      { label: 'Mobile: device list + trust labeling UI', icon: 'Smartphone' },
+      { label: 'Backend: baseline CRUD endpoints', icon: 'Database' },
+      { label: 'Push delivery via FCM/APNs', icon: 'Bell' },
+      { label: 'Arm/disarm state machine', icon: 'Shield' },
+      { label: 'Alert log + event replay', icon: 'History' },
+    ]}
+  />,
 
-  // ─── Slide 11: Gate 3 — Baseline Learning ─────────────────────────
-  <div key="s11" className="flex flex-1 flex-col">
-    <Headline>Gate 3: Baseline Learning</Headline>
-    <Subheadline style={{ margin: '0 0 2vh' }}>
-      System learns which devices are trusted household members
-    </Subheadline>
-    <div className="flex flex-1 items-center">
-      <TwoColumn
-        className="w-full items-start"
-        left={
-          <Checklist
-            items={[
-              { text: 'Watcher builds baseline from initial observation window', checked: false },
-              { text: 'Redis stores hot baseline for sub-second lookups', checked: false },
-              { text: 'Users label devices as trusted/ignored in mobile app', checked: false },
-              { text: 'Baseline persists across restarts in Postgres', checked: false },
-            ]}
-            animate="stagger"
-          />
-        }
-        right={
-          <div>
-            <p style={{ color: 'var(--sm-muted)', fontSize: 'clamp(0.85rem, 1.4vw, 1.1rem)', marginBottom: '1rem' }}>
-              <strong style={{ color: 'var(--sm-text)' }}>Exit criteria:</strong> System correctly classifies household phones as trusted and flags a new device as unknown.
-            </p>
-            <IconList
-              items={[
-                { icon: 'Brain', text: 'Watcher: baseline algorithm + Redis sync' },
-                { icon: 'Smartphone', text: 'Mobile: device list + trust labeling UI' },
-                { icon: 'Database', text: 'Backend: baseline CRUD endpoints' },
-              ]}
-              animate="stagger"
-            />
-          </div>
-        }
-      />
-    </div>
-  </div>,
+  // ─── Slide 11: Gate 5 — Post-MVP Intelligence ─────────────────────
+  <FeatureSlide
+    key="s11"
+    title="Gate 5: Post-MVP Intelligence"
+    subtitle="Smart features that improve accuracy and reduce noise over time"
+    columns={3}
+    features={[
+      { label: 'Pattern Analysis', description: 'Learn arrival/departure patterns for household members to reduce false positives', icon: 'TrendingUp' },
+      { label: 'Zone Mapping', description: 'RSSI triangulation to locate which room a device is in', icon: 'MapPin' },
+      { label: 'Occupancy Insights', description: "Who's home, when did they arrive, historical occupancy trends", icon: 'Users' },
+      { label: 'Anomaly Detection', description: 'Flag unusual patterns like devices appearing at odd hours', icon: 'ShieldAlert' },
+      { label: 'Analytics Dashboard', description: 'Visualize presence data, alert frequency, and system health', icon: 'BarChart3' },
+      { label: 'Integrations', description: 'HomeAssistant, IFTTT, and smart home automations', icon: 'Plug' },
+    ]}
+  />,
 
-  // ─── Slide 12: Gate 4 — Real-Time Alert MVP ───────────────────────
-  <div key="s12" className="flex flex-1 flex-col">
-    <Headline>Gate 4: Real-Time Alert MVP</Headline>
-    <Subheadline style={{ margin: '0 0 2vh' }}>
-      The core value — push notifications for unknown presence
-    </Subheadline>
-    <div className="flex flex-1 items-center">
-      <TwoColumn
-        className="w-full items-start"
-        left={
-          <Checklist
-            items={[
-              { text: 'Watcher fires alert when unknown device detected', checked: false },
-              { text: 'Backend delivers push notification to mobile app', checked: false },
-              { text: 'User can arm/disarm the system from the app', checked: false },
-              { text: 'Alert history viewable in the app', checked: false },
-            ]}
-            animate="stagger"
-          />
-        }
-        right={
-          <div>
-            <p style={{ color: 'var(--sm-muted)', fontSize: 'clamp(0.85rem, 1.4vw, 1.1rem)', marginBottom: '1rem' }}>
-              <strong style={{ color: 'var(--sm-text)' }}>Exit criteria:</strong> System is armed → unknown phone walks in → user receives push within ~5 seconds.
-            </p>
-            <IconList
-              items={[
-                { icon: 'Bell', text: 'Push delivery via FCM/APNs' },
-                { icon: 'Shield', text: 'Arm/disarm state machine' },
-                { icon: 'History', text: 'Alert log + event replay' },
-              ]}
-              animate="stagger"
-            />
-          </div>
-        }
-      />
-    </div>
-  </div>,
-
-  // ─── Slide 13: Gate 5 — Post-MVP Intelligence ─────────────────────
-  <div key="s13" className="flex flex-1 flex-col">
-    <Headline>Gate 5: Post-MVP Intelligence</Headline>
-    <Subheadline style={{ margin: '0 0 2vh' }}>
-      Smart features that improve accuracy and reduce noise over time
-    </Subheadline>
-    <div className="flex flex-1 items-center py-[2vh]">
-      <FeatureGrid
-        columns={3}
-        features={[
-          {
-            icon: 'TrendingUp',
-            title: 'Pattern Analysis',
-            description: 'Learn arrival/departure patterns for household members to reduce false positives',
-          },
-          {
-            icon: 'MapPin',
-            title: 'Zone Mapping',
-            description: 'RSSI triangulation to locate which room a device is in',
-          },
-          {
-            icon: 'Users',
-            title: 'Occupancy Insights',
-            description: "Who's home, when did they arrive, historical occupancy trends",
-          },
-          {
-            icon: 'ShieldAlert',
-            title: 'Anomaly Detection',
-            description: 'Flag unusual patterns like devices appearing at odd hours',
-          },
-          {
-            icon: 'BarChart3',
-            title: 'Analytics Dashboard',
-            description: 'Visualize presence data, alert frequency, and system health',
-          },
-          {
-            icon: 'Plug',
-            title: 'Integrations',
-            description: 'HomeAssistant, IFTTT, and smart home automations',
-          },
-        ]}
-        animate="stagger"
-      />
-    </div>
-  </div>,
-
-  // ─── Slide 14: Section Divider — Deliverables ─────────────────────
-  <SectionHeader
-    key="s14"
-    number={3}
+  // ─── Slide 12: Section — Deliverables ─────────────────────────────
+  <SectionDividerSlide
+    key="s12"
+    number="03"
     title="MVP Deliverables"
     subtitle="Six workstreams, one team"
-    animate
+    gradient="amber-rose"
   />,
 
-  // ─── Slide 15: Deliverables by Workstream ─────────────────────────
-  <div key="s15" className="flex flex-1 flex-col">
-    <Headline>Workstream Deliverables</Headline>
-    <div className="flex flex-1 items-center py-[2vh]">
-      <StepCards
-        steps={[
-          {
-            number: 1,
-            title: 'Mobile App',
-            description: 'Onboarding, BLE provisioning, arm/disarm, device management, push notifications, alert history',
-          },
-          {
-            number: 2,
-            title: 'Firmware',
-            description: 'ESP32 sniffer sketch, gateway firmware, BLE provisioning, OTA update support',
-          },
-          {
-            number: 3,
-            title: 'Backend / API',
-            description: 'Auth, device registry, baseline CRUD, alert routing, push delivery, arm/disarm state',
-          },
-          {
-            number: 4,
-            title: 'Watcher + Analytics',
-            description: 'MQTT consumer, baseline learning, unknown device detection, alert trigger engine',
-          },
-          {
-            number: 5,
-            title: 'DevOps / Platform',
-            description: 'EMQX broker, Redis, Neon Postgres, CI/CD pipelines, monitoring, OTA infrastructure',
-          },
-          {
-            number: 6,
-            title: 'Beta Operations',
-            description: 'Hardware kits, tester onboarding, feedback collection, bug triage, iteration cycles',
-          },
-        ]}
-        animate="stagger"
-      />
-    </div>
-  </div>,
+  // ─── Slide 13: Workstream Deliverables ────────────────────────────
+  <FeatureSlide
+    key="s13"
+    title="Workstream Deliverables"
+    columns={2}
+    features={[
+      { label: 'Mobile App', description: 'Onboarding, BLE provisioning, arm/disarm, device management, push notifications, alert history', icon: 'Smartphone' },
+      { label: 'Firmware', description: 'ESP32 sniffer sketch, gateway firmware, BLE provisioning, OTA update support', icon: 'Cpu' },
+      { label: 'Backend / API', description: 'Auth, device registry, baseline CRUD, alert routing, push delivery, arm/disarm state', icon: 'Server' },
+      { label: 'Watcher + Analytics', description: 'MQTT consumer, baseline learning, unknown device detection, alert trigger engine', icon: 'Eye' },
+      { label: 'DevOps / Platform', description: 'EMQX broker, Redis, Neon Postgres, CI/CD pipelines, monitoring, OTA infrastructure', icon: 'Cloud' },
+      { label: 'Beta Operations', description: 'Hardware kits, tester onboarding, feedback collection, bug triage, iteration cycles', icon: 'Users' },
+    ]}
+  />,
 
-  // ─── Slide 16: Key Metrics ────────────────────────────────────────
-  <div key="s16" className="flex flex-1 flex-col">
-    <Headline>Key Metrics</Headline>
-    <div
-      className="flex flex-1 items-center justify-evenly"
-      style={{ gap: 'clamp(1rem, 3vw, 3rem)' }}
-    >
-      <StatCallout value="<5s" label="Alert Latency" animate />
-      <StatCallout value="<1%" label="False Positive Rate" animate />
-      <StatCallout value="99.9%" label="Uptime Target" animate />
-    </div>
-  </div>,
+  // ─── Slide 14: Key Metrics ────────────────────────────────────────
+  <MetricsSlide
+    key="s14"
+    title="Key Metrics"
+    metrics={[
+      { value: '<5s', label: 'Alert Latency', trend: 'down', color: 'emerald' },
+      { value: '<1%', label: 'False Positive Rate', trend: 'down', color: 'blue' },
+      { value: '99.9%', label: 'Uptime Target', trend: 'up', color: 'purple' },
+    ]}
+  />,
 
-  // ─── Slide 17: Next Steps ─────────────────────────────────────────
-  <div key="s17" className="flex flex-1 flex-col">
-    <Headline>Next Steps</Headline>
-    <div className="flex flex-1 items-center py-[2vh]">
-      <NextStepsGrid
-        steps={[
-          { action: 'Finalize ESP32 sniffer firmware', owner: 'Firmware', status: 'in-progress' },
-          { action: 'Deploy EMQX broker on AWS', owner: 'DevOps', status: 'todo' },
-          { action: 'Build Watcher MQTT consumer', owner: 'Backend', status: 'todo' },
-          { action: 'Scaffold React Native app', owner: 'Mobile', status: 'todo' },
-          { action: 'Run Gate 1 lab validation', owner: 'All', status: 'todo' },
-          { action: 'Recruit 5 beta testers', owner: 'Beta Ops', status: 'todo' },
-        ]}
-        className="w-full"
-        animate="stagger"
-      />
-    </div>
-  </div>,
+  // ─── Slide 15: Next Steps ─────────────────────────────────────────
+  <TableSlide
+    key="s15"
+    title="Next Steps"
+    subtitle="Owners and priorities"
+    steps={[
+      { action: 'Finalize ESP32 sniffer firmware', owner: 'Firmware', status: 'in-progress' },
+      { action: 'Deploy EMQX broker on AWS', owner: 'DevOps', status: 'todo' },
+      { action: 'Build Watcher MQTT consumer', owner: 'Backend', status: 'todo' },
+      { action: 'Scaffold React Native app', owner: 'Mobile', status: 'todo' },
+      { action: 'Run Gate 1 lab validation', owner: 'All', status: 'todo' },
+      { action: 'Recruit 5 beta testers', owner: 'Beta Ops', status: 'todo' },
+    ]}
+  />,
 
-  // ─── Slide 18: Thank You ──────────────────────────────────────────
-  <GradientBg
-    key="s18"
-    className="flex flex-1 flex-col items-center justify-center"
-  >
-    <EndSlide
-      variant="qa"
-      message="Let's align on priorities and kick off Gate 1"
-      animate
-    />
-  </GradientBg>,
+  // ─── Slide 16: Conclusion ─────────────────────────────────────────
+  <ConclusionSlide
+    key="s16"
+    variant="qa"
+    title="Questions & Discussion"
+    subtitle="Let's align on priorities and kick off Gate 1"
+    callToAction="Let's align on priorities and kick off Gate 1"
+  />,
 ];
 
 export default slides;
