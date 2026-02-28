@@ -9,18 +9,18 @@ import {
 
 const slides = [
   // Slide 1: Welcome — centered hero
-  <div key="s1" className="flex flex-1 flex-col items-center justify-center text-center gap-10">
-    <Headline className="text-8xl">Welcome to Slidemason</Headline>
-    <Subheadline className="text-4xl">
+  <div key="s1" className="flex flex-1 flex-col items-center justify-center text-center" style={{ gap: 'clamp(1.5rem, 3vh, 3rem)' }}>
+    <Headline className="!tracking-tighter" style={{ fontSize: 'clamp(2.5rem, 7vw, 6rem)' }}>Welcome to Slidemason</Headline>
+    <Subheadline style={{ fontSize: 'clamp(1.25rem, 2.8vw, 2.5rem)' }}>
       Local-first presentations, built with your coding agent
     </Subheadline>
-    <p className="text-2xl text-[var(--sm-muted)] mt-8">
+    <p className="text-[var(--sm-muted)]" style={{ fontSize: 'clamp(1rem, 1.8vw, 1.5rem)', marginTop: 'clamp(1rem, 2vh, 2rem)' }}>
       Use arrow keys to navigate →
     </p>
   </div>,
 
-  // Slide 2: How it works — heading top, steps fill the rest
-  <div key="s2" className="flex flex-1 flex-col gap-12">
+  // Slide 2: How it works
+  <div key="s2" className="flex flex-1 flex-col" style={{ gap: 'clamp(1.5rem, 3vh, 3rem)' }}>
     <Headline>How It Works</Headline>
     <div className="flex-1 flex flex-col justify-center">
       <NumberedSteps
@@ -34,8 +34,8 @@ const slides = [
     </div>
   </div>,
 
-  // Slide 3: Quick start — heading top, bullets fill the rest
-  <div key="s3" className="flex flex-1 flex-col gap-12">
+  // Slide 3: Quick start
+  <div key="s3" className="flex flex-1 flex-col" style={{ gap: 'clamp(1.5rem, 3vh, 3rem)' }}>
     <Headline>Quick Start</Headline>
     <div className="flex-1 flex flex-col justify-center">
       <BulletGroup
@@ -51,18 +51,18 @@ const slides = [
     <FooterMark text="See README.md for the full guide" />
   </div>,
 
-  // Slide 4: What's inside — 2-column grid filling the space
-  <div key="s4" className="flex flex-1 flex-col gap-12">
+  // Slide 4: What's inside
+  <div key="s4" className="flex flex-1 flex-col" style={{ gap: 'clamp(1.5rem, 3vh, 3rem)' }}>
     <Headline>What's Inside</Headline>
-    <div className="flex-1 grid grid-cols-2 gap-x-20 gap-y-10 content-center text-3xl text-[var(--sm-text)]">
-      <div><span className="text-5xl font-bold text-[var(--sm-primary)]">16</span> <span className="ml-2">slide components</span></div>
-      <div><span className="text-5xl font-bold text-[var(--sm-primary)]">12</span> <span className="ml-2">ready-made templates</span></div>
-      <div><span className="text-5xl font-bold text-[var(--sm-primary)]">3</span> <span className="ml-2">built-in themes</span></div>
-      <div><span className="text-5xl font-bold text-[var(--sm-primary)]">9</span> <span className="ml-2">agent prompt files</span></div>
-      <div><span className="text-5xl font-bold text-[var(--sm-primary)]">PDF</span> <span className="ml-2">export via CLI</span></div>
-      <div><span className="text-5xl font-bold text-[var(--sm-primary)]">0</span> <span className="ml-2">cloud dependencies</span></div>
+    <div className="flex-1 grid grid-cols-2 content-center text-[var(--sm-text)]" style={{ gap: 'clamp(1rem, 2.5vw, 2.5rem)', fontSize: 'clamp(1rem, 2vw, 1.875rem)' }}>
+      <div><span className="font-bold text-[var(--sm-primary)]" style={{ fontSize: 'clamp(1.5rem, 3.5vw, 3rem)' }}>16</span> <span className="ml-1">slide components</span></div>
+      <div><span className="font-bold text-[var(--sm-primary)]" style={{ fontSize: 'clamp(1.5rem, 3.5vw, 3rem)' }}>12</span> <span className="ml-1">ready-made templates</span></div>
+      <div><span className="font-bold text-[var(--sm-primary)]" style={{ fontSize: 'clamp(1.5rem, 3.5vw, 3rem)' }}>3</span> <span className="ml-1">built-in themes</span></div>
+      <div><span className="font-bold text-[var(--sm-primary)]" style={{ fontSize: 'clamp(1.5rem, 3.5vw, 3rem)' }}>9</span> <span className="ml-1">agent prompt files</span></div>
+      <div><span className="font-bold text-[var(--sm-primary)]" style={{ fontSize: 'clamp(1.5rem, 3.5vw, 3rem)' }}>PDF</span> <span className="ml-1">export via CLI</span></div>
+      <div><span className="font-bold text-[var(--sm-primary)]" style={{ fontSize: 'clamp(1.5rem, 3.5vw, 3rem)' }}>0</span> <span className="ml-1">cloud dependencies</span></div>
     </div>
-    <p className="text-2xl text-[var(--sm-muted)]">
+    <p className="text-[var(--sm-muted)]" style={{ fontSize: 'clamp(0.9rem, 1.5vw, 1.25rem)' }}>
       Start building → drop files in /data and run pnpm ingest
     </p>
   </div>,
