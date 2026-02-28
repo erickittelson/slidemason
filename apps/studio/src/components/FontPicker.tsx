@@ -54,17 +54,22 @@ export function FontPicker({ headingFont, bodyFont, onChangeHeading, onChangeBod
             >
               <span style={{
                 display: 'block', fontFamily: `'${p.heading}', sans-serif`,
-                fontWeight: 700, fontSize: '0.85rem', marginBottom: '2px',
-                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                fontWeight: 700, fontSize: '0.9rem', lineHeight: 1.1, marginBottom: '3px',
+                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#fff',
               }}>
-                {p.name}
+                Aa Heading
               </span>
               <span style={{
                 display: 'block', fontFamily: `'${p.body}', sans-serif`,
-                color: '#999', fontSize: '0.6rem',
+                fontSize: '0.65rem', lineHeight: 1.2, color: '#bbb', marginBottom: '4px',
+              }}>
+                Body text sample here
+              </span>
+              <span style={{
+                display: 'block', fontSize: '0.55rem', color: '#666',
                 whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
               }}>
-                {p.body} — {p.vibe}
+                {p.heading} + {p.body}
               </span>
             </button>
           );
