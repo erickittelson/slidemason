@@ -54,3 +54,6 @@ export * from './comparison';
 
 // Media & Visual
 export * from './media';
+
+// Backgrounds & Decorative
+export * from './backgrounds';

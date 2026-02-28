@@ -1,1 +1,20 @@
-// Components will be exported here as they are built
+export { GradientBg } from './GradientBg';
+export type { GradientBgProps } from './GradientBg';
+export { MeshGradient } from './MeshGradient';
+export type { MeshGradientProps } from './MeshGradient';
+export { GeometricPattern } from './GeometricPattern';
+export type { GeometricPatternProps } from './GeometricPattern';
+export { BlobShape } from './BlobShape';
+export type { BlobShapeProps } from './BlobShape';
+export { GridLines } from './GridLines';
+export type { GridLinesProps } from './GridLines';
+export { WavesDivider } from './WavesDivider';
+export type { WavesDividerProps } from './WavesDivider';
+export { CircuitPattern } from './CircuitPattern';
+export type { CircuitPatternProps } from './CircuitPattern';
+export { TopographyLines } from './TopographyLines';
+export type { TopographyLinesProps } from './TopographyLines';
+export { NoisyGradient } from './NoisyGradient';
+export type { NoisyGradientProps } from './NoisyGradient';
+export { SpotlightEffect } from './SpotlightEffect';
+export type { SpotlightEffectProps } from './SpotlightEffect';
