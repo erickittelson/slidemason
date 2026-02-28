@@ -25,6 +25,7 @@ import { AssetLibrary } from './components/AssetLibrary';
 import { FloatingThemePicker } from './components/FloatingThemePicker';
 import { SlideThumbnails } from './components/SlideThumbnails';
 import { TableOfContents } from './components/TableOfContents';
+import { NextStepsModal } from './components/NextStepsModal';
 import { useProjectStatus } from './hooks/useProjectStatus';
 import { useFiles } from './hooks/useFiles';
 import { useBrief } from './hooks/useBrief';
@@ -156,6 +157,7 @@ export function App() {
   const [theme, setTheme] = useState('midnight');
   const [headingFont, setHeadingFont] = useState('Inter');
   const [bodyFont, setBodyFont] = useState('Inter');
+  const [showNextSteps, setShowNextSteps] = useState(false);
 
   // Hooks for dev mode
   const { status, refresh: refreshStatus } = useProjectStatus();
@@ -196,6 +198,11 @@ export function App() {
     saveBrief({ fonts: { heading, body } });
   };
 
+  const handleSaveAll = async () => {
+    await saveBrief({ theme, fonts: { heading: headingFont, body: bodyFont } });
+    setShowNextSteps(true);
+  };
+
   const handleFilesChanged = () => {
     refreshStatus();
   };
@@ -227,8 +234,6 @@ export function App() {
               <BriefForm
                 brief={brief}
                 onChange={setBrief}
-                onSave={() => saveBrief()}
-                saved={briefSaved}
               />
             }
           />
@@ -251,7 +256,23 @@ export function App() {
             onUpload={uploadAssets}
             onRemove={removeAsset}
           />
+
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', margin: '12px 0' }} />
+          <button
+            onClick={handleSaveAll}
+            style={{
+              width: '100%', padding: '10px', fontSize: '0.85rem', fontWeight: 600,
+              backgroundColor: briefSaved ? 'rgba(34,197,94,0.3)' : 'rgba(139,92,246,0.3)',
+              color: briefSaved ? '#86efac' : '#c4b5fd',
+              border: `1px solid ${briefSaved ? 'rgba(34,197,94,0.4)' : 'rgba(139,92,246,0.4)'}`,
+              borderRadius: '8px', cursor: 'pointer',
+            }}
+          >
+            {briefSaved ? '✓ Saved' : 'Save & Next Steps'}
+          </button>
         </Sidebar>
+
+        {showNextSteps && <NextStepsModal onClose={() => setShowNextSteps(false)} />}
         <main style={{ flex: 1, overflow: 'hidden' }}>
           <DeckProvider slideCount={slides.length} theme={theme}>
             <SlideRenderer slides={slides} fullWidth={false} />

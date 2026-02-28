@@ -4,8 +4,6 @@ import type { Brief } from '../hooks/useBrief';
 interface BriefFormProps {
   brief: Brief;
   onChange: (brief: Brief) => void;
-  onSave: () => void;
-  saved: boolean;
 }
 
 const inputStyle: React.CSSProperties = {
@@ -274,7 +272,7 @@ function DropdownOrText({
   );
 }
 
-export function BriefForm({ brief, onChange, onSave, saved }: BriefFormProps) {
+export function BriefForm({ brief, onChange }: BriefFormProps) {
   const update = (field: keyof Brief, value: string) => {
     onChange({ ...brief, [field]: value });
   };
@@ -367,18 +365,6 @@ export function BriefForm({ brief, onChange, onSave, saved }: BriefFormProps) {
         </div>
       ))}
 
-      <button
-        onClick={onSave}
-        style={{
-          width: '100%', padding: '8px', fontSize: '0.8rem', fontWeight: 600,
-          backgroundColor: saved ? 'rgba(34,197,94,0.3)' : 'rgba(139,92,246,0.3)',
-          color: saved ? '#86efac' : '#c4b5fd',
-          border: `1px solid ${saved ? 'rgba(34,197,94,0.4)' : 'rgba(139,92,246,0.4)'}`,
-          borderRadius: '6px', cursor: 'pointer',
-        }}
-      >
-        {saved ? '✓ Saved' : 'Save Brief'}
-      </button>
     </div>
   );
 }
