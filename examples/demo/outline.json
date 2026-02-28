@@ -1,0 +1,72 @@
+{
+  "theme": "slate",
+  "slides": [
+    {
+      "id": "s01",
+      "type": "title-hero",
+      "intent": "open with confidence and frame the narrative",
+      "headline": "SyncSpace Q1 Strategy Review",
+      "subheadline": "Growth, Product Direction, and Q2 Priorities"
+    },
+    {
+      "id": "s02",
+      "type": "agenda",
+      "intent": "set expectations for the discussion",
+      "headline": "Today's Agenda",
+      "copyPoints": ["Q1 Performance", "Product Momentum", "Competitive Landscape", "Q2 Priorities", "Resource Ask"]
+    },
+    {
+      "id": "s03",
+      "type": "stat-grid",
+      "intent": "lead with strong Q1 numbers",
+      "headline": "Q1 at a Glance",
+      "copyPoints": ["12,500 MAU (+23%)", "$485K Revenue (+18%)", "4.2% Churn (-1.1%)", "62 NPS (+8)"]
+    },
+    {
+      "id": "s04",
+      "type": "two-column-argument",
+      "intent": "show product momentum with evidence",
+      "headline": "Product Momentum",
+      "copyPoints": ["Shipped 3 major features", "78% team adoption rate", "14.2 min avg session (+2.3 min)"]
+    },
+    {
+      "id": "s05",
+      "type": "quote-insight",
+      "intent": "ground the strategy in customer voice",
+      "headline": "Customer Voice",
+      "notesSeed": "Use the strongest customer quote from the notes"
+    },
+    {
+      "id": "s06",
+      "type": "comparison-table",
+      "intent": "frame competitive positioning clearly",
+      "headline": "Competitive Landscape"
+    },
+    {
+      "id": "s07",
+      "type": "section-divider",
+      "intent": "transition to forward-looking section",
+      "headline": "Looking Ahead"
+    },
+    {
+      "id": "s08",
+      "type": "roadmap",
+      "intent": "lay out Q2 priorities",
+      "headline": "Q2 Roadmap",
+      "copyPoints": ["Enterprise SSO & SCIM", "AI meeting summaries", "Mobile app v2", "EMEA expansion prep"]
+    },
+    {
+      "id": "s09",
+      "type": "recommendation-ask",
+      "intent": "make the resource ask clear and justified",
+      "headline": "The Ask",
+      "notesSeed": "3 senior engineers + 1 designer to hit Q2 targets"
+    },
+    {
+      "id": "s10",
+      "type": "appendix",
+      "intent": "provide reference data for follow-up",
+      "headline": "Appendix: Detailed Metrics"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "title": "SyncSpace Q1 Strategy Review",
+  "audience": "executive leadership and board",
+  "goal": "align on Q1 results, product direction, and resource allocation for Q2",
+  "tone": "clear, data-driven, executive",
+  "themes": ["growth momentum", "product-market fit", "team expansion", "competitive positioning"],
+  "sources": [
+    { "file": "prd.md", "type": "markdown", "summary": "Product requirements for SyncSpace v2 features" },
+    { "file": "notes.md", "type": "markdown", "summary": "Strategy meeting notes with key decisions and concerns" },
+    { "file": "metrics.csv", "type": "csv", "summary": "Q1 2026 performance metrics showing strong growth" }
+  ],
+  "constraints": ["12 slides max", "executive audience — no jargon", "focus on decisions, not details"]
+}
