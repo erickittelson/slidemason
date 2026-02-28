@@ -5,6 +5,7 @@ interface FontPickerProps {
   bodyFont: string;
   onChangeHeading: (font: string) => void;
   onChangeBody: (font: string) => void;
+  onChangePairing: (heading: string, body: string) => void;
 }
 
 const selectStyle: React.CSSProperties = {
@@ -17,7 +18,7 @@ const labelStyle: React.CSSProperties = {
   color: '#aaa', fontSize: '0.75rem', fontWeight: 500, display: 'block', marginBottom: '4px',
 };
 
-export function FontPicker({ headingFont, bodyFont, onChangeHeading, onChangeBody }: FontPickerProps) {
+export function FontPicker({ headingFont, bodyFont, onChangeHeading, onChangeBody, onChangePairing }: FontPickerProps) {
   const activePairing = FONT_PAIRINGS.find(p => p.heading === headingFont && p.body === bodyFont);
 
   return (
@@ -37,8 +38,7 @@ export function FontPicker({ headingFont, bodyFont, onChangeHeading, onChangeBod
               onClick={() => {
                 loadGoogleFont(p.heading);
                 loadGoogleFont(p.body);
-                onChangeHeading(p.heading);
-                onChangeBody(p.body);
+                onChangePairing(p.heading, p.body);
               }}
               onMouseEnter={() => {
                 loadGoogleFont(p.heading);

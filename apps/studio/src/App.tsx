@@ -190,6 +190,12 @@ export function App() {
     saveBrief({ fonts: { heading: headingFont, body: font } });
   };
 
+  const handleFontPairing = (heading: string, body: string) => {
+    setHeadingFont(heading);
+    setBodyFont(body);
+    saveBrief({ fonts: { heading, body } });
+  };
+
   const handleFilesChanged = () => {
     refreshStatus();
   };
@@ -236,6 +242,7 @@ export function App() {
             bodyFont={bodyFont}
             onChangeHeading={handleHeadingFontChange}
             onChangeBody={handleBodyFontChange}
+            onChangePairing={handleFontPairing}
           />
 
           <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', margin: '12px 0' }} />
