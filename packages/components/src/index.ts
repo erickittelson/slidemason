@@ -33,3 +33,6 @@ export { FooterMark } from './FooterMark';
 export type { FooterMarkProps } from './FooterMark';
 export { PresenterNotes } from './PresenterNotes';
 export type { PresenterNotesProps } from './PresenterNotes';
+
+// Typography Components
+export * from './typography';
