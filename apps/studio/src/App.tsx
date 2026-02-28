@@ -158,6 +158,33 @@ export function App() {
   const [bodyFont, setBodyFont] = useState('Inter');
   const [showNextSteps, setShowNextSteps] = useState(false);
   const [openStep, setOpenStep] = useState(1); // which step is expanded (1-5, 0=none)
+  const [stepError, setStepError] = useState('');
+
+  // Validation for mandatory fields per step
+  const validateStep = (step: number): string | null => {
+    if (step === 1 && files.length === 0) {
+      return 'Upload at least one source file before continuing.';
+    }
+    if (step === 2) {
+      const missing: string[] = [];
+      if (!brief.audience) missing.push('Audience');
+      if (!brief.goal) missing.push('Goal');
+      if (missing.length > 0) {
+        return `${missing.join(' and ')} ${missing.length === 1 ? 'is' : 'are'} required.`;
+      }
+    }
+    return null;
+  };
+
+  const handleNext = (fromStep: number) => {
+    const error = validateStep(fromStep);
+    if (error) {
+      setStepError(error);
+      return;
+    }
+    setStepError('');
+    setOpenStep(fromStep + 1);
+  };
 
   // Hooks for dev mode
   const { files, upload: uploadFiles, remove: removeFile } = useFiles();
@@ -220,8 +247,9 @@ export function App() {
           <CollapsibleSection
             step={1} title="Source Files"
             open={openStep === 1} done={files.length > 0}
-            onToggle={() => setOpenStep(openStep === 1 ? 0 : 1)}
-            onNext={() => setOpenStep(2)}
+            onToggle={() => { setStepError(''); setOpenStep(openStep === 1 ? 0 : 1); }}
+            onNext={() => handleNext(1)}
+            error={openStep === 1 ? stepError : undefined}
           >
             <FileUploadZone
               files={files}
@@ -233,9 +261,10 @@ export function App() {
           <CollapsibleSection
             step={2} title="Brief"
             open={openStep === 2}
-            done={!!(brief.audience || brief.goal || brief.title)}
-            onToggle={() => setOpenStep(openStep === 2 ? 0 : 2)}
-            onNext={() => setOpenStep(3)}
+            done={!!(brief.audience && brief.goal)}
+            onToggle={() => { setStepError(''); setOpenStep(openStep === 2 ? 0 : 2); }}
+            onNext={() => handleNext(2)}
+            error={openStep === 2 ? stepError : undefined}
           >
             <BriefForm brief={brief} onChange={setBrief} />
           </CollapsibleSection>
@@ -243,8 +272,8 @@ export function App() {
           <CollapsibleSection
             step={3} title="Theme"
             open={openStep === 3} done={theme !== 'midnight'}
-            onToggle={() => setOpenStep(openStep === 3 ? 0 : 3)}
-            onNext={() => setOpenStep(4)}
+            onToggle={() => { setStepError(''); setOpenStep(openStep === 3 ? 0 : 3); }}
+            onNext={() => handleNext(3)}
           >
             <ThemePicker activeTheme={theme} onSelectTheme={handleThemeChange} />
           </CollapsibleSection>
@@ -253,8 +282,8 @@ export function App() {
             step={4} title="Fonts"
             open={openStep === 4}
             done={headingFont !== 'Inter' || bodyFont !== 'Inter'}
-            onToggle={() => setOpenStep(openStep === 4 ? 0 : 4)}
-            onNext={() => setOpenStep(5)}
+            onToggle={() => { setStepError(''); setOpenStep(openStep === 4 ? 0 : 4); }}
+            onNext={() => handleNext(4)}
           >
             <FontPicker
               headingFont={headingFont}
@@ -268,7 +297,7 @@ export function App() {
           <CollapsibleSection
             step={5} title="Assets"
             open={openStep === 5} done={assets.length > 0}
-            onToggle={() => setOpenStep(openStep === 5 ? 0 : 5)}
+            onToggle={() => { setStepError(''); setOpenStep(openStep === 5 ? 0 : 5); }}
           >
             <AssetLibrary
               assets={assets}

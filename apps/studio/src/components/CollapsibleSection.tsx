@@ -8,10 +8,12 @@ interface CollapsibleSectionProps {
   done: boolean;
   onToggle: () => void;
   onNext?: () => void;
+  /** Validation error shown above Next button — blocks advancing when set */
+  error?: string;
 }
 
 export function CollapsibleSection({
-  step, title, children, open, done, onToggle, onNext,
+  step, title, children, open, done, onToggle, onNext, error,
 }: CollapsibleSectionProps) {
   return (
     <div style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
@@ -61,17 +63,28 @@ export function CollapsibleSection({
           {children}
 
           {onNext && (
-            <button
-              onClick={onNext}
-              style={{
-                marginTop: '10px', width: '100%', padding: '8px', fontSize: '0.75rem',
-                fontWeight: 600, backgroundColor: 'rgba(139,92,246,0.2)', color: '#c4b5fd',
-                border: '1px solid rgba(139,92,246,0.3)', borderRadius: '6px',
-                cursor: 'pointer',
-              }}
-            >
-              Next →
-            </button>
+            <>
+              {error && (
+                <p style={{
+                  color: '#f87171', fontSize: '0.7rem', margin: '8px 0 0',
+                  padding: '6px 8px', backgroundColor: 'rgba(248,113,113,0.1)',
+                  borderRadius: '4px', border: '1px solid rgba(248,113,113,0.2)',
+                }}>
+                  {error}
+                </p>
+              )}
+              <button
+                onClick={onNext}
+                style={{
+                  marginTop: '8px', width: '100%', padding: '8px', fontSize: '0.75rem',
+                  fontWeight: 600, backgroundColor: 'rgba(139,92,246,0.2)', color: '#c4b5fd',
+                  border: '1px solid rgba(139,92,246,0.3)', borderRadius: '6px',
+                  cursor: 'pointer',
+                }}
+              >
+                Next →
+              </button>
+            </>
           )}
         </div>
       )}

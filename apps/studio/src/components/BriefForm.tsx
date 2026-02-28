@@ -136,13 +136,13 @@ const FIELDS: {
     placeholder: 'e.g. Jane Smith, VP of Product',
   },
   {
-    key: 'audience', label: 'Audience', type: 'dropdown-or-text', maxLength: 100,
+    key: 'audience', label: 'Audience *', type: 'dropdown-or-text', maxLength: 100,
     tooltip: 'Who will see this? Helps the AI choose the right tone and depth.',
     placeholder: 'e.g. Marketing team',
     options: AUDIENCES,
   },
   {
-    key: 'goal', label: 'Goal', type: 'dropdown-or-text', maxLength: 150,
+    key: 'goal', label: 'Goal *', type: 'dropdown-or-text', maxLength: 150,
     tooltip: 'What should the audience do or feel after? Drives the narrative arc.',
     placeholder: 'e.g. Approve the proposed budget',
     options: GOALS,
