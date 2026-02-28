@@ -128,7 +128,7 @@ async function handleListFiles(res: ServerResponse) {
   await ensureDir(DATA_DIR);
   const entries = await readdir(DATA_DIR, { withFileTypes: true });
   const files = entries
-    .filter((e) => e.isFile())
+    .filter((e) => e.isFile() && !e.name.startsWith('.'))
     .map((e) => e.name);
   json(res, { files });
 }
