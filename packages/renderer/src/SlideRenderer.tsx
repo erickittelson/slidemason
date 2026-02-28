@@ -1,6 +1,7 @@
-import { type ReactNode, useCallback, useEffect, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { MDXProvider } from '@mdx-js/react';
 import { motion, AnimatePresence } from 'framer-motion';
+import html2canvas from 'html2canvas';
 import * as components from '@slidemason/components';
 import { SlideLayout } from './SlideLayout';
 import { useDeck } from './DeckProvider';
@@ -18,10 +19,33 @@ interface SlideRendererProps {
 export function SlideRenderer({ slides, fullWidth = true }: SlideRendererProps) {
   const { currentSlide, slideCount, goTo, next, prev, theme } = useDeck();
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const slideRef = useRef<HTMLDivElement>(null);
+  const [screenshotDone, setScreenshotDone] = useState(false);
 
   const isPrintMode =
     typeof window !== 'undefined' &&
     window.location.search.includes('print');
+
+  const captureScreenshot = useCallback(async () => {
+    if (!slideRef.current) return;
+    try {
+      const canvas = await html2canvas(slideRef.current, {
+        backgroundColor: null,
+        scale: 2,
+        useCORS: true,
+      });
+      const blob = await new Promise<Blob>((resolve) =>
+        canvas.toBlob((b) => resolve(b!), 'image/png')
+      );
+      await navigator.clipboard.write([
+        new ClipboardItem({ 'image/png': blob }),
+      ]);
+      setScreenshotDone(true);
+      setTimeout(() => setScreenshotDone(false), 1500);
+    } catch (err) {
+      console.error('Screenshot failed:', err);
+    }
+  }, []);
 
   const toggleFullscreen = useCallback(() => {
     if (!document.fullscreenElement) {
@@ -44,6 +68,7 @@ export function SlideRenderer({ slides, fullWidth = true }: SlideRendererProps) 
   return (
     <MDXProvider components={components}>
       <div
+        ref={slideRef}
         data-theme={theme}
         className={`relative ${fullWidth ? 'w-screen h-screen' : 'w-full h-full'} overflow-hidden`}
         style={{ backgroundColor: 'var(--sm-bg)' }}
@@ -134,6 +159,14 @@ export function SlideRenderer({ slides, fullWidth = true }: SlideRendererProps) 
                 aria-label="Toggle fullscreen"
               >
                 {isFullscreen ? '⊡' : '⊞'}
+              </button>
+              <button
+                onClick={captureScreenshot}
+                className="cursor-pointer border-none bg-transparent p-1 text-sm leading-none transition-opacity duration-150"
+                style={{ color: screenshotDone ? 'var(--sm-primary)' : 'var(--sm-muted)' }}
+                aria-label="Copy slide screenshot to clipboard"
+              >
+                {screenshotDone ? '✓' : '📷'}
               </button>
             </div>
 
