@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+/* Import theme CSS files */
+@import "@slidemason/themes/slate.css";
+@import "@slidemason/themes/canvas.css";
+@import "@slidemason/themes/signal.css";
+
+/* Base styles */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+}
