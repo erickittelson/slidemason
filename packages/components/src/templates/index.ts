@@ -13,5 +13,16 @@ export { DiagramSlide } from './DiagramSlide';
 export { TableSlide } from './TableSlide';
 export { FullBleedSlide } from './FullBleedSlide';
 export { ConclusionSlide } from './ConclusionSlide';
+export { ChartSlide } from './ChartSlide';
+export { MatrixSlide } from './MatrixSlide';
+export { MockupSlide } from './MockupSlide';
+export { TeamSlide } from './TeamSlide';
+export { PricingSlide } from './PricingSlide';
+export { CodeSlide } from './CodeSlide';
+export { GallerySlide } from './GallerySlide';
+export { ScoreSlide } from './ScoreSlide';
+export { NetworkSlide } from './NetworkSlide';
+export { FlowSlide } from './FlowSlide';
+export { StatementSlide } from './StatementSlide';
 
 export type * from './types';

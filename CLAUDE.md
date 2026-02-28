@@ -12,7 +12,7 @@ Slidemason is a local-first, open-source presentation builder. The monorepo is s
 
 | Path | Purpose |
 |---|---|
-| `packages/components/` | 116 primitive components + 15 slide templates |
+| `packages/components/` | 116 primitive components + 26 slide templates |
 | `packages/renderer/` | Presentation engine with Framer Motion transitions |
 | `packages/themes/` | 12 CSS themes |
 | `apps/studio/` | Vite-based studio with sidebar workflow |
@@ -67,6 +67,17 @@ import {
   TableSlide,
   FullBleedSlide,
   ConclusionSlide,
+  ChartSlide,
+  MatrixSlide,
+  MockupSlide,
+  TeamSlide,
+  PricingSlide,
+  CodeSlide,
+  GallerySlide,
+  ScoreSlide,
+  NetworkSlide,
+  FlowSlide,
+  StatementSlide,
 } from '@slidemason/components';
 
 const slides = [
@@ -100,6 +111,17 @@ Use this table to pick the right template for each piece of content:
 | Action items / next steps | `TableSlide` |
 | Dramatic emphasis (1-2 max) | `FullBleedSlide` |
 | Final slide / CTA | `ConclusionSlide` |
+| Bar/donut/pie/area charts | `ChartSlide` |
+| SWOT / feature matrix / priority grid | `MatrixSlide` |
+| Product screenshot in device frame | `MockupSlide` |
+| Team / people introductions | `TeamSlide` |
+| Pricing tiers | `PricingSlide` |
+| Code walkthrough | `CodeSlide` |
+| Image grid / logo wall / icon mosaic | `GallerySlide` |
+| Scores / status / ratings | `ScoreSlide` |
+| Org chart / mind map / hub-spoke | `NetworkSlide` |
+| Flowchart / sankey / swimlane | `FlowSlide` |
+| Bold statement with typography effect | `StatementSlide` |
 
 ---
 
@@ -514,6 +536,309 @@ interface ConclusionSlideProps {
     website: 'example.com',
     social: '@example',
   }}
+/>
+```
+
+### ChartSlide
+
+```ts
+interface ChartSlideProps {
+  title?: string;
+  subtitle?: string;
+  type: 'bar' | 'donut' | 'pie' | 'area' | 'stacked-bar' | 'waterfall' | 'progress' | 'gauge';
+  data: Array<{ label: string; value: number }>;
+  stackedData?: Array<{ label: string; segments: Array<{ value: number; label?: string }> }>;
+  direction?: 'horizontal' | 'vertical';
+  centerLabel?: string;
+  max?: number;
+  gaugeLabel?: string;
+}
+```
+
+```tsx
+<ChartSlide
+  key="chart"
+  title="Revenue by Quarter"
+  type="bar"
+  data={[
+    { label: 'Q1', value: 1200 },
+    { label: 'Q2', value: 1800 },
+    { label: 'Q3', value: 2400 },
+    { label: 'Q4', value: 3100 },
+  ]}
+/>
+```
+
+### MatrixSlide
+
+```ts
+interface MatrixSlideProps {
+  title?: string;
+  subtitle?: string;
+  type: 'swot' | 'feature' | 'priority' | 'competitor' | 'quadrant';
+  strengths?: string[];
+  weaknesses?: string[];
+  opportunities?: string[];
+  threats?: string[];
+  features?: string[];
+  products?: Array<{ name: string; values: Array<boolean | string> }>;
+  items?: Array<{ label: string; x?: number; y?: number; effort?: number; impact?: number }>;
+  xAxis?: string;
+  yAxis?: string;
+}
+```
+
+```tsx
+<MatrixSlide
+  key="swot"
+  title="SWOT Analysis"
+  type="swot"
+  strengths={['Strong brand', 'Great team']}
+  weaknesses={['Limited budget']}
+  opportunities={['New market segment']}
+  threats={['Rising competition']}
+/>
+```
+
+### MockupSlide
+
+```ts
+interface MockupSlideProps {
+  title?: string;
+  subtitle?: string;
+  type: 'phone' | 'browser' | 'laptop';
+  src?: string;
+  url?: string;
+  bullets?: string[];
+  mediaPosition?: 'left' | 'right';
+}
+```
+
+```tsx
+<MockupSlide
+  key="mockup"
+  title="Mobile Experience"
+  type="phone"
+  src="/screenshots/app-home.png"
+  bullets={['One-tap access', 'Offline support', 'Push notifications']}
+  mediaPosition="left"
+/>
+```
+
+### TeamSlide
+
+```ts
+interface TeamSlideProps {
+  title?: string;
+  subtitle?: string;
+  members: Array<{ name: string; role: string; avatar?: string; bio?: string }>;
+}
+```
+
+```tsx
+<TeamSlide
+  key="team"
+  title="Leadership Team"
+  members={[
+    { name: 'Alice Chen', role: 'CEO' },
+    { name: 'Bob Kim', role: 'CTO' },
+    { name: 'Carol Park', role: 'VP Design' },
+  ]}
+/>
+```
+
+### PricingSlide
+
+```ts
+interface PricingSlideProps {
+  title?: string;
+  subtitle?: string;
+  tiers: Array<{
+    name: string;
+    price: string;
+    period?: string;
+    features: string[];
+    highlighted?: boolean;
+  }>;
+}
+```
+
+```tsx
+<PricingSlide
+  key="pricing"
+  title="Plans & Pricing"
+  tiers={[
+    { name: 'Starter', price: '$9', period: '/mo', features: ['5 users', '10GB storage'] },
+    { name: 'Pro', price: '$29', period: '/mo', features: ['Unlimited users', '100GB storage', 'Priority support'], highlighted: true },
+    { name: 'Enterprise', price: 'Custom', features: ['Dedicated infra', 'SLA guarantee', 'SSO'] },
+  ]}
+/>
+```
+
+### CodeSlide
+
+```ts
+interface CodeSlideProps {
+  title?: string;
+  subtitle?: string;
+  code: string;
+  language?: string;
+  annotations?: Array<{ x: number; y: number; label: string }>;
+}
+```
+
+```tsx
+<CodeSlide
+  key="code"
+  title="Quick Start"
+  language="bash"
+  code={`npm install @slidemason/components
+npx slidemason init
+npx slidemason build`}
+/>
+```
+
+### GallerySlide
+
+```ts
+interface GallerySlideProps {
+  title?: string;
+  subtitle?: string;
+  type: 'images' | 'logos' | 'icons';
+  images?: Array<{ src: string; alt: string }>;
+  logos?: Array<{ src: string; alt: string }>;
+  icons?: string[];
+  columns?: 2 | 3;
+}
+```
+
+```tsx
+<GallerySlide
+  key="partners"
+  title="Trusted By"
+  type="logos"
+  logos={[
+    { src: '/logos/acme.svg', alt: 'Acme Corp' },
+    { src: '/logos/globex.svg', alt: 'Globex' },
+  ]}
+/>
+```
+
+### ScoreSlide
+
+```ts
+interface ScoreSlideProps {
+  title?: string;
+  subtitle?: string;
+  type: 'scorecard' | 'traffic-light' | 'harvey-ball' | 'gauge' | 'rating';
+  criteria?: Array<{ label: string; weight: number; score: number }>;
+  statusItems?: Array<{ label: string; status: 'green' | 'yellow' | 'red'; note?: string }>;
+  harveyOptions?: Array<{ name: string; scores: Array<0 | 25 | 50 | 75 | 100> }>;
+  harveyCriteria?: string[];
+  ratings?: Array<{ label: string; rating: number; max?: number }>;
+  gauges?: Array<{ value: number; min?: number; max?: number; label?: string }>;
+}
+```
+
+```tsx
+<ScoreSlide
+  key="status"
+  title="System Status"
+  type="traffic-light"
+  statusItems={[
+    { label: 'API Gateway', status: 'green' },
+    { label: 'Database', status: 'yellow', note: 'High latency' },
+    { label: 'CDN', status: 'green' },
+  ]}
+/>
+```
+
+### NetworkSlide
+
+```ts
+interface NetworkSlideProps {
+  title?: string;
+  subtitle?: string;
+  type: 'org-chart' | 'mind-map' | 'hub-spoke' | 'concentric';
+  nodes?: Array<{ id: string; label: string; parentId?: string }>;
+  center?: string;
+  branches?: Array<{ label: string; children?: string[] }>;
+  spokes?: Array<{ label: string }>;
+  rings?: Array<{ label: string }>;
+}
+```
+
+```tsx
+<NetworkSlide
+  key="org"
+  title="Team Structure"
+  type="org-chart"
+  nodes={[
+    { id: '1', label: 'CEO' },
+    { id: '2', label: 'VP Eng', parentId: '1' },
+    { id: '3', label: 'VP Sales', parentId: '1' },
+  ]}
+/>
+```
+
+### FlowSlide
+
+```ts
+interface FlowSlideProps {
+  title?: string;
+  subtitle?: string;
+  type: 'flowchart' | 'sankey' | 'swimlane';
+  flowNodes?: Array<{ id: string; label: string; type: 'process' | 'decision' | 'start' | 'end' }>;
+  edges?: Array<{ from: string; to: string; label?: string }>;
+  sankeyNodes?: Array<{ id: string; label: string }>;
+  flows?: Array<{ from: string; to: string; value: number }>;
+  lanes?: Array<{ label: string; items: Array<{ text: string; start: number; end: number }> }>;
+}
+```
+
+```tsx
+<FlowSlide
+  key="flow"
+  title="User Journey"
+  type="flowchart"
+  flowNodes={[
+    { id: '1', label: 'Sign Up', type: 'start' },
+    { id: '2', label: 'Onboarding', type: 'process' },
+    { id: '3', label: 'Activated?', type: 'decision' },
+    { id: '4', label: 'Power User', type: 'end' },
+  ]}
+  edges={[
+    { from: '1', to: '2' },
+    { from: '2', to: '3' },
+    { from: '3', to: '4', label: 'Yes' },
+  ]}
+/>
+```
+
+### StatementSlide
+
+```ts
+interface StatementSlideProps {
+  title?: string;
+  type: 'gradient-text' | 'typewriter' | 'big-number' | 'pull-quote' | 'text-reveal' | 'highlight';
+  text?: string;
+  lines?: string[];
+  value?: number;
+  prefix?: string;
+  suffix?: string;
+  quote?: string;
+  attribution?: string;
+  variant?: 'info' | 'warning' | 'success' | 'tip';
+  background?: 'mesh' | 'geometric' | 'noisy' | 'spotlight' | 'none';
+}
+```
+
+```tsx
+<StatementSlide
+  key="statement"
+  type="gradient-text"
+  text="The future belongs to those who ship."
+  background="mesh"
 />
 ```
 
