@@ -1,0 +1,12 @@
+export { TitleHero } from './TitleHero';
+export { Agenda } from './Agenda';
+export { SectionDivider } from './SectionDivider';
+export { TwoColumnArgument } from './TwoColumnArgument';
+export { QuoteInsight } from './QuoteInsight';
+export { StatGridSlide } from './StatGridSlide';
+export { ImageCaption } from './ImageCaption';
+export { ComparisonTableSlide } from './ComparisonTableSlide';
+export { TimelineSlide } from './TimelineSlide';
+export { Roadmap } from './Roadmap';
+export { RecommendationAsk } from './RecommendationAsk';
+export { Appendix } from './Appendix';
