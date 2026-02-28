@@ -14,6 +14,7 @@ export default defineConfig({
     port: 4200,
   },
   resolve: {
+    conditions: ['source'],
     alias: {
       '@generated': resolve(__dirname, '../../generated'),
     },
