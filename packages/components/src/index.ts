@@ -45,3 +45,6 @@ export * from './cards';
 
 // Diagrams & Frameworks
 export * from './diagrams';
+
+// Data Visualization
+export * from './dataviz';
