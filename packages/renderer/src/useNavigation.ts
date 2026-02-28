@@ -12,6 +12,10 @@ export function useNavigation(slideCount: number) {
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
+      // Don't intercept keys when typing in form fields
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
       switch (e.key) {
         case 'ArrowRight':
         case ' ':

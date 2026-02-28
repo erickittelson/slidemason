@@ -2,16 +2,20 @@ import { useState, useEffect, useCallback } from 'react';
 
 export interface Brief {
   title: string;
+  subtitle: string;
+  presenter: string;
   audience: string;
   goal: string;
   tone: string;
   constraints: string;
+  infoCutoff: string;
   fonts?: { heading: string; body: string };
   theme?: string;
 }
 
 const DEFAULT_BRIEF: Brief = {
-  title: '', audience: '', goal: '', tone: 'professional', constraints: '',
+  title: '', subtitle: '', presenter: '', audience: '', goal: '',
+  tone: 'professional', constraints: '', infoCutoff: '',
 };
 
 export function useBrief() {
@@ -22,7 +26,7 @@ export function useBrief() {
     try {
       const res = await fetch('/__api/brief');
       const data = await res.json();
-      if (data && typeof data === 'object' && Object.keys(data).length > 0) {
+      if (data && typeof data === 'object' && !data.error && Object.keys(data).length > 0) {
         setBrief({ ...DEFAULT_BRIEF, ...data });
       }
     } catch {}
