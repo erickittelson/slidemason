@@ -1,36 +1,78 @@
-import { useState, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 interface CollapsibleSectionProps {
+  step: number;
   title: string;
   children: ReactNode;
-  defaultOpen?: boolean;
+  open: boolean;
+  done: boolean;
+  onToggle: () => void;
+  onNext?: () => void;
 }
 
-export function CollapsibleSection({ title, children, defaultOpen = false }: CollapsibleSectionProps) {
-  const [open, setOpen] = useState(defaultOpen);
-
+export function CollapsibleSection({
+  step, title, children, open, done, onToggle, onNext,
+}: CollapsibleSectionProps) {
   return (
     <div style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
       <button
-        onClick={() => setOpen(!open)}
+        onClick={onToggle}
         style={{
-          width: '100%', display: 'flex', alignItems: 'center', gap: '6px',
+          width: '100%', display: 'flex', alignItems: 'center', gap: '8px',
           padding: '10px 0', backgroundColor: 'transparent', border: 'none',
           cursor: 'pointer', color: '#fff', fontSize: '0.8rem', fontWeight: 600,
         }}
       >
+        {/* Step number / checkmark */}
         <span style={{
-          color: '#888', fontSize: '0.6rem', width: '12px', textAlign: 'center',
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          width: '20px', height: '20px', borderRadius: '50%', flexShrink: 0,
+          backgroundColor: done
+            ? 'rgba(34,197,94,0.25)'
+            : open
+              ? 'rgba(139,92,246,0.25)'
+              : 'rgba(255,255,255,0.06)',
+          color: done ? '#86efac' : open ? '#c4b5fd' : '#888',
+          fontSize: '0.6rem', fontWeight: 700,
+        }}>
+          {done ? '✓' : step}
+        </span>
+
+        <span style={{
+          flex: 1, textAlign: 'left',
+          color: done ? '#888' : open ? '#fff' : '#aaa',
+          textDecoration: done ? 'line-through' : 'none',
+        }}>
+          {title}
+        </span>
+
+        {/* Chevron */}
+        <span style={{
+          color: '#666', fontSize: '0.55rem',
           transition: 'transform 0.15s',
           transform: open ? 'rotate(90deg)' : 'rotate(0deg)',
         }}>
           ▶
         </span>
-        {title}
       </button>
+
       {open && (
-        <div style={{ paddingBottom: '12px' }}>
+        <div style={{ paddingBottom: '12px', paddingLeft: '28px' }}>
           {children}
+
+          {onNext && (
+            <button
+              onClick={onNext}
+              style={{
+                marginTop: '10px', width: '100%', padding: '8px', fontSize: '0.75rem',
+                fontWeight: 600, backgroundColor: 'rgba(139,92,246,0.2)', color: '#c4b5fd',
+                border: '1px solid rgba(139,92,246,0.3)', borderRadius: '6px',
+                cursor: 'pointer',
+              }}
+            >
+              Next →
+            </button>
+          )}
         </div>
       )}
     </div>

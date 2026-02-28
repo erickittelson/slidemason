@@ -157,6 +157,7 @@ export function App() {
   const [headingFont, setHeadingFont] = useState('Inter');
   const [bodyFont, setBodyFont] = useState('Inter');
   const [showNextSteps, setShowNextSteps] = useState(false);
+  const [openStep, setOpenStep] = useState(1); // which step is expanded (1-5, 0=none)
 
   // Hooks for dev mode
   const { files, upload: uploadFiles, remove: removeFile } = useFiles();
@@ -216,7 +217,12 @@ export function App() {
     return (
       <div style={{ display: 'flex', width: '100vw', height: '100vh', overflow: 'hidden' }}>
         <Sidebar>
-          <CollapsibleSection title="Source Files" defaultOpen>
+          <CollapsibleSection
+            step={1} title="Source Files"
+            open={openStep === 1} done={files.length > 0}
+            onToggle={() => setOpenStep(openStep === 1 ? 0 : 1)}
+            onNext={() => setOpenStep(2)}
+          >
             <FileUploadZone
               files={files}
               onUpload={uploadFiles}
@@ -224,15 +230,32 @@ export function App() {
             />
           </CollapsibleSection>
 
-          <CollapsibleSection title="Brief" defaultOpen>
+          <CollapsibleSection
+            step={2} title="Brief"
+            open={openStep === 2}
+            done={!!(brief.audience || brief.goal || brief.title)}
+            onToggle={() => setOpenStep(openStep === 2 ? 0 : 2)}
+            onNext={() => setOpenStep(3)}
+          >
             <BriefForm brief={brief} onChange={setBrief} />
           </CollapsibleSection>
 
-          <CollapsibleSection title="Theme">
+          <CollapsibleSection
+            step={3} title="Theme"
+            open={openStep === 3} done={theme !== 'midnight'}
+            onToggle={() => setOpenStep(openStep === 3 ? 0 : 3)}
+            onNext={() => setOpenStep(4)}
+          >
             <ThemePicker activeTheme={theme} onSelectTheme={handleThemeChange} />
           </CollapsibleSection>
 
-          <CollapsibleSection title="Fonts">
+          <CollapsibleSection
+            step={4} title="Fonts"
+            open={openStep === 4}
+            done={headingFont !== 'Inter' || bodyFont !== 'Inter'}
+            onToggle={() => setOpenStep(openStep === 4 ? 0 : 4)}
+            onNext={() => setOpenStep(5)}
+          >
             <FontPicker
               headingFont={headingFont}
               bodyFont={bodyFont}
@@ -242,7 +265,11 @@ export function App() {
             />
           </CollapsibleSection>
 
-          <CollapsibleSection title="Assets">
+          <CollapsibleSection
+            step={5} title="Assets"
+            open={openStep === 5} done={assets.length > 0}
+            onToggle={() => setOpenStep(openStep === 5 ? 0 : 5)}
+          >
             <AssetLibrary
               assets={assets}
               onUpload={uploadAssets}
