@@ -1,1 +1,16 @@
-// Components will be exported here as they are built
+export { RecommendationBox } from './RecommendationBox';
+export type { RecommendationBoxProps } from './RecommendationBox';
+export { NextStepsGrid } from './NextStepsGrid';
+export type { NextStepsGridProps } from './NextStepsGrid';
+export { ContactCard } from './ContactCard';
+export type { ContactCardProps } from './ContactCard';
+export { QRCode } from './QRCode';
+export type { QRCodeProps } from './QRCode';
+export { CTAButton } from './CTAButton';
+export type { CTAButtonProps } from './CTAButton';
+export { PollResults } from './PollResults';
+export type { PollResultsProps } from './PollResults';
+export { CountdownTimer } from './CountdownTimer';
+export type { CountdownTimerProps } from './CountdownTimer';
+export { EmbedFrame } from './EmbedFrame';
+export type { EmbedFrameProps } from './EmbedFrame';
