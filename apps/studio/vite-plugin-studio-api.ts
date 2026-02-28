@@ -216,9 +216,21 @@ async function handleStatus(res: ServerResponse) {
   let hasFiles = false;
   if (hasData) {
     const entries = await readdir(DATA_DIR, { withFileTypes: true });
-    hasFiles = entries.some((e) => e.isFile());
+    // Ignore hidden files (.gitkeep, .DS_Store, etc.)
+    hasFiles = entries.some((e) => e.isFile() && !e.name.startsWith('.'));
   }
-  const hasBrief = await exists(BRIEF_PATH);
+
+  // Brief counts as "filled in" only if it has a non-empty title
+  let hasBrief = false;
+  if (await exists(BRIEF_PATH)) {
+    try {
+      const raw = await readFile(BRIEF_PATH, 'utf-8');
+      const data = JSON.parse(raw);
+      hasBrief = typeof data.title === 'string' && data.title.trim().length > 0;
+    } catch {
+      hasBrief = false;
+    }
+  }
 
   // A "deck" exists if there is at least one .mdx file in generated/
   let hasDeck = false;

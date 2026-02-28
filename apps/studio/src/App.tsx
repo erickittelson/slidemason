@@ -208,27 +208,29 @@ export function App() {
     return (
       <div style={{ display: 'flex', width: '100vw', height: '100vh', overflow: 'hidden' }}>
         <Sidebar>
-          <QuickStartGuide status={status} />
-
-          <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', margin: '8px 0' }} />
-          <FileUploadZone
-            files={files}
-            onUpload={(fl) => { uploadFiles(fl).then(handleFilesChanged); }}
-            onRemove={(name) => { removeFile(name).then(handleFilesChanged); }}
+          <QuickStartGuide
+            status={status}
+            fileUpload={
+              <FileUploadZone
+                files={files}
+                onUpload={(fl) => { uploadFiles(fl).then(handleFilesChanged); }}
+                onRemove={(name) => { removeFile(name).then(handleFilesChanged); }}
+              />
+            }
+            briefForm={
+              <BriefForm
+                brief={brief}
+                onChange={setBrief}
+                onSave={() => saveBrief()}
+                saved={briefSaved}
+              />
+            }
           />
 
-          <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', margin: '8px 0' }} />
-          <BriefForm
-            brief={brief}
-            onChange={setBrief}
-            onSave={() => saveBrief()}
-            saved={briefSaved}
-          />
-
-          <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', margin: '8px 0' }} />
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', margin: '12px 0' }} />
           <ThemePicker activeTheme={theme} onSelectTheme={handleThemeChange} />
 
-          <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', margin: '8px 0' }} />
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', margin: '12px 0' }} />
           <FontPicker
             headingFont={headingFont}
             bodyFont={bodyFont}
@@ -236,7 +238,7 @@ export function App() {
             onChangeBody={handleBodyFontChange}
           />
 
-          <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', margin: '8px 0' }} />
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', margin: '12px 0' }} />
           <AssetLibrary
             assets={assets}
             onUpload={uploadAssets}
