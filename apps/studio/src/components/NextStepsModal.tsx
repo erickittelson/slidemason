@@ -4,7 +4,7 @@ interface NextStepsModalProps {
   onClose: () => void;
 }
 
-const PROMPT_TEXT = `Read the brief at data/brief.json and the source files in data/. Using the Slidemason component library in packages/components, build a complete presentation deck. Write the slides to apps/studio/src/slides.tsx and export them as a default array of React elements.`;
+const PROMPT_TEXT = `Read the brief at generated/brief.json and the source files in data/. Study the Slidemason component library in packages/components/src/ to understand the available slide components, layouts, and templates. Then build a complete presentation deck that follows the brief's audience, goal, tone, and constraints. Write the slides to apps/studio/src/slides.tsx and export them as a default array of React elements. Use SlideLayout as the wrapper for each slide and pick components that best fit the content.`;
 
 export function NextStepsModal({ onClose }: NextStepsModalProps) {
   const [copied, setCopied] = useState(false);
