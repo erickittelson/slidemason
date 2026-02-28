@@ -8,7 +8,10 @@
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
-    }
+    },
+    "./slate.css": "./src/slate.css",
+    "./canvas.css": "./src/canvas.css",
+    "./signal.css": "./src/signal.css"
   },
   "scripts": {
     "build": "tsc",
