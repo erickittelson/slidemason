@@ -61,13 +61,13 @@ export function PyramidChart({
                 : undefined
             }
           >
-            <polygon points={points} fill={color} stroke="#fff" strokeWidth={1} />
+            <polygon points={points} fill={color} stroke="var(--sm-bg)" strokeWidth={1} />
             <text
               x={cx}
               y={y + layerHeight / 2}
               textAnchor="middle"
               dominantBaseline="central"
-              fill="#fff"
+              fill="var(--sm-bg)"
               fontSize={13}
             >
               {layer.label}

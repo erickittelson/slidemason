@@ -46,7 +46,7 @@ export function PricingTable({ tiers, className = '', style, animate }: PricingT
                   left: '50%',
                   transform: 'translateX(-50%)',
                   backgroundColor: 'var(--sm-primary)',
-                  color: '#fff',
+                  color: 'var(--sm-bg)',
                   fontSize: '0.7rem',
                   fontWeight: 700,
                   padding: '0.15rem 0.75rem',

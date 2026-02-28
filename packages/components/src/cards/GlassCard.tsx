@@ -18,7 +18,7 @@ export function GlassCard({ children, className = '', style, animate }: GlassCar
         background: 'var(--sm-glass-bg, rgba(255,255,255,0.1))',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
-        border: '1px solid rgba(255,255,255,0.2)',
+        border: '1px solid var(--sm-border)',
         borderRadius: 'var(--sm-radius)',
         ...style,
       }}

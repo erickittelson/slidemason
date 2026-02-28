@@ -40,7 +40,7 @@ export function ActionCard({ icon, title, description, action, className = '', s
       <button
         style={{
           backgroundColor: 'var(--sm-primary)',
-          color: '#fff',
+          color: 'var(--sm-bg)',
           border: 'none',
           borderRadius: 'var(--sm-radius)',
           padding: '0.5rem 1rem',

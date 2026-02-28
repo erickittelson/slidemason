@@ -40,7 +40,7 @@ export function StatCallout({
         <div
           className="mt-2 inline-flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium"
           style={{
-            color: trend.direction === 'up' ? 'var(--sm-success, #22c55e)' : 'var(--sm-error, #ef4444)',
+            color: trend.direction === 'up' ? 'var(--sm-success, #22c55e)' : 'var(--sm-danger, #ef4444)',
             backgroundColor: trend.direction === 'up'
               ? 'rgba(34, 197, 94, 0.1)'
               : 'rgba(239, 68, 68, 0.1)',

@@ -24,7 +24,7 @@ export function Label({
     variant === 'filled'
       ? {
           backgroundColor: resolvedColor,
-          color: '#fff',
+          color: 'var(--sm-bg)',
         }
       : {
           backgroundColor: 'transparent',

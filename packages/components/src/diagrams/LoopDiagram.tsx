@@ -113,7 +113,7 @@ export function LoopDiagram({
               y={pos.y}
               textAnchor="middle"
               dominantBaseline="central"
-              fill="#fff"
+              fill="var(--sm-bg)"
               fontSize={10}
             >
               {stage.label}

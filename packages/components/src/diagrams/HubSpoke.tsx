@@ -93,7 +93,7 @@ export function HubSpoke({
         y={cy}
         textAnchor="middle"
         dominantBaseline="central"
-        fill="#fff"
+        fill="var(--sm-bg)"
         fontSize={13}
         fontWeight="600"
       >

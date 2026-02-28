@@ -70,7 +70,7 @@ export function FunnelChart({
               y={y + layerHeight / 2}
               textAnchor="middle"
               dominantBaseline="central"
-              fill="#fff"
+              fill="var(--sm-bg)"
               fontSize={13}
             >
               {stage.label}

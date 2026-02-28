@@ -58,7 +58,7 @@ export function TreeMap({
             width={rect.w}
             height={height}
             fill={rect.color}
-            stroke="#fff"
+            stroke="var(--sm-bg)"
             strokeWidth={2}
           />
           {rect.w > 30 && (
@@ -67,7 +67,7 @@ export function TreeMap({
               y={height / 2}
               textAnchor="middle"
               dominantBaseline="central"
-              fill="#fff"
+              fill="var(--sm-bg)"
               fontSize={12}
             >
               {rect.label}

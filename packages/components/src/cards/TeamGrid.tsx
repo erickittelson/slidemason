@@ -57,7 +57,7 @@ export function TeamGrid({ members, className = '', style, animate }: TeamGridPr
                   height: 64,
                   borderRadius: '50%',
                   backgroundColor: 'var(--sm-primary)',
-                  color: '#fff',
+                  color: 'var(--sm-bg)',
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',

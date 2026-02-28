@@ -81,7 +81,7 @@ export function MindMap({
               y={pos.y}
               textAnchor="middle"
               dominantBaseline="central"
-              fill="#fff"
+              fill="var(--sm-bg)"
               fontSize={10}
             >
               {branch.label}

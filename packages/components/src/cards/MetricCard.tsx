@@ -60,7 +60,7 @@ export function MetricCard({ value, label, trend, sparkline, className = '', sty
               padding: '0.1rem 0.4rem',
               borderRadius: '4px',
               backgroundColor: trend.direction === 'up' ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)',
-              color: trend.direction === 'up' ? '#22c55e' : '#ef4444',
+              color: trend.direction === 'up' ? 'var(--sm-success, #22c55e)' : 'var(--sm-danger, #ef4444)',
             }}
           >
             {trend.direction === 'up' ? '↑' : '↓'} {trend.value}

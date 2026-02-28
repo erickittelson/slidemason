@@ -104,7 +104,7 @@ export function CycleDiagram({
               y={pos.y}
               textAnchor="middle"
               dominantBaseline="central"
-              fill="#fff"
+              fill="var(--sm-bg)"
               fontSize={11}
             >
               {stage.label}

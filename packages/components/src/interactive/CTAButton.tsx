@@ -38,7 +38,7 @@ export function CTAButton({
   const variantStyles: Record<string, CSSProperties> = {
     primary: {
       backgroundColor: 'var(--sm-primary)',
-      color: '#fff',
+      color: 'var(--sm-bg)',
     },
     secondary: {
       backgroundColor: 'var(--sm-secondary, var(--sm-surface))',

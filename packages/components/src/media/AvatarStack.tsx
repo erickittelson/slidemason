@@ -33,7 +33,7 @@ export function AvatarStack({ avatars, max = 5, className = '', style, animate }
     justifyContent: 'center',
     fontSize: '0.75rem',
     fontWeight: 700,
-    color: '#fff',
+    color: 'var(--sm-bg)',
     backgroundColor: 'var(--sm-primary, #3b82f6)',
     flexShrink: 0,
     objectFit: 'cover' as const,

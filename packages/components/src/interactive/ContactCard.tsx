@@ -60,7 +60,7 @@ export function ContactCard({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: '#fff',
+          color: 'var(--sm-bg)',
           fontWeight: 700,
           fontSize: '1.2rem',
         }}
