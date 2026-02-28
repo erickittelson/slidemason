@@ -20,6 +20,7 @@ export function HeroText({
   const baseStyle: CSSProperties = {
     fontSize: 'clamp(3rem, 8vw, 8rem)',
     lineHeight: 1.1,
+    fontFamily: 'var(--sm-heading-font, inherit)',
     ...(gradient
       ? {
           background: 'linear-gradient(to right, var(--sm-primary), var(--sm-accent))',

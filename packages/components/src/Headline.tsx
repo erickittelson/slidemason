@@ -8,7 +8,7 @@ export interface HeadlineProps {
 
 export function Headline({ children, className = '', style }: HeadlineProps) {
   return (
-    <h1 className={`font-bold tracking-tight text-[var(--sm-text)] ${className}`.trim()} style={{ fontSize: 'clamp(2rem, 5vw, 4.5rem)', ...style }}>
+    <h1 className={`font-bold tracking-tight text-[var(--sm-text)] ${className}`.trim()} style={{ fontSize: 'clamp(2rem, 5vw, 4.5rem)', fontFamily: 'var(--sm-heading-font, inherit)', ...style }}>
       {children}
     </h1>
   );
