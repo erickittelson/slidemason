@@ -1,0 +1,31 @@
+{
+  "name": "slidemason",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Local-first, open-source presentation builder powered by agentic coding workflows",
+  "author": "Eric Kittelson",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/erickittelson/slidemason.git"
+  },
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=10"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @slidemason/studio dev",
+    "build": "pnpm -r build",
+    "test": "vitest run",
+    "lint": "eslint .",
+    "typecheck": "tsc --build"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.0.2",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.56.1",
+    "vitest": "^4.0.18"
+  }
+}
