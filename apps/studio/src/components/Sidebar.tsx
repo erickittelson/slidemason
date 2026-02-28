@@ -40,7 +40,7 @@ export function Sidebar({ children, onCollapsedChange }: SidebarProps) {
         <SidebarToggle collapsed={collapsed} onToggle={toggle} />
       </div>
       {!collapsed && (
-        <div style={{ flex: 1, overflowY: 'auto', padding: '0 12px 12px' }}>
+        <div className="sidebar-scroll" style={{ flex: 1, overflowY: 'auto', padding: '0 12px 12px' }}>
           {children}
         </div>
       )}
