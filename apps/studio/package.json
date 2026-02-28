@@ -9,20 +9,22 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
     "@mdx-js/react": "^3.1.1",
-    "@slidemason/renderer": "workspace:*",
     "@slidemason/components": "workspace:*",
-    "@slidemason/themes": "workspace:*"
+    "@slidemason/renderer": "workspace:*",
+    "@slidemason/themes": "workspace:*",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
   },
   "devDependencies": {
-    "vite": "^7.3.1",
-    "@vitejs/plugin-react": "^5.1.4",
     "@mdx-js/rollup": "^3.1.1",
-    "tailwindcss": "^4.1.10",
     "@tailwindcss/vite": "^4.1.10",
+    "@types/busboy": "^1.5.4",
     "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3"
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.4",
+    "busboy": "^1.6.0",
+    "tailwindcss": "^4.1.10",
+    "vite": "^7.3.1"
   }
 }
