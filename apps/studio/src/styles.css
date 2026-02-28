@@ -3,11 +3,13 @@
 /* Tell Tailwind to scan workspace packages for class names */
 @source "../../../packages/components/src";
 @source "../../../packages/renderer/src";
+@source "../../../packages/components/src/motion.css";
 
 /* Import theme CSS files */
 @import "@slidemason/themes/slate.css";
 @import "@slidemason/themes/canvas.css";
 @import "@slidemason/themes/signal.css";
+@import "@slidemason/components/motion.css";
 
 /* Base styles */
 *, *::before, *::after {
