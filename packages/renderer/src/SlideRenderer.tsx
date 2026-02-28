@@ -9,12 +9,19 @@ interface SlideRendererProps {
 }
 
 export function SlideRenderer({ slides }: SlideRendererProps) {
-  const { currentSlide, theme } = useDeck();
+  const { currentSlide, slideCount, theme } = useDeck();
 
   return (
     <MDXProvider components={components}>
       <SlideLayout theme={theme}>
         {slides[currentSlide]}
+        <div
+          className="absolute bottom-8 right-10 flex items-center gap-3 text-base"
+          style={{ color: 'var(--sm-muted)', opacity: 0.5 }}
+        >
+          <span>{currentSlide + 1} / {slideCount}</span>
+          <span className="text-sm">← →</span>
+        </div>
       </SlideLayout>
     </MDXProvider>
   );

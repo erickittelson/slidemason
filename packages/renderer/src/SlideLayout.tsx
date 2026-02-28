@@ -26,7 +26,7 @@ export function SlideLayout({ children, theme = 'slate' }: SlideLayoutProps) {
       style={{ backgroundColor: 'var(--sm-bg)' }}
     >
       <div
-        className="flex flex-col"
+        className="relative flex flex-col"
         style={{
           width: '1920px',
           height: '1080px',

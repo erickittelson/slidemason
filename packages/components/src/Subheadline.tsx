@@ -7,7 +7,7 @@ export interface SubheadlineProps {
 
 export function Subheadline({ children, className = '' }: SubheadlineProps) {
   return (
-    <h2 className={`text-2xl font-medium text-[var(--sm-muted)] ${className}`.trim()}>
+    <h2 className={`text-3xl font-medium text-[var(--sm-muted)] ${className}`.trim()}>
       {children}
     </h2>
   );

@@ -5,7 +5,7 @@ export interface FooterMarkProps {
 
 export function FooterMark({ text, className = '' }: FooterMarkProps) {
   return (
-    <div className={`text-xs text-[var(--sm-muted)] opacity-60 ${className}`.trim()}>
+    <div className={`text-sm text-[var(--sm-muted)] opacity-60 ${className}`.trim()}>
       {text}
     </div>
   );

@@ -7,10 +7,10 @@ export interface StatCardProps {
 export function StatCard({ value, label, className = '' }: StatCardProps) {
   return (
     <div
-      className={`rounded-[var(--sm-radius)] border border-[var(--sm-border)] bg-[var(--sm-surface)] p-6 text-center ${className}`.trim()}
+      className={`rounded-[var(--sm-radius)] border border-[var(--sm-border)] bg-[var(--sm-surface)] p-8 text-center ${className}`.trim()}
     >
-      <div className="text-4xl font-bold text-[var(--sm-primary)]">{value}</div>
-      <div className="mt-1 text-sm text-[var(--sm-muted)]">{label}</div>
+      <div className="text-6xl font-bold text-[var(--sm-primary)]">{value}</div>
+      <div className="mt-2 text-lg text-[var(--sm-muted)]">{label}</div>
     </div>
   );
 }
