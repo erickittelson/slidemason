@@ -1,1 +1,16 @@
-// Components will be exported here as they are built
+export { AgendaNav } from './AgendaNav';
+export type { AgendaNavProps } from './AgendaNav';
+export { SectionHeader } from './SectionHeader';
+export type { SectionHeaderProps } from './SectionHeader';
+export { ChapterCard } from './ChapterCard';
+export type { ChapterCardProps } from './ChapterCard';
+export { BreadcrumbBar } from './BreadcrumbBar';
+export type { BreadcrumbBarProps } from './BreadcrumbBar';
+export { ProgressIndicator } from './ProgressIndicator';
+export type { ProgressIndicatorProps } from './ProgressIndicator';
+export { TableOfContents } from './TableOfContents';
+export type { TableOfContentsProps } from './TableOfContents';
+export { EndSlide } from './EndSlide';
+export type { EndSlideProps } from './EndSlide';
+export { TitleCard } from './TitleCard';
+export type { TitleCardProps } from './TitleCard';
