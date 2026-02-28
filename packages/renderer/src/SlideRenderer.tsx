@@ -6,9 +6,10 @@ import { useDeck } from './DeckProvider';
 
 interface SlideRendererProps {
   slides: ReactNode[];
+  fullWidth?: boolean;
 }
 
-export function SlideRenderer({ slides }: SlideRendererProps) {
+export function SlideRenderer({ slides, fullWidth = true }: SlideRendererProps) {
   const { currentSlide, slideCount, goTo, next, prev, theme } = useDeck();
 
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -45,7 +46,7 @@ export function SlideRenderer({ slides }: SlideRendererProps) {
 
   return (
     <MDXProvider components={components}>
-      <SlideLayout theme={theme}>
+      <SlideLayout theme={theme} fullWidth={fullWidth}>
         {slides[currentSlide]}
         {!isPrintMode && (
           <div

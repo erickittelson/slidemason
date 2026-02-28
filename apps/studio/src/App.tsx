@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { DeckProvider, SlideRenderer } from '@slidemason/renderer';
 import {
   Headline,
@@ -12,6 +13,8 @@ import {
   EndSlide,
   GradientBg,
 } from '@slidemason/components';
+import { getMode } from './lib/mode';
+import { Sidebar } from './components/Sidebar';
 
 const slides = [
   // Slide 1: Hero — gradient HeroText on MeshGradient background
@@ -135,8 +138,37 @@ const slides = [
 ];
 
 export function App() {
+  const mode = getMode();
+  const [theme] = useState('midnight');
+
+  // PDF mode: just slides, no chrome
+  if (mode === 'pdf') {
+    return (
+      <DeckProvider slideCount={slides.length} theme={theme}>
+        <SlideRenderer slides={slides} />
+      </DeckProvider>
+    );
+  }
+
+  // Dev mode: sidebar + viewer
+  if (mode === 'dev') {
+    return (
+      <div style={{ display: 'flex', width: '100vw', height: '100vh', overflow: 'hidden' }}>
+        <Sidebar>
+          <p style={{ color: '#888', fontSize: '0.85rem' }}>Sidebar sections coming soon...</p>
+        </Sidebar>
+        <main style={{ flex: 1, overflow: 'hidden' }}>
+          <DeckProvider slideCount={slides.length} theme={theme}>
+            <SlideRenderer slides={slides} fullWidth={false} />
+          </DeckProvider>
+        </main>
+      </div>
+    );
+  }
+
+  // Web mode: full-width viewer (floating features added later)
   return (
-    <DeckProvider slideCount={slides.length} theme="midnight">
+    <DeckProvider slideCount={slides.length} theme={theme}>
       <SlideRenderer slides={slides} />
     </DeckProvider>
   );
