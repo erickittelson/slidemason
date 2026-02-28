@@ -45,15 +45,27 @@ export function FontPicker({ headingFont, bodyFont, onChangeHeading, onChangeBod
                 loadGoogleFont(p.body);
               }}
               style={{
-                padding: '6px 8px', textAlign: 'left', cursor: 'pointer',
+                padding: '8px', textAlign: 'left', cursor: 'pointer',
                 backgroundColor: isActive ? 'rgba(139,92,246,0.25)' : '#2a2a3e',
                 border: `1px solid ${isActive ? 'rgba(139,92,246,0.5)' : 'rgba(255,255,255,0.08)'}`,
-                borderRadius: '6px', color: '#fff', fontSize: '0.7rem', lineHeight: 1.3,
+                borderRadius: '6px', color: '#fff', lineHeight: 1.2, overflow: 'hidden',
               }}
-              title={`${p.heading} + ${p.body} — ${p.vibe}`}
+              title={`${p.heading} + ${p.body}`}
             >
-              <span style={{ fontWeight: 600, display: 'block', fontSize: '0.7rem' }}>{p.name}</span>
-              <span style={{ color: '#888', fontSize: '0.6rem' }}>{p.vibe}</span>
+              <span style={{
+                display: 'block', fontFamily: `'${p.heading}', sans-serif`,
+                fontWeight: 700, fontSize: '0.85rem', marginBottom: '2px',
+                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+              }}>
+                {p.name}
+              </span>
+              <span style={{
+                display: 'block', fontFamily: `'${p.body}', sans-serif`,
+                color: '#999', fontSize: '0.6rem',
+                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+              }}>
+                {p.body} — {p.vibe}
+              </span>
             </button>
           );
         })}
