@@ -2,9 +2,9 @@
 
 # Slidemason
 
-**Local-first, open-source presentation builder powered by AI coding agents.**
+**Open-source presentation builder that runs locally with your AI coding agent.**
 
-Turn your notes, documents, and data into polished slide decks — without SaaS, without lock-in,<br>and without leaving your editor. Every slide is custom React. No templates. No cookie-cutter layouts.
+Clone it. Run it in your IDE. Point your favorite coding agent at it —<br>Claude Code, Cursor, Copilot, Windsurf, whatever you use —<br>and it generates polished slide decks from your documents. Runs entirely on your machine.<br>No SaaS. No accounts. No data leaves your laptop.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -41,7 +41,9 @@ pnpm install
 pnpm dev        # Studio opens at http://localhost:4200
 ```
 
-> **Prerequisites:** Node.js 22+, pnpm 10+
+Open the studio in your browser, fill out a brief, then tell your coding agent to build the deck. That's it. The agent reads `CLAUDE.md` (or the equivalent for your platform) and knows exactly what to do.
+
+> **Prerequisites:** Node.js 22+, pnpm 10+. Works with any IDE or terminal — VS Code, Cursor, the command line, whatever you prefer.
 
 ---
 
