@@ -26,8 +26,6 @@ const DEFAULT_BRIEF: Brief = {
 
 export function useBrief(slug: string | null) {
   const [brief, setBrief] = useState<Brief>(DEFAULT_BRIEF);
-  const [saved, setSaved] = useState(false);
-
   const load = useCallback(async () => {
     if (!slug) { setBrief(DEFAULT_BRIEF); return; }
     try {
@@ -48,11 +46,9 @@ export function useBrief(slug: string | null) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(toSave),
     });
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
   }, [slug, brief]);
 
   useEffect(() => { load(); }, [load]);
 
-  return { brief, setBrief, save, saved, load };
+  return { brief, setBrief, save };
 }
