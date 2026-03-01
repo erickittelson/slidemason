@@ -71,7 +71,13 @@ export function TypeWriter({
   const showCursor = cursor && started && !done;
 
   return (
-    <span ref={ref} className={className} style={style}>
+    <span
+      ref={ref}
+      className={className}
+      style={style}
+      data-pptx-type="text"
+      data-pptx-typewriter-final={text}
+    >
       {text.slice(0, charIndex)}
       {showCursor && (
         <span

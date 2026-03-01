@@ -32,7 +32,7 @@ export function BeforeAfter({
   };
 
   return (
-    <div className={className} style={style}>
+    <div className={className} style={style} data-pptx-type="passthrough">
       <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
         <button
           onClick={() => setShowAfter(false)}

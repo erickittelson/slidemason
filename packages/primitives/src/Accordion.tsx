@@ -21,7 +21,7 @@ export function Accordion({
   const [openIndex, setOpenIndex] = useState<number | undefined>(defaultOpen);
 
   return (
-    <div className={className} style={{ display: 'flex', flexDirection: 'column', gap: 8, ...style }}>
+    <div className={className} style={{ display: 'flex', flexDirection: 'column', gap: 8, ...style }} data-pptx-type="passthrough">
       {items.map((item, i) => {
         const isOpen = openIndex === i;
         return (

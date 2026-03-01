@@ -56,6 +56,7 @@ export function Animate({
         whileInView={animate}
         viewport={{ once: true }}
         transition={transition}
+        data-pptx-type="passthrough"
       >
         {children}
       </motion.div>
@@ -69,6 +70,7 @@ export function Animate({
       initial={initial}
       animate={animate}
       transition={transition}
+      data-pptx-type="passthrough"
     >
       {children}
     </motion.div>

@@ -31,7 +31,7 @@ export function Stagger({
   const { initial, animate } = EFFECTS[effect];
 
   return (
-    <div className={className} style={style}>
+    <div className={className} style={style} data-pptx-type="passthrough">
       {Children.map(children, (child, i) => (
         <motion.div
           key={i}

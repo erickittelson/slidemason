@@ -18,6 +18,7 @@ export function HoverCard({
   return (
     <div
       className={className}
+      data-pptx-type="passthrough"
       style={{
         background: 'var(--sm-glass-bg)',
         backdropFilter: 'blur(12px)',

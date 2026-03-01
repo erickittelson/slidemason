@@ -38,6 +38,7 @@ export function Tooltip({
 
   return (
     <div
+      data-pptx-type="passthrough"
       style={{ position: 'relative', display: 'inline-block', ...style }}
       onMouseEnter={() => setVisible(true)}
       onMouseLeave={() => setVisible(false)}

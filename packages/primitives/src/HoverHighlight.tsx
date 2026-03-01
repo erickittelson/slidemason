@@ -16,7 +16,7 @@ export function HoverHighlight({
   const items = Children.toArray(children);
 
   return (
-    <div className={className} style={style}>
+    <div className={className} style={style} data-pptx-type="passthrough">
       {items.map((child, i) => {
         if (!isValidElement(child)) return child;
 

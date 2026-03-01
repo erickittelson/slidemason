@@ -26,7 +26,7 @@ export function ProgressReveal({
   const isInView = useInView(ref, { once: true });
 
   return (
-    <div ref={ref} className={className} style={style}>
+    <div ref={ref} className={className} style={style} data-pptx-type="progress" data-pptx-value={value} data-pptx-label={label || ''}>
       {label && (
         <div
           style={{

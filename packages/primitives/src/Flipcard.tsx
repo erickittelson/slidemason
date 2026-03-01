@@ -36,6 +36,7 @@ export function Flipcard({
   return (
     <div
       className={className}
+      data-pptx-type="passthrough"
       onClick={() => setFlipped(!flipped)}
       style={{
         perspective: 1000,

@@ -50,7 +50,13 @@ export function CountUp({
   }, [isInView, from, to, duration, decimals]);
 
   return (
-    <span ref={ref} className={className} style={style}>
+    <span
+      ref={ref}
+      className={className}
+      style={style}
+      data-pptx-type="text"
+      data-pptx-countup-final={`${prefix}${to.toFixed(decimals)}${suffix}`}
+    >
       {prefix}{display}{suffix}
     </span>
   );

@@ -41,7 +41,7 @@ export function Sortable({
   }
 
   return (
-    <div className={className} style={{ display: 'flex', flexDirection: 'column', gap: 8, ...style }}>
+    <div className={className} style={{ display: 'flex', flexDirection: 'column', gap: 8, ...style }} data-pptx-type="passthrough">
       {items.map((item, i) => {
         const isDragging = dragIndex === i;
         return (

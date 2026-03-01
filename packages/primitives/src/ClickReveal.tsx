@@ -16,12 +16,13 @@ export function ClickReveal({
   const [revealed, setRevealed] = useState(false);
 
   if (revealed) {
-    return <div className={className} style={style}>{children}</div>;
+    return <div className={className} style={style} data-pptx-type="passthrough">{children}</div>;
   }
 
   return (
     <div
       className={className}
+      data-pptx-type="passthrough"
       onClick={() => setRevealed(true)}
       style={{
         border: '2px dashed var(--sm-border)',

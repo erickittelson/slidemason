@@ -33,7 +33,7 @@ export function Tabs({
   };
 
   return (
-    <div className={className} style={style}>
+    <div className={className} style={style} data-pptx-type="tabs">
       <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
         {items.map((item, i) => {
           const isActive = i === activeIndex;

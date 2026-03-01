@@ -17,7 +17,7 @@ export function Spotlight({
   const [active, setActive] = useState(defaultActive);
 
   return (
-    <div className={className} style={style}>
+    <div className={className} style={style} data-pptx-type="passthrough">
       <div>
         {items.map((child, i) => {
           if (!isValidElement(child)) return child;
