@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from 'react';
 import { useInView } from 'framer-motion';
+import { isPptxMode } from './pptxMode';
 
 interface TypeWriterProps {
   text: string;
@@ -34,6 +35,7 @@ export function TypeWriter({
   style,
   className = '',
 }: TypeWriterProps) {
+  const pptx = isPptxMode();
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true });
   const [charIndex, setCharIndex] = useState(0);
@@ -67,6 +69,10 @@ export function TypeWriter({
 
     return () => clearInterval(interval);
   }, [started, text, speed]);
+
+  if (pptx) {
+    return <span className={className} style={style} data-pptx-type="text" data-pptx-typewriter-final={text}>{text}</span>;
+  }
 
   const showCursor = cursor && started && !done;
 

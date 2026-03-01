@@ -1,5 +1,6 @@
 import { Children } from 'react';
 import { motion, type TargetAndTransition, type Easing } from 'framer-motion';
+import { isPptxMode } from './pptxMode';
 
 type Effect = 'fade-up' | 'fade-down' | 'scale';
 
@@ -28,7 +29,12 @@ export function Stagger({
   className = '',
   children,
 }: StaggerProps) {
+  const pptx = isPptxMode();
   const { initial, animate } = EFFECTS[effect];
+
+  if (pptx) {
+    return <div className={className} style={style} data-pptx-type="passthrough">{children}</div>;
+  }
 
   return (
     <div className={className} style={style} data-pptx-type="passthrough">

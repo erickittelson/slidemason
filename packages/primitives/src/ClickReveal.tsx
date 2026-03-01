@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { isPptxMode } from './pptxMode';
 
 interface ClickRevealProps {
   children: React.ReactNode;
@@ -13,7 +14,12 @@ export function ClickReveal({
   style,
   className = '',
 }: ClickRevealProps) {
+  const pptx = isPptxMode();
   const [revealed, setRevealed] = useState(false);
+
+  if (pptx) {
+    return <div className={className} style={style} data-pptx-type="passthrough">{children}</div>;
+  }
 
   if (revealed) {
     return <div className={className} style={style} data-pptx-type="passthrough">{children}</div>;

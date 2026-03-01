@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from 'react';
 import { useInView } from 'framer-motion';
+import { isPptxMode } from './pptxMode';
 
 interface CountUpProps {
   to: number;
@@ -22,6 +23,7 @@ export function CountUp({
   style,
   className = '',
 }: CountUpProps) {
+  const pptx = isPptxMode();
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true });
   const [display, setDisplay] = useState(from.toFixed(decimals));
@@ -48,6 +50,14 @@ export function CountUp({
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, [isInView, from, to, duration, decimals]);
+
+  if (pptx) {
+    return (
+      <span className={className} style={style} data-pptx-type="text" data-pptx-countup-final={`${prefix}${to.toFixed(decimals)}${suffix}`}>
+        {prefix}{to.toFixed(decimals)}{suffix}
+      </span>
+    );
+  }
 
   return (
     <span

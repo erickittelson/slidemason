@@ -1,4 +1,5 @@
 import { motion, type TargetAndTransition, type Easing } from 'framer-motion';
+import { isPptxMode } from './pptxMode';
 
 type Effect =
   | 'fade-up'
@@ -44,8 +45,13 @@ export function Animate({
   className = '',
   children,
 }: AnimateProps) {
+  const pptx = isPptxMode();
   const { initial, animate } = EFFECTS[effect];
   const transition = { duration, delay, ease: ease as Easing };
+
+  if (pptx) {
+    return <div className={className} style={style} data-pptx-type="passthrough">{children}</div>;
+  }
 
   if (once) {
     return (

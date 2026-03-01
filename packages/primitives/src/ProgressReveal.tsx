@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { motion, useInView, type Easing } from 'framer-motion';
+import { isPptxMode } from './pptxMode';
 
 interface ProgressRevealProps {
   value: number;
@@ -22,8 +23,25 @@ export function ProgressReveal({
   style,
   className = '',
 }: ProgressRevealProps) {
+  const pptx = isPptxMode();
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true });
+
+  if (pptx) {
+    return (
+      <div className={className} style={style} data-pptx-type="progress" data-pptx-value={value} data-pptx-label={label || ''}>
+        {label && (
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: 'clamp(0.7rem, 0.9vw, 0.85rem)' }}>
+            <span style={{ color: 'var(--sm-text)' }}>{label}</span>
+            <span style={{ color: 'var(--sm-muted)' }}>{value}%</span>
+          </div>
+        )}
+        <div style={{ width: '100%', height, borderRadius: height / 2, background: 'var(--sm-surface)', overflow: 'hidden' }}>
+          <div style={{ width: `${value}%`, height: '100%', borderRadius: height / 2, background: color }} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div ref={ref} className={className} style={style} data-pptx-type="progress" data-pptx-value={value} data-pptx-label={label || ''}>
