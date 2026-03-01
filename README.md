@@ -1,14 +1,47 @@
+<div align="center">
+
 # Slidemason
 
 **Local-first, open-source presentation builder powered by AI coding agents.**
 
-Slidemason turns your notes, documents, and data into polished slide decks — without SaaS, without lock-in, and without leaving your editor. Upload source files, fill out a brief in the studio, and let your AI coding agent generate a complete presentation. Every slide is custom React — bespoke designs with animations, icons, charts, and interactive elements. No templates. No cookie-cutter layouts.
+Turn your notes, documents, and data into polished slide decks — without SaaS, without lock-in,<br>and without leaving your editor. Every slide is custom React. No templates. No cookie-cutter layouts.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
-[![pnpm](https://img.shields.io/badge/pnpm-10+-orange.svg)](https://pnpm.io/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-19-61DAFB.svg?logo=react&logoColor=black)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-7-646CFF.svg?logo=vite&logoColor=white)](https://vite.dev/)
+[![pnpm](https://img.shields.io/badge/pnpm-10+-F69220.svg?logo=pnpm&logoColor=white)](https://pnpm.io/)
 
 ![Slidemason Demo — 15 slides generated from a brief](docs/demo.gif)
+
+</div>
+
+---
+
+## Why Slidemason?
+
+| | Traditional tools | Slidemason |
+|---|---|---|
+| **Design** | Pick a template, fight with it | Every slide is bespoke — unique layout, typography, animations |
+| **Data** | Copy-paste into chart wizards | Upload source docs, agent reads and structures everything |
+| **Time** | 2-4 hours per deck | Under 5 minutes |
+| **Cost** | $20-30/mo for Canva/Gamma/Beautiful.ai | Free and open source. Agent costs ~8-40 cents per deck |
+| **Privacy** | Your data on their servers | 100% local. Nothing leaves your machine |
+| **Lock-in** | Proprietary formats | Standard React, JSON, CSS. Everything is readable and versionable |
+| **Agent** | Locked to one AI | Works with Claude Code, Cursor, Copilot, Windsurf, or any coding agent |
+
+---
+
+## Quick Start
+
+```bash
+git clone https://github.com/erickittelson/slidemason.git
+cd slidemason
+pnpm install
+pnpm dev        # Studio opens at http://localhost:4200
+```
+
+> **Prerequisites:** Node.js 22+, pnpm 10+
 
 ---
 
@@ -22,22 +55,11 @@ Slidemason turns your notes, documents, and data into polished slide decks — w
 - **Google Fonts** — Pick heading and body fonts from curated pairings or search the full Google Fonts library.
 - **Branding** — Upload your logo (with placement control), set footer text. The agent places them on every slide.
 - **Deck images** — Upload images and describe them. The agent knows what each image is and uses them in context.
-- **Live preview** — Slides hot-reload in the studio as the agent writes them. Arrow keys to navigate, thumbnail strip at the bottom.
+- **Live preview** — Slides hot-reload in the studio as the agent writes them. Arrow keys to navigate.
 - **Export to PPTX** — One-click PowerPoint export from the sidebar. PDF export via Playwright.
 - **Crash-proof primitives** — Invalid props fall back gracefully instead of white-screening. AI agents can pass bad values without killing the deck.
-- **Deck validation API** — `GET /__api/decks/<slug>/validate` renders every slide server-side and reports errors. Agents can self-correct before you even see the deck.
+- **Deck validation API** — `GET /__api/decks/:slug/validate` renders every slide server-side and reports errors. Agents can self-correct before you even see the deck.
 - **Open and inspectable** — Briefs are JSON, slides are TSX, themes are CSS. Everything is readable and version-controllable.
-
----
-
-## Quick Start
-
-```bash
-git clone https://github.com/erickittelson/slidemason.git
-cd slidemason
-pnpm install
-pnpm dev        # Studio opens at http://localhost:4200
-```
 
 ---
 
@@ -45,70 +67,25 @@ pnpm dev        # Studio opens at http://localhost:4200
 
 The studio sidebar walks you through 7 steps to build a brief. Then your AI agent reads the brief and source files and generates the slides.
 
-### Step 1: Source Files
-Upload PDFs, markdown, text files, or any documents with the content for your presentation. Drag and drop or click to upload.
+| Step | What you do | What happens |
+|:---:|---|---|
+| **1** | Upload source files | PDFs, markdown, text — drag and drop |
+| **2** | Fill out the brief | Audience, goal, tone, slide count, data density, visual style |
+| **3** | Add your vision | Free-text instructions: "make it feel urgent", "emphasize Q3 numbers" |
+| **4** | Pick a theme | 12 themes, live preview as you browse |
+| **5** | Choose fonts | Curated pairings or search Google Fonts |
+| **6** | Upload branding | Logo (with placement control) + footer text |
+| **7** | Add deck images | Screenshots, diagrams, photos — with descriptions for the agent |
 
-### Step 2: Brief
-Fill out who the deck is for and what it should accomplish:
-- **Title & subtitle** (optional — AI generates if blank)
-- **Presenter** name
-- **Audience** — select from presets (C-suite, investors, team, clients, conference) or type your own
-- **Goal** — what the audience should do or feel after (approve budget, align on strategy, etc.)
-- **Tone** — professional, casual, inspirational, technical, storytelling, data-driven
-- **Slide count** — 5 to 25+
-- **Duration** — 5 to 60 minutes
-- **Data density** — from data-heavy charts to pure narrative
-- **Visual style** — minimal, diagram-focused, icon-driven, text-forward, infographic
-- **Content focus** — strategic, tactical, educational, persuasive, status update
+Hit **Build Deck** and the studio saves everything to `brief.json`. Then ask your agent to generate the slides — it reads the brief, source files, and images, and writes `slides.tsx`. Slides hot-reload as the agent writes them.
 
-### Step 3: Your Vision
-Free-text field for anything else — "make it feel urgent", "emphasize the Q3 numbers", "keep it under 10 minutes". Direct instructions to the agent in your own words.
-
-### Step 4: Theme
-Pick from 12 themes. The preview updates live so you can see exactly how each one looks with your slides.
-
-### Step 5: Fonts
-Choose heading and body fonts. Pick from curated pairings (Inter + DM Sans, Space Grotesk + Inter, etc.) or search Google Fonts for anything specific.
-
-### Step 6: Branding
-Upload a logo and choose placement (top-left, top-right, bottom-left, bottom-right). Set footer text (e.g., "Confidential - Acme Inc"). The agent places these on every slide.
-
-### Step 7: Deck Images
-Upload screenshots, diagrams, photos, or any images you want in the presentation. Add a description to each one so the agent knows what it is and where to use it.
-
-### Build
-Hit **Build Deck** and the studio saves everything to `brief.json`. Then ask your agent to generate the slides — it reads the brief, source files, and images, and writes `slides.tsx`. Slides hot-reload in the studio as the agent writes them.
-
-### Export
-Once the deck looks good, click **Export PPTX** to download a PowerPoint file. Or use Playwright for PDF export.
-
----
-
-## Project Structure
-
-```
-slidemason/
-├── packages/
-│   ├── primitives/    # 36 slide components (layout, visual, animation, interaction, data)
-│   ├── renderer/      # Presentation engine (navigation, transitions, slide layout)
-│   ├── themes/        # 12 CSS themes with 31 variables each
-│   └── export/        # PPTX export via Playwright
-├── apps/
-│   └── studio/        # Vite dev server + sidebar workflow + REST API
-├── decks/             # Each deck is a folder
-│   └── <slug>/
-│       ├── data/          # Source documents (PDFs, markdown, text)
-│       ├── data/assets/   # Logo, images, screenshots
-│       ├── generated/     # brief.json produced by the studio
-│       └── slides.tsx     # Generated slide content (custom JSX)
-└── CLAUDE.md          # AI agent instructions (symlinked for all platforms)
-```
+Once the deck looks good, click **Export PPTX** to download a PowerPoint file, or use Playwright for PDF export.
 
 ---
 
 ## How Slides Work
 
-Every slide is bespoke JSX — not a template fill-in. The agent designs each slide's layout, typography, colors, and animations from scratch based on the content. Slides use primitives from `@slidemason/primitives` for consistency, then layer on custom styling with Tailwind classes and theme CSS variables.
+Every slide is bespoke JSX — not a template fill-in. The agent designs each slide's layout, typography, colors, and animations from scratch based on the content.
 
 ```tsx
 import { Slide, Heading, GradientText, Badge, Text, Split, Card, Grid,
@@ -133,48 +110,90 @@ const slides = [
 export default slides;
 ```
 
-All colors come from theme CSS variables (`var(--sm-primary)`, `var(--sm-surface)`, etc.) so slides look great in any of the 12 themes without changing code.
+All colors come from theme CSS variables (`var(--sm-primary)`, `var(--sm-surface)`, etc.) so slides look great in any theme without changing code.
 
 ---
 
 ## Themes
 
-`midnight` · `slate` · `canvas` · `signal` · `noir` · `dawn` · `boardroom` · `neon` · `forest` · `glacier` · `sunset` · `paper`
+<table>
+<tr>
+<td><code>midnight</code></td><td><code>slate</code></td><td><code>canvas</code></td><td><code>signal</code></td><td><code>noir</code></td><td><code>dawn</code></td>
+</tr>
+<tr>
+<td><code>boardroom</code></td><td><code>neon</code></td><td><code>forest</code></td><td><code>glacier</code></td><td><code>sunset</code></td><td><code>paper</code></td>
+</tr>
+</table>
 
-Each theme defines 31 CSS custom properties for backgrounds, text, accents, charts, status colors, shadows, and more. Set the theme in the brief and it applies automatically.
+Each theme defines 31 CSS custom properties covering backgrounds, text, accents, chart palettes, status colors, shadows, glass effects, and more. Set the theme in the brief and it applies automatically.
 
 ---
 
-## AI Agent Token Usage & Cost
+## Tech Stack
 
-### The real comparison: time, not tokens
+<table>
+<tr>
+<td align="center"><a href="https://react.dev/"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" width="36" /><br><sub>React 19</sub></a></td>
+<td align="center"><a href="https://vite.dev/"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vitejs/vitejs-original.svg" width="36" /><br><sub>Vite 7</sub></a></td>
+<td align="center"><a href="https://www.typescriptlang.org/"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" width="36" /><br><sub>TypeScript 5.9</sub></a></td>
+<td align="center"><a href="https://tailwindcss.com/"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg" width="36" /><br><sub>Tailwind v4</sub></a></td>
+<td align="center"><a href="https://www.framer.com/motion/"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/framermotion/framermotion-original.svg" width="36" /><br><sub>Framer Motion</sub></a></td>
+<td align="center"><a href="https://playwright.dev/"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/playwright/playwright-original.svg" width="36" /><br><sub>Playwright</sub></a></td>
+</tr>
+</table>
 
-Building a polished 15-slide presentation by hand takes most people **2-4 hours** — researching layouts, writing copy, tweaking spacing, fighting with alignment, exporting, realizing slide 7 looks terrible, starting over. With Slidemason, the workflow is:
+| Layer | Technology | Purpose |
+|---|---|---|
+| **Frontend** | React 19 + Vite 7 | Fast dev server with instant HMR |
+| **Styling** | Tailwind CSS v4 | Utility-first styling with CSS variables |
+| **Animation** | Framer Motion 12 | Slide transitions and element animations |
+| **Icons** | Lucide React | 1,500+ icons for visual anchors |
+| **Charts** | Recharts 3 | Bar, line, area, and pie charts |
+| **Export** | Playwright + PptxGenJS | Headless browser for PPTX and PDF export |
+| **Types** | TypeScript 5.9 | End-to-end type safety |
+| **Monorepo** | pnpm workspaces | Package management across 5 packages |
+| **Testing** | Vitest + Testing Library | Unit tests including crash-proof primitives |
 
-1. Upload your source docs (~1 min)
-2. Fill out the brief in the sidebar (~2 min)
-3. Tell your agent to generate the deck (~1-2 min for the agent to write it)
-4. Review and tweak individual slides (~2-5 min)
+---
 
-**Total: under 5 minutes for a deck that would have taken hours.** The first time takes a bit longer as you learn the studio, but after that it's fast.
+## Project Structure
 
-So when you see the cost numbers below, keep that in mind. We're talking about **cents** to save **hours**.
+```
+slidemason/
+├── packages/
+│   ├── primitives/    # 36 slide components (layout, visual, animation, interaction, data)
+│   ├── renderer/      # Presentation engine (navigation, transitions, slide layout)
+│   ├── themes/        # 12 CSS themes with 31 variables each
+│   ├── core/          # Data validation and schemas
+│   └── export/        # PPTX + PDF export via Playwright
+├── apps/
+│   └── studio/        # Vite dev server + sidebar workflow + REST API
+├── decks/             # Each deck is a folder
+│   └── <slug>/
+│       ├── data/          # Source documents (PDFs, markdown, text)
+│       ├── data/assets/   # Logo, images, screenshots
+│       ├── generated/     # brief.json produced by the studio
+│       └── slides.tsx     # Generated slide content (custom JSX)
+├── scripts/           # Tooling (demo capture, etc.)
+└── CLAUDE.md          # AI agent instructions (symlinked for all platforms)
+```
 
-### Cost per deck (ballpark numbers)
+---
 
-These numbers are approximate — actual cost depends on source document size, revisions, and agent overhead. But they give you the right order of magnitude.
+## AI Agent Cost
 
-Based on a 15-slide deck with a 6-page source document:
+Building a polished 15-slide presentation by hand takes most people **2-4 hours**. With Slidemason, it's **under 5 minutes**. The agent cost is cents:
 
 | Platform | Model | Cost per deck | Cost to fix one slide |
 |---|---|---|---|
 | **Claude Code** | Haiku 4.5 | **~8 cents** | ~1 cent |
 | **Claude Code** | Sonnet 4.6 | **~25 cents** | ~3 cents |
 | **Claude Code** | Opus 4.6 | **~40 cents** | ~5 cents |
-| **Cursor** | Pro ($20/mo) | ~1-2 of your ~225 monthly requests | ~1 request |
-| **Copilot** | Pro ($10/mo) | ~1-3 of your 300 monthly requests | ~1 request |
+| **Cursor** | Pro ($20/mo) | ~1-2 of ~225 monthly requests | ~1 request |
+| **Copilot** | Pro ($10/mo) | ~1-3 of 300 monthly requests | ~1 request |
 
-> A 15-slide presentation costs somewhere between **a dime and two quarters**. Fixing a single slide costs **a few pennies**. On subscription plans like Cursor or Copilot, each deck is a rounding error on your monthly budget — you could generate decks every day and barely notice.
+<details>
+<summary><strong>Detailed cost breakdown</strong></summary>
 
 ### Where those numbers come from
 
@@ -186,7 +205,7 @@ The agent reads your instructions (~6K tokens), brief (~250 tokens), and source 
 | Sonnet 4.6 | $3 / 1M tokens | $15 / 1M tokens | ~$0.23 |
 | Opus 4.6 | $5 / 1M tokens | $25 / 1M tokens | ~$0.38 |
 
-Agent overhead (system prompts, multi-turn reasoning, file reads) can add 1.5-2x on top. Claude Code shows actual session cost in the status bar so you always know what you spent. These numbers will shift as model pricing changes — check your platform's current rates.
+Agent overhead (system prompts, multi-turn reasoning, file reads) can add 1.5-2x on top. Claude Code shows actual session cost in the status bar so you always know what you spent.
 
 ### Subscription platforms
 
@@ -203,6 +222,8 @@ Agent overhead (system prompts, multi-turn reasoning, file reads) can add 1.5-2x
 - **Trim your source docs** — remove appendices and boilerplate before uploading
 - **Get the brief right first** — a clear brief means fewer do-overs
 
+</details>
+
 ---
 
 ## Validating Decks
@@ -213,20 +234,7 @@ After the agent generates slides, you can validate they render without errors:
 curl http://localhost:4200/__api/decks/<slug>/validate
 ```
 
-Returns `{ "valid": true, "slideCount": 15 }` on success, or an `errors` array with slide index and error message on failure. All primitives include defensive fallbacks so invalid props degrade gracefully instead of crashing — but the validation endpoint catches deeper issues before you see them.
-
----
-
-## Tech Stack
-
-- **React 19** + **Vite 7** — Fast dev server with instant hot reload
-- **TypeScript 5.9** — End-to-end type safety
-- **Tailwind CSS v4** — Utility-first styling
-- **Framer Motion** — Slide animations and transitions
-- **Lucide React** — 1,500+ icons for visual anchors
-- **Recharts** — Charts and data visualization
-- **Playwright** — Headless browser for PDF and PPTX export
-- **pnpm workspaces** — Monorepo package management
+Returns `{ "valid": true, "slideCount": 15 }` on success, or an `errors` array with slide index and error message on failure. All primitives include defensive fallbacks so invalid props degrade gracefully — but the validation endpoint catches deeper issues before you see them.
 
 ---
 
@@ -236,24 +244,40 @@ Returns `{ "valid": true, "slideCount": 15 }` on success, or an `errors` array w
 pnpm dev              # Start studio dev server (port 4200)
 pnpm build            # Build all packages
 pnpm test             # Run test suite (includes crash-proof primitive tests)
+pnpm capture-demo     # Regenerate the demo GIF via Playwright
 ```
 
 ---
 
 ## Contributing
 
-Contributions are welcome. To get started:
+Contributions are welcome! To get started:
 
 ```bash
+git clone https://github.com/erickittelson/slidemason.git
+cd slidemason
 pnpm install
 pnpm dev
-pnpm test
+pnpm test             # Make sure everything passes
 ```
 
 Please open an issue before submitting large changes so we can discuss the approach.
+
+### AI Agent Support
+
+Slidemason ships with instructions for every major AI coding agent:
+
+| Platform | Config file | How it loads |
+|---|---|---|
+| Claude Code | `CLAUDE.md` | Auto-detected |
+| Cursor | `.cursorrules` | Symlink to `CLAUDE.md` |
+| Windsurf | `.windsurfrules` | Symlink to `CLAUDE.md` |
+| GitHub Copilot | `.github/copilot-instructions.md` | Symlink to `CLAUDE.md` |
+
+One source of truth, four platforms.
 
 ---
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE) — use it however you want.
