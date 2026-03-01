@@ -15,8 +15,10 @@
     "dev": "tsc --watch"
   },
   "dependencies": {
+    "@slidemason/themes": "workspace:*",
     "pdf-lib": "^1.17.1",
-    "playwright": "^1.58.2"
+    "playwright": "^1.58.2",
+    "pptxgenjs": "^4.0.1"
   },
   "devDependencies": {
     "@types/node": "^25.3.2"
