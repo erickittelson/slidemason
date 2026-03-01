@@ -370,6 +370,53 @@ async function handleGetAsset(slug: string, name: string, res: ServerResponse) {
   res.end(data);
 }
 
+async function handleExportPptx(slug: string, res: ServerResponse, server: ViteDevServer) {
+  const paths = deckPaths(slug);
+  if (!(await exists(paths.brief))) {
+    json(res, { error: 'brief not found' }, 404);
+    return;
+  }
+
+  const briefRaw = await readFile(paths.brief, 'utf-8');
+  const briefData = JSON.parse(briefRaw);
+  const themeName = briefData.theme || 'midnight';
+
+  // Count slides by matching key= attributes
+  let slideCount = 0;
+  if (await exists(paths.slides)) {
+    const content = await readFile(paths.slides, 'utf-8');
+    const matches = content.match(/key="/g);
+    slideCount = matches ? matches.length : 0;
+  }
+
+  if (slideCount === 0) {
+    json(res, { error: 'no slides found' }, 400);
+    return;
+  }
+
+  // Get dev server port
+  const address = server.httpServer?.address();
+  const port = typeof address === 'object' && address ? address.port : 4200;
+  const baseUrl = `http://localhost:${port}`;
+
+  // Dynamic import to avoid loading playwright at startup
+  const { exportPptx } = await import('@slidemason/export');
+
+  const buffer = await exportPptx({
+    url: baseUrl,
+    slug,
+    themeName,
+    slideCount,
+  });
+
+  res.writeHead(200, {
+    'Content-Type': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'Content-Disposition': `attachment; filename="${slug}.pptx"`,
+    'Content-Length': buffer.length,
+  });
+  res.end(buffer);
+}
+
 async function handleGetSlides(slug: string, res: ServerResponse) {
   const paths = deckPaths(slug);
   if (!(await exists(paths.slides))) {
@@ -487,6 +534,12 @@ export function studioApiPlugin(): Plugin {
                 await handleGetSlides(slug, res);
                 return;
               }
+            }
+
+            // /__api/decks/:slug/export/pptx
+            if (rest === '/export/pptx' && method === 'GET') {
+              await handleExportPptx(slug, res, server);
+              return;
             }
 
           }
