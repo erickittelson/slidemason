@@ -47,6 +47,7 @@ export function App() {
   const [openStep, setOpenStep] = useState(1); // which step is expanded (1-5, 0=none)
   const [stepError, setStepError] = useState('');
   const [slides, setSlides] = useState<ReactNode[]>(defaultSlides);
+  const [exportingPptx, setExportingPptx] = useState(false);
 
   const activeDeckRef = useRef(activeDeck);
   activeDeckRef.current = activeDeck;
@@ -285,7 +286,7 @@ export function App() {
             />
           </CollapsibleSection>
 
-          <div style={{ padding: '12px 0' }}>
+          <div style={{ padding: '12px 0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <button
               onClick={handleSaveAll}
               style={{
@@ -297,6 +298,39 @@ export function App() {
             >
               Build Deck
             </button>
+            {slides.length > 1 && (
+              <button
+                onClick={async () => {
+                  if (!activeDeck) return;
+                  setExportingPptx(true);
+                  try {
+                    const res = await fetch(`/__api/decks/${encodeURIComponent(activeDeck)}/export/pptx`);
+                    if (!res.ok) throw new Error('Export failed');
+                    const blob = await res.blob();
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${activeDeck}.pptx`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  } catch (err) {
+                    console.error('PPTX export failed:', err);
+                  } finally {
+                    setExportingPptx(false);
+                  }
+                }}
+                disabled={exportingPptx}
+                style={{
+                  width: '100%', padding: '10px', fontSize: '0.8rem', fontWeight: 600,
+                  backgroundColor: exportingPptx ? 'rgba(100,100,100,0.3)' : 'rgba(59,130,246,0.2)',
+                  color: exportingPptx ? '#888' : '#93c5fd',
+                  border: '1px solid rgba(59,130,246,0.3)',
+                  borderRadius: '8px', cursor: exportingPptx ? 'default' : 'pointer',
+                }}
+              >
+                {exportingPptx ? 'Exporting PPTX...' : 'Export PPTX'}
+              </button>
+            )}
           </div>
         </Sidebar>
 
