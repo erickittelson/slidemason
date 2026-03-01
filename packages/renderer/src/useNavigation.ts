@@ -1,27 +1,71 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+
+/** SessionStorage key for persisting slide position across reloads. */
+function storageKey(): string {
+  const hash = window.location.hash.replace(/^#\/?/, '');
+  return hash ? `slidemason-pos-${hash}` : 'slidemason-pos-default';
+}
+
+function readStoredSlide(max: number): number {
+  try {
+    const stored = sessionStorage.getItem(storageKey());
+    if (stored != null) {
+      const n = parseInt(stored, 10);
+      if (!isNaN(n) && n >= 0) return Math.min(n, max);
+    }
+  } catch { /* SSR or private browsing */ }
+  return 0;
+}
 
 export function useNavigation(slideCount: number) {
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(() =>
+    readStoredSlide(slideCount - 1),
+  );
+  const prevSlideRef = useRef(currentSlide);
+
+  // Derive direction from change in currentSlide
+  const direction: 1 | -1 = currentSlide >= prevSlideRef.current ? 1 : -1;
+
+  // Update ref after each render so next render can compare
+  useEffect(() => {
+    prevSlideRef.current = currentSlide;
+  });
+
+  // Persist current slide to sessionStorage
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(storageKey(), String(currentSlide));
+    } catch { /* ignore */ }
+  }, [currentSlide]);
 
   const goTo = useCallback((index: number) => {
     setCurrentSlide(Math.max(0, Math.min(index, slideCount - 1)));
   }, [slideCount]);
 
-  const next = useCallback(() => goTo(currentSlide + 1), [currentSlide, goTo]);
-  const prev = useCallback(() => goTo(currentSlide - 1), [currentSlide, goTo]);
+  const next = useCallback(() => {
+    setCurrentSlide((prev) => Math.min(prev + 1, slideCount - 1));
+  }, [slideCount]);
+
+  const prev = useCallback(() => {
+    setCurrentSlide((prev) => Math.max(prev - 1, 0));
+  }, [slideCount]);
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      // Don't intercept keys when typing in form fields
-      const tag = (e.target as HTMLElement)?.tagName;
+      const target = e.target as HTMLElement;
+      const tag = target?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      // Don't intercept when editing inline text
+      if (target?.isContentEditable) return;
 
       switch (e.key) {
+        case 'ArrowDown':
         case 'ArrowRight':
         case ' ':
           e.preventDefault();
           next();
           break;
+        case 'ArrowUp':
         case 'ArrowLeft':
           e.preventDefault();
           prev();
@@ -32,5 +76,5 @@ export function useNavigation(slideCount: number) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [next, prev]);
 
-  return { currentSlide, goTo, next, prev };
+  return { currentSlide, direction, goTo, next, prev };
 }

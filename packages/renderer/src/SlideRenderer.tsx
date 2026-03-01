@@ -1,45 +1,182 @@
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
-import { MDXProvider } from '@mdx-js/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import html2canvas from 'html2canvas';
-import * as components from '@slidemason/components';
 import { SlideLayout } from './SlideLayout';
 import { useDeck } from './DeckProvider';
+import { useSlideEditor, EDIT_MODE_STYLES } from './useSlideEditor';
+import { EditorToolbar } from './EditorToolbar';
+import { SaveIndicator } from './SaveIndicator';
+
+/* ── SVG Icons ── */
+
+const ChevronUp = () => (
+  <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M6 14l5-5 5 5" />
+  </svg>
+);
+
+const ChevronDown = () => (
+  <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M6 8l5 5 5-5" />
+  </svg>
+);
+
+const CameraIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 6a1 1 0 011-1h1.5l1.2-1.8h4.6l1.2 1.8H14a1 1 0 011 1v7a1 1 0 01-1 1H4a1 1 0 01-1-1z" />
+    <circle cx="9" cy="9.5" r="2.5" />
+  </svg>
+);
+
+const PencilIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M11.5 1.5a2.12 2.12 0 013 3L5.5 13.5 1 15l1.5-4.5z" />
+  </svg>
+);
+
+const ExpandIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M2 7V2h5M16 7V2h-5M2 11v5h5M16 11v5h-5" />
+  </svg>
+);
+
+const ShrinkIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M7 2v5H2M11 2v5h5M7 16v-5H2M11 16v-5h5" />
+  </svg>
+);
+
+/* ── Screenshot helper: inline computed styles onto cloned DOM ── */
+
+function copyComputedStylesToClone(original: Element, clone: Element) {
+  if (!(original instanceof HTMLElement) || !(clone instanceof HTMLElement)) return;
+
+  const computed = window.getComputedStyle(original);
+  const props = [
+    'color', 'background-color', 'background-image', 'background',
+    'border-color', 'border-top-color', 'border-right-color',
+    'border-bottom-color', 'border-left-color',
+    'box-shadow', 'text-shadow', 'outline-color',
+    'fill', 'stroke', 'opacity',
+    '-webkit-text-fill-color', '-webkit-background-clip',
+  ];
+
+  for (const prop of props) {
+    try {
+      const value = computed.getPropertyValue(prop);
+      if (value && value !== 'none' && value !== 'normal') {
+        clone.style.setProperty(prop, value);
+      }
+    } catch { /* skip unsupported props */ }
+  }
+
+  const origChildren = Array.from(original.children);
+  const cloneChildren = Array.from(clone.children);
+  for (let i = 0; i < Math.min(origChildren.length, cloneChildren.length); i++) {
+    copyComputedStylesToClone(origChildren[i], cloneChildren[i]);
+  }
+}
+
+/* ── Animation variants (direction-aware vertical) ── */
+
+const slideVariants = {
+  enter: (dir: number) => ({
+    opacity: 0,
+    y: dir > 0 ? 80 : -80,
+  }),
+  center: {
+    opacity: 1,
+    y: 0,
+  },
+  exit: (dir: number) => ({
+    opacity: 0,
+    y: dir > 0 ? -80 : 80,
+  }),
+};
 
 const slideTransition = {
   duration: 0.7,
   ease: [0.22, 1, 0.36, 1] as const,
 };
 
+/* ── Glass button style helper ── */
+
+const glassButton: React.CSSProperties = {
+  border: 'none',
+  background: 'transparent',
+  cursor: 'pointer',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: 0,
+  transition: 'opacity 0.15s ease',
+};
+
+/* ── Main Component ── */
+
 interface SlideRendererProps {
   slides: ReactNode[];
   fullWidth?: boolean;
+  editable?: boolean;
+  deckSlug?: string | null;
 }
 
-export function SlideRenderer({ slides, fullWidth = true }: SlideRendererProps) {
-  const { currentSlide, slideCount, goTo, next, prev, theme } = useDeck();
-  const [isFullscreen, setIsFullscreen] = useState(false);
+export function SlideRenderer({
+  slides,
+  fullWidth = true,
+  editable = false,
+  deckSlug,
+}: SlideRendererProps) {
+  const { currentSlide, slideCount, direction, next, prev, theme } = useDeck();
+
   const slideRef = useRef<HTMLDivElement>(null);
+
+  // UI state
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [screenshotDone, setScreenshotDone] = useState(false);
 
   const isPrintMode =
-    typeof window !== 'undefined' &&
-    window.location.search.includes('print');
+    typeof window !== 'undefined' && window.location.search.includes('print');
 
+  const isFirst = currentSlide === 0;
+  const isLast = currentSlide === slideCount - 1;
+  const progress = slideCount > 1 ? (currentSlide / (slideCount - 1)) * 100 : 0;
+
+  // ── Edit mode (extracted hook) ──
+  const {
+    editMode,
+    saveStatus,
+    toolbarPos,
+    setToolbarPos,
+    handleSlideClick,
+    startTextEdit,
+    handleColorSelect,
+    handleReorder,
+    handleDelete,
+    toggleEditMode,
+  } = useSlideEditor({ deckSlug, currentSlide, slideRef });
+
+  // ── Screenshot ──
   const captureScreenshot = useCallback(async () => {
     if (!slideRef.current) return;
     try {
       const canvas = await html2canvas(slideRef.current, {
-        backgroundColor: null,
         scale: 2,
         useCORS: true,
+        logging: false,
+        onclone: (_doc, clonedElement) => {
+          copyComputedStylesToClone(slideRef.current!, clonedElement);
+        },
       });
+
       const blob = await new Promise<Blob>((resolve) =>
-        canvas.toBlob((b) => resolve(b!), 'image/png')
+        canvas.toBlob((b) => resolve(b!), 'image/png'),
       );
+
       await navigator.clipboard.write([
         new ClipboardItem({ 'image/png': blob }),
       ]);
+
       setScreenshotDone(true);
       setTimeout(() => setScreenshotDone(false), 1500);
     } catch (err) {
@@ -47,11 +184,17 @@ export function SlideRenderer({ slides, fullWidth = true }: SlideRendererProps) 
     }
   }, []);
 
+  // ── Fullscreen ──
   const toggleFullscreen = useCallback(() => {
     if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().then(() => setIsFullscreen(true)).catch(() => {});
+      document.documentElement
+        .requestFullscreen()
+        .then(() => setIsFullscreen(true))
+        .catch(() => {});
     } else {
-      document.exitFullscreen().then(() => setIsFullscreen(false)).catch(() => {});
+      document.exitFullscreen()
+        .then(() => setIsFullscreen(false))
+        .catch(() => {});
     }
   }, []);
 
@@ -61,132 +204,202 @@ export function SlideRenderer({ slides, fullWidth = true }: SlideRendererProps) 
     return () => document.removeEventListener('fullscreenchange', handleChange);
   }, []);
 
-  const isFirst = currentSlide === 0;
-  const isLast = currentSlide === slideCount - 1;
-  const progress = slideCount > 1 ? (currentSlide / (slideCount - 1)) * 100 : 0;
-
+  // ── Render ──
   return (
-    <MDXProvider components={components}>
-      <div
-        ref={slideRef}
-        data-theme={theme}
-        className={`relative ${fullWidth ? 'w-screen h-screen' : 'w-full h-full'} overflow-hidden`}
-        style={{ backgroundColor: 'var(--sm-bg)' }}
-      >
-        {/* Animated slide content */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentSlide}
-            initial={{ opacity: 0, y: 40, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -40, scale: 0.98 }}
-            transition={slideTransition}
-            className="w-full h-full"
-          >
-            <SlideLayout theme={theme} fullWidth={false}>
+    <div
+      ref={slideRef}
+      data-theme={theme}
+      data-edit-mode={editMode || undefined}
+      className={`relative ${fullWidth ? 'w-screen h-screen' : 'w-full h-full'} overflow-hidden`}
+      style={{ backgroundColor: 'var(--sm-bg)' }}
+    >
+      {/* Edit mode hover styles */}
+      {editMode && <style>{EDIT_MODE_STYLES}</style>}
+
+      {/* ── Animated slide content ── */}
+      <AnimatePresence mode="wait" custom={direction}>
+        <motion.div
+          key={currentSlide}
+          custom={direction}
+          variants={slideVariants}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          transition={slideTransition}
+          className="w-full h-full"
+        >
+          <SlideLayout theme={theme} fullWidth={false}>
+            <div
+              onClick={editMode ? handleSlideClick : undefined}
+              style={{ display: 'contents' }}
+            >
               {slides[currentSlide]}
-            </SlideLayout>
-          </motion.div>
-        </AnimatePresence>
-
-        {!isPrintMode && (
-          <>
-            {/* Slide counter — top left */}
-            <div
-              className="absolute top-6 left-8 font-mono text-xs tracking-widest"
-              style={{ color: 'var(--sm-muted)', opacity: 0.4 }}
-            >
-              {String(currentSlide + 1).padStart(2, '0')} / {String(slideCount).padStart(2, '0')}
             </div>
+          </SlideLayout>
+        </motion.div>
+      </AnimatePresence>
 
-            {/* Dot minimap — left side, desktop only */}
-            <div
-              className="absolute left-4 top-1/2 -translate-y-1/2 hidden lg:flex flex-col gap-2"
-              style={{ opacity: 0.4 }}
-            >
-              {Array.from({ length: slideCount }, (_, i) => (
-                <button
-                  key={i}
-                  onClick={() => goTo(i)}
-                  className="w-2 h-2 rounded-full border-none cursor-pointer transition-all duration-300 p-0"
-                  style={{
-                    backgroundColor: i === currentSlide ? 'var(--sm-primary)' : 'var(--sm-muted)',
-                    transform: i === currentSlide ? 'scale(1.4)' : 'scale(1)',
-                    opacity: i === currentSlide ? 1 : 0.4,
-                  }}
-                  aria-label={`Go to slide ${i + 1}`}
-                />
-              ))}
-            </div>
+      {/* ── Editor toolbar ── */}
+      {editMode && toolbarPos && (
+        <EditorToolbar
+          x={toolbarPos.x}
+          y={toolbarPos.y}
+          themeRoot={slideRef.current}
+          onTextEdit={startTextEdit}
+          onColorSelect={handleColorSelect}
+          onReorder={handleReorder}
+          onDelete={handleDelete}
+          onClose={() => setToolbarPos(null)}
+        />
+      )}
 
-            {/* Nav buttons — bottom right, glassmorphic pill */}
-            <div
-              className="absolute bottom-6 right-8 flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-md"
+      {/* ── Save status indicator ── */}
+      <SaveIndicator status={saveStatus} />
+
+      {!isPrintMode && (
+        <>
+          {/* ── Top-left: Edit mode toggle (only when editable) ── */}
+          {editable && (
+            <button
+              onClick={toggleEditMode}
+              className="absolute top-5 left-6"
               style={{
-                backgroundColor: 'var(--sm-glass-bg)',
-                border: '1px solid var(--sm-border)',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+                ...glassButton,
+                color: editMode ? 'var(--sm-primary)' : 'var(--sm-muted)',
+                opacity: editMode ? 1 : 0.5,
+                width: '36px',
+                height: '36px',
+                borderRadius: '8px',
+                backgroundColor: editMode ? 'rgba(99, 102, 241, 0.15)' : 'transparent',
+                border: editMode ? '1px solid rgba(99, 102, 241, 0.3)' : '1px solid transparent',
+                zIndex: 10,
               }}
+              title={editMode ? 'Exit edit mode' : 'Edit slides'}
             >
-              <button
-                onClick={prev}
-                disabled={isFirst}
-                className="cursor-pointer border-none bg-transparent p-1 text-sm leading-none transition-opacity duration-150"
-                style={{ color: 'var(--sm-muted)', opacity: isFirst ? 0.3 : 1 }}
-                aria-label="Previous slide"
-              >
-                ←
-              </button>
-              <span
-                className="font-mono text-xs"
-                style={{ color: 'var(--sm-muted)', opacity: 0.6 }}
-              >
-                {currentSlide + 1} / {slideCount}
-              </span>
-              <button
-                onClick={next}
-                disabled={isLast}
-                className="cursor-pointer border-none bg-transparent p-1 text-sm leading-none transition-opacity duration-150"
-                style={{ color: 'var(--sm-muted)', opacity: isLast ? 0.3 : 1 }}
-                aria-label="Next slide"
-              >
-                →
-              </button>
-              <button
-                onClick={toggleFullscreen}
-                className="cursor-pointer border-none bg-transparent p-1 text-sm leading-none"
-                style={{ color: 'var(--sm-muted)' }}
-                aria-label="Toggle fullscreen"
-              >
-                {isFullscreen ? '⊡' : '⊞'}
-              </button>
-              <button
-                onClick={captureScreenshot}
-                className="cursor-pointer border-none bg-transparent p-1 text-sm leading-none transition-opacity duration-150"
-                style={{ color: screenshotDone ? 'var(--sm-primary)' : 'var(--sm-muted)' }}
-                aria-label="Copy slide screenshot to clipboard"
-              >
-                {screenshotDone ? '✓' : '📷'}
-              </button>
-            </div>
+              <PencilIcon />
+            </button>
+          )}
 
-            {/* Progress bar — bottom edge */}
-            <div
-              className="absolute bottom-0 left-0 right-0"
-              style={{ height: '2px', backgroundColor: 'var(--sm-border)' }}
+          {/* ── Top-right: Fullscreen ── */}
+          <button
+            onClick={toggleFullscreen}
+            className="absolute top-5 right-6"
+            style={{
+              ...glassButton,
+              color: 'var(--sm-muted)',
+              opacity: 0.5,
+              width: '36px',
+              height: '36px',
+              borderRadius: '8px',
+              zIndex: 10,
+            }}
+            title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+          >
+            {isFullscreen ? <ShrinkIcon /> : <ExpandIcon />}
+          </button>
+
+          {/* ── Bottom-left: Slide counter + screenshot ── */}
+          <div
+            className="absolute bottom-5 left-6 flex items-center gap-3"
+            style={{ zIndex: 10 }}
+          >
+            <span
+              className="font-mono text-sm tracking-wider"
+              style={{ color: 'var(--sm-muted)', opacity: 0.6 }}
             >
-              <div
-                style={{
-                  height: '100%',
-                  width: `${progress}%`,
-                  background: 'linear-gradient(to right, var(--sm-primary), var(--sm-accent))',
-                  transition: 'width 500ms ease-out',
-                }}
-              />
-            </div>
-          </>
-        )}
-      </div>
-    </MDXProvider>
+              {String(currentSlide + 1).padStart(2, '0')}{' '}
+              <span style={{ opacity: 0.4 }}>/</span>{' '}
+              {String(slideCount).padStart(2, '0')}
+            </span>
+            <button
+              onClick={captureScreenshot}
+              style={{
+                ...glassButton,
+                color: screenshotDone ? 'var(--sm-success)' : 'var(--sm-muted)',
+                opacity: screenshotDone ? 1 : 0.5,
+                width: '32px',
+                height: '32px',
+                borderRadius: '6px',
+              }}
+              title="Copy slide screenshot to clipboard"
+            >
+              {screenshotDone ? (
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 9l3.5 3.5L14 5" />
+                </svg>
+              ) : (
+                <CameraIcon />
+              )}
+            </button>
+          </div>
+
+          {/* ── Bottom-right: Up / Down navigation ── */}
+          <div
+            className="absolute bottom-5 right-6 flex flex-col items-center gap-1 rounded-full backdrop-blur-md"
+            style={{
+              backgroundColor: 'var(--sm-glass-bg)',
+              border: '1px solid var(--sm-border)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+              padding: '6px',
+              zIndex: 10,
+            }}
+          >
+            <button
+              onClick={prev}
+              disabled={isFirst}
+              style={{
+                ...glassButton,
+                color: 'var(--sm-muted)',
+                opacity: isFirst ? 0.2 : 0.8,
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+              }}
+              aria-label="Previous slide"
+            >
+              <ChevronUp />
+            </button>
+            <div
+              style={{
+                width: '20px',
+                height: '1px',
+                backgroundColor: 'var(--sm-border)',
+                opacity: 0.5,
+              }}
+            />
+            <button
+              onClick={next}
+              disabled={isLast}
+              style={{
+                ...glassButton,
+                color: 'var(--sm-muted)',
+                opacity: isLast ? 0.2 : 0.8,
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+              }}
+              aria-label="Next slide"
+            >
+              <ChevronDown />
+            </button>
+          </div>
+
+          {/* ── Progress bar — bottom edge ── */}
+          <div
+            className="absolute bottom-0 left-0 right-0"
+            style={{ height: '2px', backgroundColor: 'var(--sm-border)', zIndex: 10 }}
+          >
+            <div
+              style={{
+                height: '100%',
+                width: `${progress}%`,
+                background: 'linear-gradient(to right, var(--sm-primary), var(--sm-accent))',
+                transition: 'width 500ms ease-out',
+              }}
+            />
+          </div>
+        </>
+      )}
+    </div>
   );
 }

@@ -2,7 +2,7 @@
 
 **Local-first, open-source presentation builder powered by agentic coding workflows.**
 
-Slidemason turns your notes, documents, and data into polished slide decks — without SaaS, without lock-in, and without leaving your terminal. Drop files into a `data/` directory, run a structured pipeline, and let your coding agent (Claude Code, Cursor, Copilot, Windsurf) generate a complete presentation from source material. Every intermediate artifact is a plain JSON or MDX file you can read, edit, and version-control.
+Slidemason turns your notes, documents, and data into polished slide decks — without SaaS, without lock-in, and without leaving your terminal. Drop files into a deck's `data/` directory, fill out a brief in the studio, and let your coding agent (Claude Code, Cursor, Copilot, Windsurf) generate a complete presentation from source material. Every slide is custom JSX — bespoke designs with Framer Motion animations, Lucide icons, and Tailwind styling.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
@@ -14,12 +14,11 @@ Slidemason turns your notes, documents, and data into polished slide decks — w
 
 - **Local-first** — Your data never leaves your machine. No accounts, no telemetry, no cloud.
 - **Agent-compatible** — Works with Claude Code, Cursor, Copilot, Windsurf, or any coding agent that can read files.
-- **Beautiful by default** — 3 themes, 12 templates, 16 components. Ship a polished deck without touching CSS.
-- **Structured pipeline** — Ingest, brief, outline, slides. Each stage produces a human-readable artifact.
+- **Beautiful by default** — 12 themes with 31 CSS variables each. Ship a polished deck without touching CSS.
+- **Custom slides** — Every slide is bespoke JSX using Framer Motion, Lucide icons, and Tailwind + theme variables.
+- **Studio workflow** — Upload source files, fill out a brief, copy a prompt, and let your AI agent build the deck.
 - **Export to PDF or static web** — Generate a PDF with Playwright or a static site you can host anywhere.
-- **Publish to GitHub Pages** — One command to deploy your deck to the web.
-- **Open and inspectable** — Every intermediate file (manifest, brief, outline) is JSON you can read and edit.
-- **Composable** — Build custom slide layouts from reusable React components, or use the included templates.
+- **Open and inspectable** — Briefs are JSON, slides are TSX. Everything is readable and version-controllable.
 
 ---
 
@@ -33,46 +32,17 @@ cd slidemason
 # Install dependencies
 pnpm install
 
-# Drop your source files
-cp your-prd.md data/
-cp your-notes.md data/
-
-# Scan your data
-pnpm slidemason ingest
-
-# Use your coding agent to generate the deck
-# (Tell your agent: "Read prompts/system.md and follow the workflow")
-
-# Preview locally
+# Start the studio
 pnpm dev
-
-# Export to PDF
-pnpm slidemason export-pdf --slides 10 --output deck.pdf
 ```
 
----
+Then open the studio in your browser. The workflow is:
 
-## How It Works
-
-Slidemason follows a six-stage pipeline. Each stage reads from the previous stage's output and writes to `generated/`.
-
-```
-data/ ──> ingest ──> brief ──> outline ──> slides ──> preview ──> export
-          │          │         │            │          │            │
-          v          v         v            v          v            v
-     manifest.json  brief.json  outline.json  deck/*.mdx  localhost   PDF
-```
-
-| Stage | What happens | Input | Output |
-|-------|-------------|-------|--------|
-| **Ingest** | Scans `data/`, inventories every file with metadata | Source files | `generated/manifest.json` |
-| **Brief** | Summarizes source material into a presentation brief | Manifest + source files | `generated/brief.json` |
-| **Outline** | Plans the narrative arc, selects theme and templates | Brief | `generated/outline.json` |
-| **Slides** | Generates MDX slide files using components and templates | Outline | `generated/deck/*.mdx` |
-| **Preview** | Renders the deck in a live-reloading browser | MDX files | `localhost:5173` |
-| **Export** | Captures slides as PDF or builds a static site | Rendered slides | PDF or HTML |
-
-Every JSON artifact is validated against Zod schemas in `packages/core/`, so malformed output is caught immediately.
+1. **Create a deck** in the studio sidebar
+2. **Upload source files** (PDFs, markdown, notes, data)
+3. **Fill out the brief** (audience, goal, tone, theme)
+4. **Copy the prompt** and paste it into your AI coding agent
+5. **Preview** your slides in the studio as the agent generates them
 
 ---
 
@@ -81,137 +51,57 @@ Every JSON artifact is validated against Zod schemas in `packages/core/`, so mal
 ```
 slidemason/
 ├── packages/
-│   ├── core/          # Zod schemas, ingestion, validation
-│   ├── components/    # 16 React presentation components
-│   ├── themes/        # 3 theme configs (slate, canvas, signal)
-│   ├── renderer/      # Vite + React + MDX slide renderer, 12 templates
-│   ├── cli/           # CLI entry point (citty)
-│   └── export/        # PDF export via Playwright
+│   ├── renderer/      # Presentation engine with Framer Motion transitions
+│   └── themes/        # 12 CSS themes with 31 variables each
 ├── apps/
-│   └── studio/        # Vite dev server for live preview
-├── data/              # Your source files (input)
-├── generated/         # All output artifacts
-│   ├── manifest.json
-│   ├── brief.json
-│   ├── outline.json
-│   └── deck/          # Generated MDX slides + deck.config.json
-├── prompts/           # Agent workflow guides
-├── examples/          # Example decks
-└── docs/              # Project documentation
+│   └── studio/        # Vite-based studio with sidebar workflow
+├── decks/             # Each deck is a folder
+│   └── <slug>/
+│       ├── data/      # Source documents (PDFs, markdown, text, etc.)
+│       ├── generated/ # Brief file produced by the studio
+│       └── slides.tsx # The deck's slide content (custom JSX)
+└── CLAUDE.md          # AI agent instructions for generating slides
 ```
 
 ---
 
-## CLI Reference
+## How Slides Work
 
-| Command | Description |
-|---------|-------------|
-| `slidemason init` | Initialize a new Slidemason project |
-| `slidemason ingest` | Scan `data/` and produce `generated/manifest.json` |
-| `slidemason validate` | Validate all generated artifacts against Zod schemas |
-| `slidemason dev` | Start the live preview server |
-| `slidemason build` | Build the slide deck for production |
-| `slidemason export-pdf` | Export the deck to PDF via Playwright |
-| `slidemason export-static` | Export the deck as a static HTML site |
-| `slidemason publish-github` | Publish the static export to GitHub Pages |
+Slides are custom JSX using `framer-motion` and `lucide-react`. Each slide is a unique design tailored to its content — no templates, no reusable layouts. The AI agent reads your source material and brief, then designs each slide from scratch.
+
+```tsx
+import { motion } from 'framer-motion';
+import { Zap, Shield, Globe } from 'lucide-react';
+
+const slides = [
+  <div key="s1" className="flex flex-1 flex-col items-center justify-center text-center p-16">
+    <motion.h1
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="text-8xl font-extrabold"
+      style={{
+        background: 'linear-gradient(135deg, var(--sm-primary), var(--sm-secondary))',
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+      }}
+    >
+      Your Title
+    </motion.h1>
+  </div>,
+];
+
+export default slides;
+```
+
+All colors use theme CSS variables (`var(--sm-primary)`, `var(--sm-surface)`, etc.) so slides look great in any of the 12 themes.
 
 ---
 
 ## Themes
 
-Slidemason ships with three themes. Set the theme in your outline and every component picks it up automatically through CSS custom properties.
+Slidemason ships with 12 themes: `midnight`, `slate`, `canvas`, `signal`, `noir`, `dawn`, `boardroom`, `neon`, `forest`, `glacier`, `sunset`, `paper`.
 
-### Slate
-
-Dark executive theme. Deep navy background (`#0f172a`) with blue (`#3b82f6`) and violet (`#8b5cf6`) accents. Best for board presentations, investor pitches, and financial reports.
-
-### Canvas
-
-Light minimal theme. Warm white background (`#fafaf9`) with charcoal (`#292524`) and amber (`#d97706`) accents. Best for strategy workshops, product reviews, and printed decks.
-
-### Signal
-
-Bold startup theme. Near-black background (`#020617`) with hot pink (`#e11d48`) and amber (`#f59e0b`) accents. Best for pitch decks, product launches, and conference talks.
-
----
-
-## Templates
-
-All 12 templates live in `packages/renderer/src/templates/`. Templates compose components into complete slide layouts.
-
-| Template | Purpose |
-|----------|---------|
-| `TitleHero` | Opening slide with headline and optional subheadline |
-| `Agenda` | Numbered list previewing the deck's structure |
-| `SectionDivider` | Transition marker between major sections |
-| `TwoColumnArgument` | Side-by-side comparison (pros/cons, before/after) |
-| `QuoteInsight` | Featured quote with attribution and context |
-| `StatGridSlide` | 2-4 key metrics displayed prominently |
-| `ImageCaption` | Full-width image with optional headline and caption |
-| `ComparisonTableSlide` | Multi-row comparison table with two options |
-| `TimelineSlide` | Chronological sequence of events or milestones |
-| `Roadmap` | Phased plan or sequential steps |
-| `RecommendationAsk` | Call to action or decision request |
-| `Appendix` | Supplementary references and data sources |
-
----
-
-## Components
-
-All 16 components live in `packages/components/`. Import from `@slidemason/components`.
-
-### Layout (7)
-
-| Component | Description |
-|-----------|-------------|
-| `Headline` | Large primary heading (`h1`) |
-| `Subheadline` | Secondary heading (`h2`), lighter weight |
-| `BulletGroup` | Unordered list with styled bullet markers |
-| `NumberedSteps` | Ordered list with numbered circle markers |
-| `TwoColumn` | Generic two-column layout accepting any content |
-| `ThreeCard` | Grid of exactly 3 content cards |
-| `SectionLabel` | Centered divider line with a label |
-
-### Data Display (9)
-
-| Component | Description |
-|-----------|-------------|
-| `StatCard` | Single statistic with large value and label |
-| `StatGrid` | Responsive grid of 2-4 stat cards |
-| `QuoteCallout` | Styled blockquote with optional attribution |
-| `ImagePanel` | Image display with optional caption |
-| `KPIStrip` | Compact horizontal row of key performance indicators |
-| `TimelineRow` | Single event in a vertical timeline |
-| `ComparisonMatrix` | Two-column comparison table with row labels |
-| `FooterMark` | Subtle footer text (confidentiality, branding) |
-| `PresenterNotes` | Hidden speaker notes for presenter view |
-
----
-
-## Agent Workflow
-
-Slidemason is designed to work with any AI coding agent. Here is the workflow:
-
-1. **Place source files** in `data/` (markdown, CSV, images, JSON).
-2. **Run `pnpm slidemason ingest`** to scan and inventory your files.
-3. **Tell your agent**: "Read `prompts/system.md` and follow the workflow."
-4. **The agent generates** `brief.json`, `outline.json`, and MDX slide files — each validated against Zod schemas.
-5. **Preview** with `pnpm dev` and iterate with your agent.
-6. **Export** with `pnpm slidemason export-pdf` or `pnpm slidemason export-static`.
-
-The `prompts/` directory contains detailed guides for each stage:
-
-| Prompt file | Guides the agent through |
-|-------------|-------------------------|
-| `system.md` | Project overview and conventions |
-| `ingest.md` | Reading and interpreting the manifest |
-| `build-brief.md` | Generating the presentation brief |
-| `build-outline.md` | Planning the narrative arc |
-| `build-deck.md` | Writing MDX slide files |
-| `refine-design.md` | Reviewing and improving the deck |
-| `components.md` | Component API reference |
-| `templates.md` | Template API reference |
-| `themes.md` | Theme selection and configuration |
+Each theme defines 31 CSS custom properties for backgrounds, text, accents, charts, status colors, shadows, and more. Set the theme in the brief and it is applied automatically.
 
 ---
 
@@ -220,9 +110,8 @@ The `prompts/` directory contains detailed guides for each stage:
 - **React 19** + **Vite 7** — Fast dev server with hot reload
 - **TypeScript 5.9** — End-to-end type safety
 - **Tailwind CSS v4** — Utility-first styling
-- **MDX** — Slides are Markdown + JSX, readable and diffable
-- **Zod** — Schema validation for every generated artifact
-- **citty** — Lightweight CLI framework
+- **Framer Motion** — Slide animations and transitions
+- **Lucide React** — Icons for visual anchors
 - **Playwright** — Headless browser for PDF export
 - **pnpm workspaces** — Monorepo package management
 
@@ -239,14 +128,8 @@ pnpm install
 # Run the dev server
 pnpm dev
 
-# Run tests
-pnpm test
-
 # Type-check
 pnpm typecheck
-
-# Lint
-pnpm lint
 ```
 
 Please open an issue before submitting large changes so we can discuss the approach.

@@ -2,7 +2,6 @@
   "files": [],
   "references": [
     { "path": "packages/core" },
-    { "path": "packages/components" },
     { "path": "packages/themes" },
     { "path": "packages/renderer" },
     { "path": "packages/cli" },

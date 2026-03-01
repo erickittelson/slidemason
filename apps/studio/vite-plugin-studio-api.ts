@@ -28,6 +28,14 @@ import Busboy from 'busboy';
 const MONO_ROOT = resolve(import.meta.dirname, '../..');
 const DECKS_DIR = resolve(MONO_ROOT, 'decks');
 
+/**
+ * Tracks file paths recently edited via the studio API.
+ * The HMR handler in vite.config.ts checks this to avoid
+ * triggering a full reload when the edit came from inline editing
+ * (the DOM already has the updated content).
+ */
+export const recentApiEdits = new Set<string>();
+
 /** Return all relevant paths for a given deck slug. */
 function deckPaths(slug: string) {
   const root = resolve(DECKS_DIR, slug);
@@ -189,7 +197,7 @@ async function handleListDecks(res: ServerResponse) {
     decks.push({ slug, title, theme, slideCount, lastModified });
   }
 
-  json(res, decks);
+  json(res, { decks });
 }
 
 async function handleCreateDeck(req: IncomingMessage, res: ServerResponse) {
@@ -220,10 +228,30 @@ async function handleCreateDeck(req: IncomingMessage, res: ServerResponse) {
   await writeFile(paths.brief, JSON.stringify(defaultBrief, null, 2), 'utf-8');
 
   // Placeholder slides.tsx
-  const placeholderSlides = `import { TitleSlide } from '@slidemason/components';
+  const placeholderSlides = `import { motion } from 'framer-motion';
+
+const fade = {
+  initial: { opacity: 0, y: 30 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] },
+};
 
 const slides = [
-  <TitleSlide key="title" title="${name.replace(/"/g, '\\"')}" subtitle="" gradient="blue-purple" />,
+  <div key="s1" className="flex flex-1 flex-col items-center justify-center text-center" style={{ padding: 'clamp(2rem, 5vw, 5rem)' }}>
+    <motion.h1
+      {...fade}
+      className="font-extrabold"
+      style={{
+        fontSize: 'clamp(3rem, 8vw, 6rem)',
+        background: 'linear-gradient(135deg, var(--sm-primary), var(--sm-secondary))',
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        lineHeight: 1.1,
+      }}
+    >
+      New Deck
+    </motion.h1>
+  </div>,
 ];
 
 export default slides;
@@ -372,6 +400,202 @@ async function handleStatus(slug: string, res: ServerResponse) {
   json(res, { hasFiles, hasBrief, hasDeck });
 }
 
+function escapeRegex(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+async function handleEditSlides(slug: string, req: IncomingMessage, res: ServerResponse) {
+  const paths = deckPaths(slug);
+  if (!(await exists(paths.slides))) {
+    json(res, { error: 'slides.tsx not found' }, 404);
+    return;
+  }
+
+  const body = await collectBody(req);
+  const { type, oldText, newText, oldValue, newValue, context, direction, elementText } = JSON.parse(
+    body.toString('utf-8'),
+  );
+
+  let content = await readFile(paths.slides, 'utf-8');
+
+  if (type === 'text' && oldText && newText) {
+    // Whitespace-flexible replacement: convert old text to a regex that
+    // matches regardless of whitespace differences between source and DOM
+    const words = oldText.split(/\s+/).filter(Boolean);
+    if (words.length > 0) {
+      const pattern = words.map((w: string) => escapeRegex(w)).join('\\s+');
+      const regex = new RegExp(pattern);
+      if (regex.test(content)) {
+        content = content.replace(regex, newText);
+      } else {
+        // Fallback: exact match
+        content = content.replace(oldText, newText);
+      }
+    }
+  } else if (type === 'color' && oldValue && newValue) {
+    if (context) {
+      // Find the context text to scope the replacement
+      const contextWords = context.split(/\s+/).filter(Boolean).slice(0, 5);
+      if (contextWords.length > 0) {
+        const contextPattern = contextWords.map((w: string) => escapeRegex(w)).join('\\s+');
+        const contextMatch = content.match(new RegExp(contextPattern));
+        if (contextMatch && contextMatch.index != null) {
+          // Replace oldValue with newValue only near the context
+          const start = Math.max(0, contextMatch.index - 300);
+          const end = Math.min(content.length, contextMatch.index + contextMatch[0].length + 300);
+          const section = content.substring(start, end);
+          const newSection = section.replace(oldValue, newValue);
+          content = content.substring(0, start) + newSection + content.substring(end);
+        }
+      }
+    } else {
+      // No context — replace first occurrence globally
+      content = content.replace(oldValue, newValue);
+    }
+  } else if (type === 'reorder' && elementText && direction) {
+    // Find lines containing the element text, then swap with adjacent sibling
+    const words = elementText.split(/\s+/).filter(Boolean).slice(0, 8);
+    if (words.length > 0) {
+      const pattern = words.map((w: string) => escapeRegex(w)).join('\\s+');
+      const match = content.match(new RegExp(pattern));
+      if (match && match.index != null) {
+        // Find enclosing JSX element by walking lines
+        const lines = content.split('\n');
+        const matchLineNum = content.substring(0, match.index).split('\n').length - 1;
+
+        // Walk up to find element start (opening tag line)
+        let startLine = matchLineNum;
+        for (let l = matchLineNum; l >= 0; l--) {
+          const trimmed = lines[l].trim();
+          if (trimmed.startsWith('<') && !trimmed.startsWith('</') && !trimmed.startsWith('{/*')) {
+            startLine = l;
+            break;
+          }
+        }
+
+        // Walk down to find element end (look for matching depth)
+        let endLine = matchLineNum;
+        let depth = 0;
+        for (let l = startLine; l < lines.length; l++) {
+          const line = lines[l];
+          // Count opening and closing tags
+          const opens = (line.match(/<[A-Za-z]/g) || []).length;
+          const closes = (line.match(/<\//g) || []).length;
+          const selfCloses = (line.match(/\/>/g) || []).length;
+          depth += opens - closes - selfCloses;
+          if (depth <= 0 && l > startLine) {
+            endLine = l;
+            break;
+          }
+          if (l === lines.length - 1) endLine = l;
+        }
+
+        // We'll do a simple line-block swap
+        const elementLines = lines.slice(startLine, endLine + 1);
+
+        if (direction === 'up' && startLine > 0) {
+          // Find previous sibling element
+          let prevEnd = startLine - 1;
+          while (prevEnd >= 0 && lines[prevEnd].trim() === '') prevEnd--;
+          if (prevEnd >= 0) {
+            let prevStart = prevEnd;
+            for (let l = prevEnd; l >= 0; l--) {
+              const trimmed = lines[l].trim();
+              if (trimmed.startsWith('<') && !trimmed.startsWith('</') && !trimmed.startsWith('{/*')) {
+                prevStart = l;
+                break;
+              }
+            }
+            const prevLines = lines.slice(prevStart, prevEnd + 1);
+            const newLines = [
+              ...lines.slice(0, prevStart),
+              ...elementLines,
+              ...prevLines,
+              ...lines.slice(endLine + 1),
+            ];
+            content = newLines.join('\n');
+          }
+        } else if (direction === 'down' && endLine < lines.length - 1) {
+          // Find next sibling element
+          let nextStart = endLine + 1;
+          while (nextStart < lines.length && lines[nextStart].trim() === '') nextStart++;
+          if (nextStart < lines.length) {
+            let nextEnd = nextStart;
+            let d = 0;
+            for (let l = nextStart; l < lines.length; l++) {
+              const line = lines[l];
+              const o = (line.match(/<[A-Za-z]/g) || []).length;
+              const c = (line.match(/<\//g) || []).length;
+              const sc = (line.match(/\/>/g) || []).length;
+              d += o - c - sc;
+              if (d <= 0 && l > nextStart) { nextEnd = l; break; }
+              if (l === lines.length - 1) nextEnd = l;
+            }
+            const nextLines = lines.slice(nextStart, nextEnd + 1);
+            const newLines = [
+              ...lines.slice(0, startLine),
+              ...nextLines,
+              ...elementLines,
+              ...lines.slice(nextEnd + 1),
+            ];
+            content = newLines.join('\n');
+          }
+        }
+      }
+    }
+  } else if (type === 'delete' && elementText) {
+    const words = elementText.split(/\s+/).filter(Boolean).slice(0, 8);
+    if (words.length > 0) {
+      const pattern = words.map((w: string) => escapeRegex(w)).join('\\s+');
+      const match = content.match(new RegExp(pattern));
+      if (match && match.index != null) {
+        const lines = content.split('\n');
+        const matchLineNum = content.substring(0, match.index).split('\n').length - 1;
+
+        // Walk up to find element start
+        let startLine = matchLineNum;
+        for (let l = matchLineNum; l >= 0; l--) {
+          const trimmed = lines[l].trim();
+          if (trimmed.startsWith('<') && !trimmed.startsWith('</') && !trimmed.startsWith('{/*')) {
+            startLine = l;
+            break;
+          }
+        }
+
+        // Walk down to find element end
+        let endLine = matchLineNum;
+        let depth = 0;
+        for (let l = startLine; l < lines.length; l++) {
+          const line = lines[l];
+          const opens = (line.match(/<[A-Za-z]/g) || []).length;
+          const closes = (line.match(/<\//g) || []).length;
+          const selfCloses = (line.match(/\/>/g) || []).length;
+          depth += opens - closes - selfCloses;
+          if (depth <= 0 && l > startLine) {
+            endLine = l;
+            break;
+          }
+          if (l === lines.length - 1) endLine = l;
+        }
+
+        // Remove the element lines (and trailing blank lines)
+        let removeEnd = endLine + 1;
+        while (removeEnd < lines.length && lines[removeEnd].trim() === '') removeEnd++;
+
+        lines.splice(startLine, removeEnd - startLine);
+        content = lines.join('\n');
+      }
+    }
+  }
+
+  // Mark as API edit so HMR handler skips the full reload
+  recentApiEdits.add(paths.slides);
+  setTimeout(() => recentApiEdits.delete(paths.slides), 2000);
+
+  await writeFile(paths.slides, content, 'utf-8');
+  json(res, { ok: true });
+}
+
 async function handleGetSlides(slug: string, res: ServerResponse) {
   const paths = deckPaths(slug);
   if (!(await exists(paths.slides))) {
@@ -490,8 +714,16 @@ export function studioApiPlugin(): Plugin {
             }
 
             // /__api/decks/:slug/slides
-            if (rest === '/slides' && method === 'GET') {
-              await handleGetSlides(slug, res);
+            if (rest === '/slides') {
+              if (method === 'GET') {
+                await handleGetSlides(slug, res);
+                return;
+              }
+            }
+
+            // /__api/decks/:slug/slides/edit
+            if (rest === '/slides/edit' && method === 'POST') {
+              await handleEditSlides(slug, req, res);
               return;
             }
           }

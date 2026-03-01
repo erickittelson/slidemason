@@ -4,6 +4,7 @@ import { useNavigation } from './useNavigation';
 interface DeckContextValue {
   currentSlide: number;
   slideCount: number;
+  direction: 1 | -1;
   goTo: (index: number) => void;
   next: () => void;
   prev: () => void;

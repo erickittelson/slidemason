@@ -1,0 +1,52 @@
+import type { ReactNode } from 'react';
+import { StaggerProvider } from './StaggerContext';
+
+type Layout = 'center' | 'split' | 'grid' | 'statement' | 'free';
+type Bg = 'none' | 'mesh';
+
+const PAD = 'clamp(2rem, 4vw, 4rem)';
+
+const layoutClasses: Record<Layout, string> = {
+  center: 'flex flex-1 flex-col items-center justify-center text-center',
+  split: 'flex flex-1',
+  grid: 'flex flex-1 flex-col',
+  statement: 'flex flex-1 flex-col items-center justify-center text-center',
+  free: 'flex flex-1 flex-col',
+};
+
+interface SlideProps {
+  children: ReactNode;
+  layout?: Layout;
+  bg?: Bg;
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+export function Slide({
+  children,
+  layout = 'free',
+  bg = 'none',
+  className = '',
+  style,
+}: SlideProps) {
+  return (
+    <StaggerProvider>
+      <div
+        className={`${layoutClasses[layout]} relative overflow-hidden ${className}`}
+        style={{ padding: PAD, ...style }}
+      >
+        {bg === 'mesh' && (
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                'radial-gradient(ellipse 70% 50% at 50% 55%, var(--sm-gradient-mesh-1), transparent)',
+              opacity: 0.12,
+            }}
+          />
+        )}
+        {children}
+      </div>
+    </StaggerProvider>
+  );
+}

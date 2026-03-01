@@ -10,9 +10,10 @@
   },
   "dependencies": {
     "@mdx-js/react": "^3.1.1",
-    "@slidemason/components": "workspace:*",
     "@slidemason/renderer": "workspace:*",
     "@slidemason/themes": "workspace:*",
+    "framer-motion": "^12.12.2",
+    "lucide-react": "^0.513.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
   },

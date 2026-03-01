@@ -1,7 +1,34 @@
-import { TitleSlide } from '@slidemason/components';
+import { motion } from 'framer-motion';
+
+const fade = {
+  initial: { opacity: 0, y: 30 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] as const },
+};
 
 const slides = [
-  <TitleSlide key="s1" title="Welcome to Slidemason" subtitle="Select a deck from the gallery to get started" gradient="blue-purple" />,
+  <div key="welcome" className="flex flex-1 flex-col items-center justify-center text-center" style={{ padding: 'clamp(2rem, 5vw, 5rem)' }}>
+    <motion.h1
+      {...fade}
+      className="font-extrabold"
+      style={{
+        fontSize: 'clamp(3rem, 8vw, 6rem)',
+        background: 'linear-gradient(135deg, var(--sm-primary), var(--sm-secondary))',
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        lineHeight: 1.1,
+      }}
+    >
+      Slidemason
+    </motion.h1>
+    <motion.p
+      {...fade}
+      transition={{ delay: 0.3, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      style={{ fontSize: 'clamp(1rem, 2.5vw, 1.5rem)', color: 'var(--sm-muted)', marginTop: 'clamp(0.5rem, 2vh, 1.5rem)' }}
+    >
+      Select a deck from the gallery to get started
+    </motion.p>
+  </div>,
 ];
 
 export default slides;

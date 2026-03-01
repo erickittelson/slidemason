@@ -1,0 +1,54 @@
+import { motion } from 'framer-motion';
+import { useStagger } from './StaggerContext';
+
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+interface StepProps {
+  n: number;
+  children: React.ReactNode;
+  active?: boolean;
+  style?: React.CSSProperties;
+}
+
+export function Step({ n, children, active = false, style }: StepProps) {
+  const i = useStagger();
+
+  return (
+    <motion.div
+      className="flex items-center"
+      style={{ gap: 'clamp(0.75rem,1.5vw,1.25rem)', position: 'relative', zIndex: 1, ...style }}
+      initial={{ opacity: 0, y: 25 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.1 * i, duration: 0.7, ease: EASE }}
+    >
+      <div
+        style={{
+          width: 'clamp(28px,3.5vw,40px)',
+          height: 'clamp(28px,3.5vw,40px)',
+          borderRadius: '50%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: active ? 'var(--sm-primary)' : 'var(--sm-surface)',
+          border: `2px solid ${active ? 'var(--sm-primary)' : 'var(--sm-border)'}`,
+          fontSize: 'clamp(0.65rem,1vw,0.8rem)',
+          fontWeight: 700,
+          color: active ? 'var(--sm-bg)' : 'var(--sm-muted)',
+          flexShrink: 0,
+        }}
+      >
+        {n}
+      </div>
+      <span
+        style={{
+          fontSize: 'clamp(0.8rem,1.3vw,1.05rem)',
+          color: 'var(--sm-text)',
+          lineHeight: 1.4,
+          fontWeight: active ? 600 : 400,
+        }}
+      >
+        {children}
+      </span>
+    </motion.div>
+  );
+}

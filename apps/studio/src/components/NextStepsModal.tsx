@@ -4,7 +4,7 @@ interface NextStepsModalProps {
   onClose: () => void;
 }
 
-const PROMPT_TEXT = `Read the brief at generated/brief.json and the source files in data/. Follow the instructions in CLAUDE.md to build the deck.`;
+const PROMPT_TEXT = `Read the brief at generated/brief.json and the source files in data/. Follow the design principles in CLAUDE.md to create cinematic, custom-designed slides. Each slide should be unique — bespoke layouts with Tailwind, Framer Motion animations, and Lucide icons.`;
 
 export function NextStepsModal({ onClose }: NextStepsModalProps) {
   const [copied, setCopied] = useState(false);

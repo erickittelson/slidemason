@@ -1,9 +1,8 @@
 @import "tailwindcss";
 
 /* Tell Tailwind to scan workspace packages for class names */
-@source "../../../packages/components/src";
 @source "../../../packages/renderer/src";
-@source "../../../packages/components/src/motion.css";
+@source "../../../decks";
 
 /* Import theme CSS files */
 @import "@slidemason/themes/slate.css";
@@ -18,7 +17,6 @@
 @import "@slidemason/themes/sunset.css";
 @import "@slidemason/themes/paper.css";
 @import "@slidemason/themes/midnight.css";
-@import "@slidemason/components/motion.css";
 
 /* Base styles */
 *, *::before, *::after {

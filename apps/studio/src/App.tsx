@@ -1,8 +1,24 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, ReactNode } from 'react';
 import { DeckProvider, SlideRenderer } from '@slidemason/renderer';
 import { getMode } from './lib/mode';
-import slides from './slides';
+import defaultSlides from './slides';
 import { applyFonts } from './lib/fonts';
+
+/* ── Dynamic deck slide loading via Vite glob ── */
+const deckModules = import.meta.glob<{ default: ReactNode[] }>(
+  '../../../decks/*/slides.tsx',
+  { eager: true },
+);
+
+function getDeckSlides(slug: string | null): ReactNode[] {
+  if (!slug) return defaultSlides;
+  for (const [path, mod] of Object.entries(deckModules)) {
+    if (path.includes(`/decks/${slug}/slides.tsx`)) {
+      return mod.default;
+    }
+  }
+  return defaultSlides;
+}
 import { Sidebar } from './components/Sidebar';
 import { CollapsibleSection } from './components/CollapsibleSection';
 import { FileUploadZone } from './components/FileUploadZone';
@@ -34,6 +50,9 @@ export function App() {
   const [showNextSteps, setShowNextSteps] = useState(false);
   const [openStep, setOpenStep] = useState(1); // which step is expanded (1-5, 0=none)
   const [stepError, setStepError] = useState('');
+
+  // Resolve slides for the active deck (or fallback to default)
+  const slides = getDeckSlides(activeDeck);
 
   // Listen for hash changes
   useEffect(() => {
@@ -251,7 +270,7 @@ export function App() {
         {showNextSteps && <NextStepsModal onClose={() => setShowNextSteps(false)} />}
         <main style={{ flex: 1, overflow: 'hidden' }}>
           <DeckProvider slideCount={slides.length} theme={theme}>
-            <SlideRenderer slides={slides} fullWidth={false} />
+            <SlideRenderer slides={slides} fullWidth={false} editable deckSlug={activeDeck} />
           </DeckProvider>
         </main>
       </div>
