@@ -22,7 +22,7 @@ export function Stack({ gap = 'md', align = 'stretch', style, className = '', ch
       style={{
         display: 'flex',
         flexDirection: 'column',
-        gap: gapSizes[gap],
+        gap: gapSizes[gap] ?? gapSizes['md'],
         alignItems: align,
         ...style,
       }}

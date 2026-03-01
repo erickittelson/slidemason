@@ -32,7 +32,7 @@ export function Card({
               borderRadius: 'var(--sm-radius)',
             }
           : {}),
-        padding: PADS[pad],
+        padding: PADS[pad] ?? PADS['md'],
         ...style,
       }}
     >

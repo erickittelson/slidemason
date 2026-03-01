@@ -22,7 +22,7 @@ export function Row({ gap = 'md', align = 'center', wrap = false, style, classNa
       style={{
         display: 'flex',
         flexDirection: 'row',
-        gap: gapSizes[gap],
+        gap: gapSizes[gap] ?? gapSizes['md'],
         alignItems: align,
         flexWrap: wrap ? 'wrap' : 'nowrap',
         ...style,

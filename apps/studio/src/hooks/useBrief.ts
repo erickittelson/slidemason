@@ -1,5 +1,16 @@
 import { useState, useEffect, useCallback } from 'react';
 
+export interface BrandingConfig {
+  logoFilename: string;
+  logoPlacement: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'none';
+  footerText: string;
+}
+
+export interface DeckImage {
+  filename: string;
+  description: string;
+}
+
 export interface Brief {
   title: string;
   subtitle: string;
@@ -16,6 +27,8 @@ export interface Brief {
   infoCutoff: string;
   fonts?: { heading: string; body: string };
   theme?: string;
+  branding?: BrandingConfig;
+  images?: DeckImage[];
 }
 
 const DEFAULT_BRIEF: Brief = {

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const THEMES = [
   { name: 'slate', bg: '#1e293b', primary: '#3b82f6' },
@@ -22,6 +22,13 @@ interface FloatingThemePickerProps {
 
 export function FloatingThemePicker({ activeTheme, onSelectTheme }: FloatingThemePickerProps) {
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [open]);
 
   return (
     <div style={{ position: 'fixed', bottom: '24px', left: '24px', zIndex: 50 }}>
@@ -72,6 +79,7 @@ export function FloatingThemePicker({ activeTheme, onSelectTheme }: FloatingThem
                 onSelectTheme(t.name);
                 setOpen(false);
               }}
+              aria-label={`${t.name} theme${activeTheme === t.name ? ' (active)' : ''}`}
               title={t.name}
               style={{
                 width: '100%',

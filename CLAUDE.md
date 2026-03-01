@@ -1,8 +1,9 @@
 # Slidemason — AI Agent Instructions
 
 > These instructions are for **any AI coding agent** (Claude Code, Cursor, GitHub Copilot, Windsurf, etc.)
-> working inside this repository. Read this file completely before generating or modifying
-> any presentation content.
+> working inside this repository. This file is symlinked to `.cursorrules`, `.windsurfrules`, and
+> `.github/copilot-instructions.md` so all platforms read the same source.
+> Read this file completely before generating or modifying any presentation content.
 
 ---
 
@@ -31,6 +32,12 @@ Read **every file** in `decks/<slug>/data/`. Synthesize key themes, metrics, dec
 ### Step 2: Read the Brief
 
 Read `decks/<slug>/generated/brief.json` for audience, goal, tone, theme, fonts, and constraints. The brief tells you **who** you are presenting to and **what** the deck should accomplish.
+
+### Step 2b: Check Branding & Images
+
+Read `brief.branding` for logo placement and footer text. If `branding.logoFilename` is set, the logo image is at `decks/<slug>/data/assets/<logoFilename>`. Place it on slides according to `branding.logoPlacement` (`top-left`, `top-right`, `bottom-left`, `bottom-right`, or `none`). If `branding.footerText` is set, include it as a subtle footer on each slide.
+
+Check `brief.images[]` for content images the user uploaded. Each entry has a `filename` (file in `decks/<slug>/data/assets/`) and a `description` explaining what it is and how the user wants it used. Reference images in slides using an `<img>` tag with `src` pointing to the asset path. Only use images the user uploaded — do not invent filenames.
 
 ### Step 3: Plan the Narrative Arc
 
@@ -103,6 +110,22 @@ export default slides;
 
 > **Key principle:** Nothing animates by default. Animation and interaction are narrative tools — use them to direct attention, build tension, or let the presenter control pacing.
 
+### Step 5: Validate the Deck
+
+After writing `slides.tsx`, validate that all slides render without errors:
+
+```bash
+curl http://localhost:4200/__api/decks/<slug>/validate
+```
+
+A successful response looks like `{ "valid": true, "slideCount": 15 }`. If any slide fails, the response includes an `errors` array with the slide index and error message. Fix the errors and re-validate.
+
+**Common validation failures:**
+- Invalid `ratio` on `<Split>` — the primitive falls back to `50/50`, but fix the source to use a valid value
+- Invalid `effect` on `<Animate>` or `<Stagger>` — falls back to `fade-up`
+- Missing required array props on `<Accordion>`, `<DataTable>`, `<Tabs>`, etc.
+- Using `framer-motion` features that don't work in SSR (avoid `useMotionValue` at module scope)
+
 ---
 
 ## Design Principles — FOLLOW THESE
@@ -126,6 +149,39 @@ export default slides;
 
 ---
 
+## Readability & Accessibility Rules
+
+Every slide must be readable at a glance. If a viewer has to squint, the slide has failed.
+
+### Minimum Font Sizes
+
+| Element | Minimum | Recommended | Example |
+|---|---|---|---|
+| Hero / title text | `clamp(2.5rem, 6vw, 5rem)` | `text-6xl` to `text-8xl` | Slide titles, section headers |
+| Body / content text | `clamp(1rem, 1.8vw, 1.5rem)` | `text-lg` to `text-xl` | Bullet points, descriptions |
+| Captions / labels | `clamp(0.75rem, 1.2vw, 1rem)` | `text-sm` to `text-base` | Badges, footnotes, presenter name |
+| Absolute minimum | `0.75rem` (12px) | — | Nothing on any slide may render below this |
+
+### Gradient Text Readability
+
+- **Both** gradient endpoint colors must have WCAG AA contrast (4.5:1) against the slide background.
+- Never gradient from a readable color to one that blends into the background (e.g. cyan → dark blue on a dark slide).
+- Test by imagining each color rendered as solid text — if either is unreadable, pick a different gradient.
+
+### Color Contrast
+
+- All text must pass WCAG AA contrast (4.5:1) against its immediate background.
+- `var(--sm-muted)` text must still be clearly readable — if it's not, use `var(--sm-text)` instead.
+- Text on glass cards (`var(--sm-glass-bg)`) must contrast against both the glass tint and whatever is behind it.
+
+### Footer & Attribution
+
+- Presenter name: use `<Text size="sm">` minimum, never raw inline styles with tiny font sizes.
+- Classification / footer text: `0.75rem` minimum, `var(--sm-muted)` color, never below 12px.
+- These elements should be small but comfortably readable, not microscopic.
+
+---
+
 ## Slide Primitives (`@slidemason/primitives`)
 
 When generating slides, **always use primitives** instead of raw `<div>` + inline styles. This dramatically reduces code size and ensures consistent theming.
@@ -146,6 +202,8 @@ When generating slides, **always use primitives** instead of raw `<div>` + inlin
 | `<Divider width?>` | Gradient horizontal rule | `<Divider />` |
 | `<Step n active?>` | Numbered step | `<Step n={1} active>First</Step>` |
 | `<Pipeline items>` | Horizontal process flow | `<Pipeline items={[{icon, label, sub}]} />` |
+| `<Chart type data>` | Bar/line/area/pie chart | `<Chart type="bar" data={[...]} series={['rev']} />` |
+| `<DataTable headers rows>` | Themed data table | `<DataTable headers={['Q','Rev']} rows={[['Q1','$2M']]} />` |
 
 ### Layout Atoms
 
@@ -200,6 +258,24 @@ When generating slides, **always use primitives** instead of raw `<div>` + inlin
 | `GradientText` | `"md"` \| `"lg"` \| `"hero"` \| `"stat"` |
 | `Card` pad | `"sm"` \| `"md"` \| `"lg"` |
 | `IconCircle` | `"sm"` \| `"md"` \| `"lg"` |
+| `Chart` type | `"bar"` \| `"line"` \| `"area"` \| `"pie"` |
+| `DataTable` | default \| `compact` |
+
+### Valid Constrained Props
+
+These props only accept specific values. Invalid values fall back to the default but should be fixed.
+
+| Component | Prop | Valid Values | Default |
+|---|---|---|---|
+| `Split` | `ratio` | `'35/65'` `'40/60'` `'50/50'` `'60/40'` `'65/35'` | `'35/65'` |
+| `Animate` | `effect` | `'fade-up'` `'fade-down'` `'fade-left'` `'fade-right'` `'scale'` `'blur-in'` `'slide-left'` `'slide-right'` | `'fade-up'` |
+| `Stagger` | `effect` | `'fade-up'` `'fade-down'` `'scale'` | `'fade-up'` |
+| `Slide` | `layout` | `'center'` `'split'` `'grid'` `'statement'` `'free'` | `'free'` |
+| `Slide` | `bg` | `'none'` `'mesh'` | `'none'` |
+| `Grid` | `gap` | `'sm'` `'md'` `'lg'` | `'md'` |
+| `Stack` | `gap` | `'xs'` `'sm'` `'md'` `'lg'` `'xl'` | `'md'` |
+| `Row` | `gap` | `'xs'` `'sm'` `'md'` `'lg'` | `'md'` |
+| `Spacer` | `size` | `'sm'` `'md'` `'lg'` `'xl'` | `'md'` |
 
 ### Rules for Primitives
 
@@ -279,6 +355,99 @@ function LiveTimer() {
   }, []);
   return <Heading>{seconds}s</Heading>;
 }
+```
+
+---
+
+## Research & Data-Heavy Decks
+
+Not every presentation follows a pitch narrative. Research, analysis, and status decks need a different structure and heavier use of data primitives.
+
+### Alternative Narrative Arc
+
+For research and data-driven decks, use this arc instead of the pitch framework:
+
+1. **Context** — Why this research matters now
+2. **Hypothesis** — What we set out to prove or discover
+3. **Data** — Key metrics and measurements (use `<Chart>` and `<DataTable>`)
+4. **Analysis** — What the data tells us (use `<StatBox>` for callout metrics)
+5. **Findings** — Conclusions drawn from the analysis
+6. **Implications** — What this means for the audience
+7. **Recommendations** — Concrete next steps
+
+### When to Use Each Data Primitive
+
+| Primitive | Best for | Example |
+|---|---|---|
+| `<Chart type="bar">` | Comparing categories | Revenue by region, feature usage counts |
+| `<Chart type="line">` | Showing trends over time | Monthly growth, performance over quarters |
+| `<Chart type="area">` | Cumulative trends | Total users, stacked revenue streams |
+| `<Chart type="pie">` | Part-of-whole breakdown | Market share, budget allocation |
+| `<DataTable>` | Exact comparisons | Feature matrices, quarterly metrics, pricing tiers |
+| `<StatBox>` | Single headline metric | "45% growth", "$2.3M ARR", "99.9% uptime" |
+| `<ProgressReveal>` | Single percentage | Completion rate, goal progress |
+
+### Data Density Rules
+
+- **Max 1 chart + 1 supporting element per slide** (e.g., chart + a row of StatBoxes)
+- **Max 1 table per slide** — tables need room to breathe
+- **Use `<Chart>` for trends and patterns**, `<DataTable>` for exact values and comparisons
+- **Follow a data-heavy slide with a breathing slide** — a key takeaway or implication slide
+- **Use `highlight` on DataTable rows** to draw attention to the most important data points
+
+### Chart Usage
+
+```tsx
+// Bar chart — comparing categories
+<Chart
+  type="bar"
+  data={[
+    { quarter: 'Q1', revenue: 2.1, costs: 1.4 },
+    { quarter: 'Q2', revenue: 3.2, costs: 1.8 },
+    { quarter: 'Q3', revenue: 4.1, costs: 2.0 },
+  ]}
+  xKey="quarter"
+  series={['revenue', 'costs']}
+/>
+
+// Line chart with axes — showing a trend
+<Chart type="line" data={monthlyData} xKey="month" series={['users']} showAxes />
+
+// Pie chart — part of whole
+<Chart
+  type="pie"
+  data={[
+    { label: 'Enterprise', value: 45 },
+    { label: 'SMB', value: 35 },
+    { label: 'Consumer', value: 20 },
+  ]}
+/>
+```
+
+### DataTable Usage
+
+```tsx
+// Simple comparison table
+<DataTable
+  headers={['Metric', 'Q1', 'Q2', 'Q3', 'Q4']}
+  rows={[
+    ['Revenue', '$2.1M', '$3.2M', '$4.1M', '$5.0M'],
+    ['Users', '12K', '28K', '45K', '67K'],
+    ['Churn', '4.2%', '3.1%', '2.8%', '2.1%'],
+  ]}
+  highlight={[0]}
+/>
+
+// Compact table for dense data
+<DataTable
+  headers={['Feature', 'Us', 'Competitor A', 'Competitor B']}
+  rows={[
+    ['API Access', 'Yes', 'Yes', 'No'],
+    ['SSO', 'Yes', 'Enterprise only', 'No'],
+    ['Custom Reports', 'Yes', 'No', 'Yes'],
+  ]}
+  compact
+/>
 ```
 
 ---

@@ -21,7 +21,7 @@ export function IconCircle({
   color = 'var(--sm-primary)',
   style,
 }: IconCircleProps) {
-  const s = SIZES[size];
+  const s = SIZES[size] ?? SIZES['md'];
 
   return (
     <div

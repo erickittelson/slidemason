@@ -85,6 +85,9 @@ export default defineConfig({
   server: {
     port: 4200,
   },
+  ssr: {
+    external: ['react', 'react-dom', 'framer-motion', 'lucide-react', 'recharts'],
+  },
   resolve: {
     conditions: ['source'],
     alias: {

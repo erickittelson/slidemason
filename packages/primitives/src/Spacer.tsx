@@ -15,7 +15,7 @@ export function Spacer({ size = 'md', style }: SpacerProps) {
     <div
       data-pptx-type="spacer"
       style={{
-        height: sizes[size],
+        height: sizes[size] ?? sizes['md'],
         flexShrink: 0,
         ...style,
       }}

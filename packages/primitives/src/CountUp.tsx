@@ -19,10 +19,11 @@ export function CountUp({
   prefix = '',
   suffix = '',
   duration = 2,
-  decimals = 0,
+  decimals: rawDecimals = 0,
   style,
   className = '',
 }: CountUpProps) {
+  const decimals = Math.max(0, Math.min(Math.floor(rawDecimals), 20));
   const pptx = isPptxMode();
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true });

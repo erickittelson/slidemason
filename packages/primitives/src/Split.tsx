@@ -23,7 +23,7 @@ export function Split({
   className = '',
   children,
 }: SplitProps) {
-  const [left, right] = ratioMap[ratio];
+  const [left, right] = ratioMap[ratio] ?? ratioMap['35/65'];
   return (
     <div
       data-pptx-type="split"

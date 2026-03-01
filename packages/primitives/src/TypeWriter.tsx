@@ -28,13 +28,14 @@ function injectStyle() {
 }
 
 export function TypeWriter({
-  text,
+  text: rawText,
   speed = 40,
   delay = 0,
   cursor = true,
   style,
   className = '',
 }: TypeWriterProps) {
+  const text = String(rawText ?? '');
   const pptx = isPptxMode();
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true });

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 
 interface AccordionItem {
   title: string;
@@ -13,17 +13,20 @@ interface AccordionProps {
 }
 
 export function Accordion({
-  items,
+  items = [],
   defaultOpen,
   style,
   className = '',
 }: AccordionProps) {
   const [openIndex, setOpenIndex] = useState<number | undefined>(defaultOpen);
+  const id = useId();
 
   return (
     <div className={className} style={{ display: 'flex', flexDirection: 'column', gap: 8, ...style }} data-pptx-type="passthrough">
       {items.map((item, i) => {
         const isOpen = openIndex === i;
+        const buttonId = `${id}-btn-${i}`;
+        const panelId = `${id}-panel-${i}`;
         return (
           <div
             key={i}
@@ -36,6 +39,9 @@ export function Accordion({
             }}
           >
             <button
+              id={buttonId}
+              aria-expanded={isOpen}
+              aria-controls={panelId}
               onClick={() => setOpenIndex(isOpen ? undefined : i)}
               style={{
                 width: '100%',
@@ -54,6 +60,7 @@ export function Accordion({
             >
               <span>{item.title}</span>
               <span
+                aria-hidden="true"
                 style={{
                   display: 'inline-block',
                   transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
@@ -64,6 +71,9 @@ export function Accordion({
               </span>
             </button>
             <div
+              id={panelId}
+              role="region"
+              aria-labelledby={buttonId}
               style={{
                 maxHeight: isOpen ? 1000 : 0,
                 opacity: isOpen ? 1 : 0,

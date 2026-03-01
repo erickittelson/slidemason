@@ -42,9 +42,11 @@ export function Tooltip({
       style={{ position: 'relative', display: 'inline-block', ...style }}
       onMouseEnter={() => setVisible(true)}
       onMouseLeave={() => setVisible(false)}
+      onFocus={() => setVisible(true)}
+      onBlur={() => setVisible(false)}
     >
       {children}
-      <div style={tooltipStyle}>{content}</div>
+      <div role="tooltip" style={tooltipStyle}>{content}</div>
     </div>
   );
 }

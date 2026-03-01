@@ -200,6 +200,7 @@ export function DeckGallery({ decks, loading, onOpen, onCreate, onDelete }: Deck
                           e.stopPropagation();
                           setMenuOpen(menuOpen === deck.slug ? null : deck.slug);
                         }}
+                        aria-label={`Menu for ${deck.slug}`}
                         style={{
                           background: 'none', border: 'none', color: '#71717a',
                           cursor: 'pointer', padding: '2px 4px', fontSize: '1.1rem',

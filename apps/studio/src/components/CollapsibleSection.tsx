@@ -19,6 +19,7 @@ export function CollapsibleSection({
     <div style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
       <button
         onClick={onToggle}
+        aria-expanded={open}
         style={{
           width: '100%', display: 'flex', alignItems: 'center', gap: '8px',
           padding: '10px 0', backgroundColor: 'transparent', border: 'none',

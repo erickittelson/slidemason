@@ -61,8 +61,8 @@ interface ChartProps {
 }
 
 export function Chart({
-  type,
-  data,
+  type = 'bar',
+  data = [],
   xKey = 'label',
   series: seriesProp,
   height = 300,

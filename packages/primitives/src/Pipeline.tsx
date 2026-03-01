@@ -11,7 +11,7 @@ interface PipelineProps {
   style?: React.CSSProperties;
 }
 
-export function Pipeline({ items, style }: PipelineProps) {
+export function Pipeline({ items = [], style }: PipelineProps) {
   return (
     <div
       data-pptx-type="pipeline"

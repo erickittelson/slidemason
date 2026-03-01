@@ -17,7 +17,7 @@ export const glacier: ThemeConfig = {
     gradientStart: '#0369a1',
     gradientEnd: '#6366f1',
     chart: ['#0369a1', '#0891b2', '#6366f1', '#d97706', '#16a34a', '#dc2626'],
-    glass: 'rgba(255,255,255,0.7)',
+    glass: 'rgba(224,242,254,0.8)',
   },
   typography: {
     headingFont: "'Inter', system-ui, sans-serif",

@@ -9,8 +9,8 @@ interface DataTableProps {
 }
 
 export function DataTable({
-  headers,
-  rows,
+  headers = [],
+  rows = [],
   highlight = [],
   compact = false,
   style,
@@ -68,9 +68,9 @@ export function DataTable({
                 style={{
                   borderBottom: ri < rows.length - 1 ? '1px solid var(--sm-border)' : undefined,
                   background: isHighlighted
-                    ? 'rgba(139,92,246,0.1)'
+                    ? 'color-mix(in srgb, var(--sm-primary) 10%, transparent)'
                     : ri % 2 === 1
-                      ? 'rgba(255,255,255,0.02)'
+                      ? 'color-mix(in srgb, var(--sm-text) 3%, transparent)'
                       : undefined,
                 }}
               >

@@ -27,6 +27,8 @@ export function HoverHighlight({
           key: i,
           onMouseEnter: () => setHoveredIndex(i),
           onMouseLeave: () => setHoveredIndex(null),
+          onFocus: () => setHoveredIndex(i),
+          onBlur: () => setHoveredIndex(null),
           style: {
             ...(typeof (child as React.ReactElement<Record<string, unknown>>).props.style === 'object'
               ? (child as React.ReactElement<Record<string, unknown>>).props.style as React.CSSProperties

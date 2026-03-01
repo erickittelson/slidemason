@@ -27,8 +27,9 @@ function readInitialSlide(max: number): number {
 }
 
 export function useNavigation(slideCount: number) {
+  const safeMax = Math.max(0, slideCount - 1);
   const [currentSlide, setCurrentSlide] = useState(() =>
-    readInitialSlide(slideCount - 1),
+    readInitialSlide(safeMax),
   );
   const prevSlideRef = useRef(currentSlide);
 
@@ -39,6 +40,19 @@ export function useNavigation(slideCount: number) {
   useEffect(() => {
     prevSlideRef.current = currentSlide;
   });
+
+  // When slideCount changes (e.g. async deck load), re-read ?slide=N from URL
+  // This handles the case where slides load after initial render
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const param = new URLSearchParams(window.location.search).get('slide');
+    if (param != null) {
+      const n = parseInt(param, 10);
+      if (!isNaN(n) && n >= 0 && n < slideCount) {
+        setCurrentSlide(n);
+      }
+    }
+  }, [slideCount]);
 
   // Persist current slide to sessionStorage
   useEffect(() => {
@@ -56,8 +70,8 @@ export function useNavigation(slideCount: number) {
   }, [slideCount]);
 
   const prev = useCallback(() => {
-    setCurrentSlide((prev) => Math.max(prev - 1, 0));
-  }, [slideCount]);
+    setCurrentSlide((cur) => Math.max(cur - 1, 0));
+  }, []);
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -79,11 +93,19 @@ export function useNavigation(slideCount: number) {
           e.preventDefault();
           prev();
           break;
+        case 'Home':
+          e.preventDefault();
+          goTo(0);
+          break;
+        case 'End':
+          e.preventDefault();
+          goTo(slideCount - 1);
+          break;
       }
     }
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [next, prev]);
+  }, [next, prev, goTo, slideCount]);
 
   return { currentSlide, direction, goTo, next, prev };
 }

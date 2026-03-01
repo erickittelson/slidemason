@@ -49,6 +49,8 @@ export function Spotlight({
             <button
               key={i}
               onClick={() => setActive(i)}
+              aria-label={`Show item ${i + 1}`}
+              aria-current={isActive ? 'true' : undefined}
               style={{
                 width: isActive ? 24 : 8,
                 height: 8,

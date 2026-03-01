@@ -25,6 +25,8 @@ interface ExportPptxOptions {
   slug: string;
   themeName: string;
   slideCount: number;
+  /** Override fonts from the deck brief (takes priority over theme fonts). */
+  fonts?: { heading?: string; body?: string };
 }
 
 /* ── Helpers ── */
@@ -118,6 +120,7 @@ function addElementToSlide(
   slide: PptxGenJS.Slide,
   el: ExtractedElement,
   theme: ThemeConfig,
+  fonts: { heading: string; body: string },
 ) {
   const x = pctToInchesX(el.x);
   const y = pctToInchesY(el.y);
@@ -130,7 +133,7 @@ function addElementToSlide(
       slide.addText(el.text, {
         x, y, w, h,
         fontSize: size,
-        fontFace: fontName(theme.typography.headingFont),
+        fontFace: fonts.heading,
         color: hex(theme.colors.text),
         bold: true,
         valign: 'middle',
@@ -144,7 +147,7 @@ function addElementToSlide(
       slide.addText(el.text, {
         x, y, w, h,
         fontSize: size,
-        fontFace: fontName(theme.typography.headingFont),
+        fontFace: fonts.heading,
         color: hex(theme.colors.primary),
         bold: true,
         valign: 'middle',
@@ -158,7 +161,7 @@ function addElementToSlide(
       slide.addText(el.text, {
         x, y, w, h,
         fontSize: TEXT_SIZES[el.attrs.size || 'md'] || 14,
-        fontFace: fontName(theme.typography.bodyFont),
+        fontFace: fonts.body,
         color: hex(isMuted ? theme.colors.muted : theme.colors.text),
         valign: 'top',
         wrap: true,
@@ -170,7 +173,7 @@ function addElementToSlide(
       slide.addText(el.text.toUpperCase(), {
         x, y, w, h,
         fontSize: 9,
-        fontFace: fontName(theme.typography.bodyFont),
+        fontFace: fonts.body,
         color: hex(theme.colors.muted),
         fill: { color: hex(theme.colors.surface) },
         line: { color: hex(theme.colors.border), width: 0.5 },
@@ -202,7 +205,7 @@ function addElementToSlide(
       slide.addText(val, {
         x, y: y + h * 0.15, w, h: h * 0.5,
         fontSize: 28,
-        fontFace: fontName(theme.typography.headingFont),
+        fontFace: fonts.heading,
         color: hex(theme.colors.text),
         bold: true,
         align: 'center',
@@ -212,7 +215,7 @@ function addElementToSlide(
         slide.addText(el.attrs.label.toUpperCase(), {
           x, y: y + h * 0.65, w, h: h * 0.25,
           fontSize: 9,
-          fontFace: fontName(theme.typography.bodyFont),
+          fontFace: fonts.body,
           color: hex(theme.colors.muted),
           align: 'center',
           valign: 'top',
@@ -257,7 +260,7 @@ function addElementToSlide(
       slide.addText(el.text, {
         x: x + circleSize + 0.1, y, w: w - circleSize - 0.1, h,
         fontSize: 12,
-        fontFace: fontName(theme.typography.bodyFont),
+        fontFace: fonts.body,
         color: hex(theme.colors.text),
         bold: isActive,
         valign: 'middle',
@@ -279,7 +282,7 @@ function addElementToSlide(
         slide.addText(`${el.attrs.label}  ${el.attrs.value || ''}%`, {
           x, y, w, h: h * 0.4,
           fontSize: 10,
-          fontFace: fontName(theme.typography.bodyFont),
+          fontFace: fonts.body,
           color: hex(theme.colors.text),
         });
       }
@@ -324,8 +327,16 @@ export async function exportPptx({
   slug,
   themeName,
   slideCount,
+  fonts: fontOverrides,
 }: ExportPptxOptions): Promise<Buffer> {
   const theme = getTheme(themeName);
+
+  // Brief fonts take priority over theme fonts
+  const resolvedFonts = {
+    heading: fontOverrides?.heading || fontName(theme.typography.headingFont),
+    body: fontOverrides?.body || fontName(theme.typography.bodyFont),
+  };
+
   const pptx = new PptxGenJS();
 
   pptx.defineLayout({ name: 'CUSTOM', width: 10, height: 5.625 });
@@ -334,27 +345,33 @@ export async function exportPptx({
   pptx.author = 'Slidemason';
 
   const browser = await chromium.launch();
-  const page = await browser.newPage();
-  await page.setViewportSize({ width: 1920, height: 1080 });
+  try {
+    const page = await browser.newPage();
+    await page.setViewportSize({ width: 1920, height: 1080 });
 
-  for (let i = 0; i < slideCount; i++) {
-    await page.goto(`${url}?print&pptx&slide=${i}#${slug}`, {
-      waitUntil: 'networkidle',
-    });
-    await page.waitForTimeout(500);
+    for (let i = 0; i < slideCount; i++) {
+      await page.goto(`${url}?print&pptx&slide=${i}#${slug}`, {
+        waitUntil: 'networkidle',
+      });
+      await page.waitForTimeout(500);
 
-    const extracted = await extractSlide(page);
+      const extracted = await extractSlide(page);
 
-    const slide = pptx.addSlide();
-    slide.background = { color: hex(theme.colors.background) };
+      const slide = pptx.addSlide();
+      slide.background = { color: hex(theme.colors.background) };
 
-    for (const el of extracted.elements) {
-      addElementToSlide(slide, el, theme);
+      for (const el of extracted.elements) {
+        // Skip empty/invisible elements (zero-size or no content)
+        if (el.w < 0.5 && el.h < 0.5) continue;
+        if (!el.text.trim() && !['card', 'divider', 'icon', 'colorbar', 'progress', 'pipeline'].includes(el.type)) continue;
+
+        addElementToSlide(slide, el, theme, resolvedFonts);
+      }
     }
+  } finally {
+    await browser.close();
   }
 
-  await browser.close();
-
   const output = await pptx.write({ outputType: 'nodebuffer' });
-  return output as Buffer;
+  return Buffer.from(output as Uint8Array);
 }

@@ -26,10 +26,11 @@ export function ClickReveal({
   }
 
   return (
-    <div
+    <button
       className={className}
       data-pptx-type="passthrough"
       onClick={() => setRevealed(true)}
+      aria-label={prompt}
       style={{
         border: '2px dashed var(--sm-border)',
         borderRadius: 'var(--sm-radius)',
@@ -40,10 +41,12 @@ export function ClickReveal({
         justifyContent: 'center',
         color: 'var(--sm-muted)',
         fontSize: '0.9rem',
+        background: 'none',
+        width: '100%',
         ...style,
       }}
     >
       {prompt}
-    </div>
+    </button>
   );
 }

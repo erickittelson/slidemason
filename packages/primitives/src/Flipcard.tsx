@@ -34,15 +34,20 @@ export function Flipcard({
   };
 
   return (
-    <div
+    <button
       className={className}
       data-pptx-type="passthrough"
       onClick={() => setFlipped(!flipped)}
+      aria-label={flipped ? 'Flip card to front' : 'Flip card to back'}
       style={{
         perspective: 1000,
         cursor: 'pointer',
         width,
         height,
+        background: 'none',
+        border: 'none',
+        padding: 0,
+        textAlign: 'inherit',
         ...style,
       }}
     >
@@ -67,6 +72,6 @@ export function Flipcard({
           {back}
         </div>
       </div>
-    </div>
+    </button>
   );
 }

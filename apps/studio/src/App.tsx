@@ -19,9 +19,11 @@ import { Sidebar } from './components/Sidebar';
 import { CollapsibleSection } from './components/CollapsibleSection';
 import { FileUploadZone } from './components/FileUploadZone';
 import { BriefForm } from './components/BriefForm';
+import { VisionInput } from './components/VisionInput';
 import { ThemePicker } from './components/ThemePicker';
 import { FontPicker } from './components/FontPicker';
-import { AssetLibrary } from './components/AssetLibrary';
+import { BrandingUpload } from './components/BrandingUpload';
+import { DeckImages } from './components/DeckImages';
 import { FloatingThemePicker } from './components/FloatingThemePicker';
 import { SlideThumbnails } from './components/SlideThumbnails';
 import { TableOfContents } from './components/TableOfContents';
@@ -29,6 +31,7 @@ import { NextStepsModal } from './components/NextStepsModal';
 import { DeckGallery } from './components/DeckGallery';
 import { useFiles } from './hooks/useFiles';
 import { useBrief } from './hooks/useBrief';
+import type { BrandingConfig, DeckImage } from './hooks/useBrief';
 import { useAssets } from './hooks/useAssets';
 import { useDecks } from './hooks/useDecks';
 
@@ -44,7 +47,8 @@ export function App() {
   const [headingFont, setHeadingFont] = useState('Inter');
   const [bodyFont, setBodyFont] = useState('Inter');
   const [showNextSteps, setShowNextSteps] = useState(false);
-  const [openStep, setOpenStep] = useState(1); // which step is expanded (1-5, 0=none)
+  const [openStep, setOpenStep] = useState(1); // which step is expanded (1-7, 0=none)
+  const [stepsCompleted, setStepsCompleted] = useState(0); // highest step advanced past
   const [stepError, setStepError] = useState('');
   const [slides, setSlides] = useState<ReactNode[]>(defaultSlides);
   const [exportingPptx, setExportingPptx] = useState(false);
@@ -128,6 +132,7 @@ export function App() {
       return;
     }
     setStepError('');
+    setStepsCompleted((prev) => Math.max(prev, fromStep));
     setOpenStep(fromStep + 1);
   };
 
@@ -156,30 +161,38 @@ export function App() {
     saveBrief({ theme: newTheme });
   };
 
-  const handleHeadingFontChange = (font: string) => {
-    setHeadingFont(font);
-    saveBrief({ fonts: { heading: font, body: bodyFont } });
-  };
-
-  const handleBodyFontChange = (font: string) => {
-    setBodyFont(font);
-    saveBrief({ fonts: { heading: headingFont, body: font } });
-  };
-
   const handleFontPairing = (heading: string, body: string) => {
     setHeadingFont(heading);
     setBodyFont(body);
     saveBrief({ fonts: { heading, body } });
   };
 
+  const handleBrandingChange = (branding: BrandingConfig) => {
+    setBrief({ ...brief, branding });
+    saveBrief({ branding });
+  };
+
+  const handleImagesChange = (images: DeckImage[]) => {
+    setBrief({ ...brief, images });
+    saveBrief({ images });
+  };
+
   const handleSaveAll = async () => {
-    await saveBrief({ theme, fonts: { heading: headingFont, body: bodyFont } });
-    setShowNextSteps(true);
+    try {
+      await saveBrief({ theme, fonts: { heading: headingFont, body: bodyFont } });
+      setShowNextSteps(true);
+    } catch {
+      // Brief save failed — don't show success modal
+    }
   };
 
   const handleCreateDeck = async (name: string) => {
-    const slug = await createDeck(name);
-    openDeck(slug);
+    try {
+      const slug = await createDeck(name);
+      openDeck(slug);
+    } catch {
+      // Deck creation failed
+    }
   };
 
 
@@ -250,37 +263,67 @@ export function App() {
           </CollapsibleSection>
 
           <CollapsibleSection
-            step={3} title="Theme"
-            open={openStep === 3} done={theme !== 'midnight'}
+            step={3} title="Your Vision"
+            open={openStep === 3}
+            done={stepsCompleted >= 3}
             onToggle={() => { setStepError(''); setOpenStep(openStep === 3 ? 0 : 3); }}
             onNext={() => handleNext(3)}
+          >
+            <VisionInput
+              value={brief.extraConstraints || ''}
+              onChange={(v) => setBrief({ ...brief, extraConstraints: v })}
+            />
+          </CollapsibleSection>
+
+          <CollapsibleSection
+            step={4} title="Theme"
+            open={openStep === 4} done={stepsCompleted >= 4}
+            onToggle={() => { setStepError(''); setOpenStep(openStep === 4 ? 0 : 4); }}
+            onNext={() => handleNext(4)}
           >
             <ThemePicker activeTheme={theme} onSelectTheme={handleThemeChange} />
           </CollapsibleSection>
 
           <CollapsibleSection
-            step={4} title="Fonts"
-            open={openStep === 4}
-            done={headingFont !== 'Inter' || bodyFont !== 'Inter'}
-            onToggle={() => { setStepError(''); setOpenStep(openStep === 4 ? 0 : 4); }}
-            onNext={() => handleNext(4)}
+            step={5} title="Fonts"
+            open={openStep === 5}
+            done={stepsCompleted >= 5}
+            onToggle={() => { setStepError(''); setOpenStep(openStep === 5 ? 0 : 5); }}
+            onNext={() => handleNext(5)}
           >
             <FontPicker
               headingFont={headingFont}
               bodyFont={bodyFont}
-              onChangeHeading={handleHeadingFontChange}
-              onChangeBody={handleBodyFontChange}
               onChangePairing={handleFontPairing}
             />
           </CollapsibleSection>
 
           <CollapsibleSection
-            step={5} title="Assets"
-            open={openStep === 5} done={assets.length > 0}
-            onToggle={() => { setStepError(''); setOpenStep(openStep === 5 ? 0 : 5); }}
+            step={6} title="Branding"
+            open={openStep === 6}
+            done={!!(brief.branding?.logoFilename || brief.branding?.footerText)}
+            onToggle={() => { setStepError(''); setOpenStep(openStep === 6 ? 0 : 6); }}
+            onNext={() => handleNext(6)}
           >
-            <AssetLibrary
+            <BrandingUpload
+              slug={activeDeck}
+              branding={brief.branding ?? { logoFilename: '', logoPlacement: 'top-right', footerText: '' }}
+              onChange={handleBrandingChange}
+              onUploadLogo={uploadAssets}
+            />
+          </CollapsibleSection>
+
+          <CollapsibleSection
+            step={7} title="Deck Images"
+            open={openStep === 7}
+            done={assets.length > 0}
+            onToggle={() => { setStepError(''); setOpenStep(openStep === 7 ? 0 : 7); }}
+          >
+            <DeckImages
+              slug={activeDeck}
               assets={assets}
+              images={brief.images ?? []}
+              onImagesChange={handleImagesChange}
               onUpload={uploadAssets}
               onRemove={removeAsset}
             />
@@ -334,7 +377,7 @@ export function App() {
           </div>
         </Sidebar>
 
-        {showNextSteps && <NextStepsModal onClose={() => setShowNextSteps(false)} />}
+        {showNextSteps && activeDeck && <NextStepsModal slug={activeDeck} onClose={() => setShowNextSteps(false)} />}
         <main style={{ flex: 1, overflow: 'hidden' }}>
           <DeckProvider slideCount={slides.length} theme={theme}>
             <SlideRenderer slides={slides} fullWidth={false} />

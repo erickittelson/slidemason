@@ -14,6 +14,9 @@
     "build": "tsc",
     "dev": "tsc --watch"
   },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "@slidemason/themes": "workspace:*",
     "pdf-lib": "^1.17.1",

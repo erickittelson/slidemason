@@ -23,10 +23,13 @@ export function FileUploadZone({ files, onUpload, onRemove }: FileUploadZoneProp
     <div>
       {/* Drop zone */}
       <div
+        role="button"
+        tabIndex={0}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onClick={() => inputRef.current?.click()}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); inputRef.current?.click(); } }}
         style={{
           border: `2px dashed ${dragging ? 'rgba(139,92,246,0.6)' : 'rgba(255,255,255,0.15)'}`,
           borderRadius: '8px',
@@ -67,6 +70,7 @@ export function FileUploadZone({ files, onUpload, onRemove }: FileUploadZoneProp
               </span>
               <button
                 onClick={() => onRemove(f.name)}
+                aria-label={`Remove ${f.name}`}
                 style={{ color: '#888', fontSize: '0.75rem', cursor: 'pointer', border: 'none', background: 'none', padding: '2px 4px' }}
               >
                 ✕

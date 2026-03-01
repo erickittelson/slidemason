@@ -28,13 +28,6 @@ import Busboy from 'busboy';
 const MONO_ROOT = resolve(import.meta.dirname, '../..');
 const DECKS_DIR = resolve(MONO_ROOT, 'decks');
 
-/**
- * Tracks file paths recently edited via the studio API.
- * The HMR handler in vite.config.ts checks this to avoid
- * triggering a full reload when the edit came from inline editing
- * (the DOM already has the updated content).
- */
-
 /** Return all relevant paths for a given deck slug. */
 function deckPaths(slug: string) {
   const root = resolve(DECKS_DIR, slug);
@@ -107,26 +100,21 @@ function mimeForExt(ext: string): string {
 /** Parse a multipart upload and return { filename, data } for the first file field. */
 function parseMultipart(
   req: IncomingMessage,
-): Promise<{ filename: string; data: Buffer }> {
+): Promise<{ filename: string; data: Buffer }[]> {
   return new Promise((resolve, reject) => {
     const bb = Busboy({ headers: req.headers });
-    let resolved = false;
+    const files: { filename: string; data: Buffer }[] = [];
 
     bb.on('file', (_fieldname, stream, info) => {
       const chunks: Buffer[] = [];
       stream.on('data', (c: Buffer) => chunks.push(c));
       stream.on('end', () => {
-        if (!resolved) {
-          resolved = true;
-          resolve({ filename: info.filename, data: Buffer.concat(chunks) });
-        }
+        files.push({ filename: info.filename, data: Buffer.concat(chunks) });
       });
     });
 
     bb.on('error', reject);
-    bb.on('close', () => {
-      if (!resolved) reject(new Error('No file field found in multipart body'));
-    });
+    bb.on('close', () => resolve(files));
 
     req.pipe(bb);
   });
@@ -178,7 +166,7 @@ async function handleListDecks(res: ServerResponse) {
     if (await exists(paths.slides)) {
       try {
         const content = await readFile(paths.slides, 'utf-8');
-        const matches = content.match(/key="/g);
+        const matches = content.match(/<Slide[\s\n]/g);
         slideCount = matches ? matches.length : 0;
       } catch {
         // ignore read errors
@@ -214,6 +202,13 @@ async function handleCreateDeck(req: IncomingMessage, res: ServerResponse) {
   }
 
   const paths = deckPaths(slug);
+
+  // Check for slug collision
+  if (await exists(paths.root)) {
+    json(res, { error: `Deck "${slug}" already exists` }, 409);
+    return;
+  }
+
   await ensureDir(paths.data);
   await ensureDir(paths.assets);
   await ensureDir(paths.generated);
@@ -287,10 +282,14 @@ async function handleListFiles(slug: string, res: ServerResponse) {
 async function handleUploadFile(slug: string, req: IncomingMessage, res: ServerResponse) {
   const paths = deckPaths(slug);
   await ensureDir(paths.data);
-  const { filename, data } = await parseMultipart(req);
-  const safe = sanitize(filename);
-  await writeFile(resolve(paths.data, safe), data);
-  json(res, { filename: safe }, 201);
+  const files = await parseMultipart(req);
+  const saved: string[] = [];
+  for (const { filename, data } of files) {
+    const safe = sanitize(filename);
+    await writeFile(resolve(paths.data, safe), data);
+    saved.push(safe);
+  }
+  json(res, { filenames: saved }, 201);
 }
 
 async function handleDeleteFile(slug: string, name: string, res: ServerResponse) {
@@ -338,10 +337,14 @@ async function handleListAssets(slug: string, res: ServerResponse) {
 async function handleUploadAsset(slug: string, req: IncomingMessage, res: ServerResponse) {
   const paths = deckPaths(slug);
   await ensureDir(paths.assets);
-  const { filename, data } = await parseMultipart(req);
-  const safe = sanitize(filename);
-  await writeFile(resolve(paths.assets, safe), data);
-  json(res, { filename: safe }, 201);
+  const files = await parseMultipart(req);
+  const saved: string[] = [];
+  for (const { filename, data } of files) {
+    const safe = sanitize(filename);
+    await writeFile(resolve(paths.assets, safe), data);
+    saved.push(safe);
+  }
+  json(res, { filenames: saved }, 201);
 }
 
 async function handleDeleteAsset(slug: string, name: string, res: ServerResponse) {
@@ -381,11 +384,11 @@ async function handleExportPptx(slug: string, res: ServerResponse, server: ViteD
   const briefData = JSON.parse(briefRaw);
   const themeName = briefData.theme || 'midnight';
 
-  // Count slides by matching key= attributes
+  // Count slides by matching top-level <Slide elements
   let slideCount = 0;
   if (await exists(paths.slides)) {
     const content = await readFile(paths.slides, 'utf-8');
-    const matches = content.match(/key="/g);
+    const matches = content.match(/<Slide[\s\n]/g);
     slideCount = matches ? matches.length : 0;
   }
 
@@ -399,14 +402,15 @@ async function handleExportPptx(slug: string, res: ServerResponse, server: ViteD
   const port = typeof address === 'object' && address ? address.port : 4200;
   const baseUrl = `http://localhost:${port}`;
 
-  // Dynamic import to avoid loading playwright at startup
-  const { exportPptx } = await import('@slidemason/export');
+  // Use Vite's SSR module loader — handles workspace packages and TS imports
+  const { exportPptx } = await server.ssrLoadModule(resolve(MONO_ROOT, 'packages/export/src/pptx.ts'));
 
   const buffer = await exportPptx({
     url: baseUrl,
     slug,
     themeName,
     slideCount,
+    fonts: briefData.fonts,
   });
 
   res.writeHead(200, {
@@ -426,6 +430,43 @@ async function handleGetSlides(slug: string, res: ServerResponse) {
   const content = await readFile(paths.slides, 'utf-8');
   res.writeHead(200, { 'Content-Type': 'text/plain' });
   res.end(content);
+}
+
+async function handleValidateDeck(slug: string, res: ServerResponse, server: ViteDevServer) {
+  const paths = deckPaths(slug);
+  if (!(await exists(paths.slides))) {
+    json(res, { valid: false, error: 'slides.tsx not found' }, 404);
+    return;
+  }
+
+  try {
+    const mod = await server.ssrLoadModule(paths.slides);
+    const slides = mod.default as import('react').ReactNode[];
+
+    if (!Array.isArray(slides) || slides.length === 0) {
+      json(res, { valid: false, error: 'No slides exported (expected default export of ReactNode[])' });
+      return;
+    }
+
+    const { renderToString } = await import('react-dom/server');
+    const errors: { index: number; error: string }[] = [];
+
+    for (let i = 0; i < slides.length; i++) {
+      try {
+        renderToString(slides[i] as any);
+      } catch (e: any) {
+        errors.push({ index: i, error: e.message });
+      }
+    }
+
+    if (errors.length === 0) {
+      json(res, { valid: true, slideCount: slides.length });
+    } else {
+      json(res, { valid: false, slideCount: slides.length, errors });
+    }
+  } catch (e: any) {
+    json(res, { valid: false, error: e.message }, 500);
+  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -542,11 +583,18 @@ export function studioApiPlugin(): Plugin {
               return;
             }
 
+            // /__api/decks/:slug/validate
+            if (rest === '/validate' && method === 'GET') {
+              await handleValidateDeck(slug, res, server);
+              return;
+            }
+
           }
 
           // Unknown /__api route
           json(res, { error: 'not found' }, 404);
         } catch (err: unknown) {
+          console.error('[studio-api] Error:', err);
           const message =
             err instanceof Error ? err.message : 'Internal server error';
           json(res, { error: message }, 500);

@@ -17,7 +17,7 @@ export const canvas: ThemeConfig = {
     gradientStart: '#292524',
     gradientEnd: '#d97706',
     chart: ['#292524', '#d97706', '#059669', '#dc2626', '#2563eb', '#7c3aed'],
-    glass: 'rgba(255,255,255,0.7)',
+    glass: 'rgba(245,245,244,0.85)',
   },
   typography: {
     headingFont: "'Inter', system-ui, sans-serif",

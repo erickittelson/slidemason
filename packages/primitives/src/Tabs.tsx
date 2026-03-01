@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 
 interface TabItem {
   label: string;
@@ -13,12 +13,13 @@ interface TabsProps {
 }
 
 export function Tabs({
-  items,
+  items = [],
   defaultIndex = 0,
   style,
   className = '',
 }: TabsProps) {
   const [activeIndex, setActiveIndex] = useState(defaultIndex);
+  const id = useId();
 
   const buttonBase: React.CSSProperties = {
     padding: '8px 16px',
@@ -34,12 +35,16 @@ export function Tabs({
 
   return (
     <div className={className} style={style} data-pptx-type="tabs">
-      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+      <div role="tablist" style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
         {items.map((item, i) => {
           const isActive = i === activeIndex;
           return (
             <button
               key={i}
+              role="tab"
+              id={`${id}-tab-${i}`}
+              aria-selected={isActive}
+              aria-controls={`${id}-panel-${i}`}
               onClick={() => setActiveIndex(i)}
               style={{
                 ...buttonBase,
@@ -53,7 +58,13 @@ export function Tabs({
           );
         })}
       </div>
-      <div>{items[activeIndex]?.content}</div>
+      <div
+        role="tabpanel"
+        id={`${id}-panel-${activeIndex}`}
+        aria-labelledby={`${id}-tab-${activeIndex}`}
+      >
+        {items[activeIndex]?.content}
+      </div>
     </div>
   );
 }

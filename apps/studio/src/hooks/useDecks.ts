@@ -30,6 +30,10 @@ export function useDecks() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name }),
     });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: 'Failed to create deck' }));
+      throw new Error(err.error || 'Failed to create deck');
+    }
     const data = await res.json();
     await refresh();
     return data.slug;

@@ -1,366 +1,678 @@
+// ─── SaberAlert MVP — Team Alignment Deck ───────────────────────
+// Narrative: Hook (north star) → Context → MVP definition → Architecture → Gates → Deliverables → Website → Ask
+//
+// Animation budget (4 of 15 slides):
+//   s1  — CountUp on "~5s" stat (lands the north star with impact)
+//   s4  — Stagger on 8 MVP lifecycle steps (sequential reveal)
+//   s7  — Animate the pipeline flow (signal → alert path)
+//   s12 — Scale entrance on Gate 3 payoff (climactic moment)
+//
+// Interaction budget (2 of 15 slides):
+//   s8  — Tabs for architecture layers (presenter drills into each team's stack)
+//   s13 — ClickReveal per team deliverable (presenter paces discussion)
+//
+// Branding: logo.avif top-right, footer "Confidential - DigitalSaber INC" on every slide
+// ─────────────────────────────────────────────────────────────────
+
 import {
   Slide, Heading, Text, Badge, Card, GradientText,
   GhostNumber, Divider, IconCircle, StatBox, Step, Pipeline,
+  Grid, Split, Stack, Row, Spacer, ColorBar,
+  Animate, CountUp, Stagger, ProgressReveal,
+  Tooltip, ClickReveal, Tabs,
 } from '@slidemason/primitives';
 import {
-  Radio, Brain, Bell, ShieldCheck, Wifi, Eye, Database, Smartphone,
-  Cpu, Server, Cloud, Filter, ThumbsUp, BellRing, CheckCircle2, Circle,
-  AlertCircle, Zap, Lock, Activity, Clock, Target, Rocket, Users, Home, Layers,
+  Radio, Wifi, Smartphone, Cloud, Brain, Bell,
+  ShieldCheck, Shield, Eye, Clock, Cpu, Database,
+  Server, Activity, Users, CheckCircle, Target,
+  ArrowRight, Zap, Lock, Settings, BarChart3,
+  Upload, Home, AlertTriangle, Fingerprint,
+  Globe, Rocket,
 } from 'lucide-react';
+import { motion } from 'framer-motion';
+
+/* ── Branding overlay — placed inside every <Slide> ──────────── */
+function Brand() {
+  return (
+    <>
+      {/* Logo — top right */}
+      <img
+        src="/__api/decks/saberalert-mvp/assets/logo.avif"
+        alt="DigitalSaber"
+        style={{
+          position: 'absolute', top: 'clamp(12px, 2vw, 24px)', right: 'clamp(12px, 2vw, 24px)',
+          height: 'clamp(20px, 3vw, 36px)', objectFit: 'contain', opacity: 0.7,
+          zIndex: 10, pointerEvents: 'none',
+        }}
+      />
+      {/* Footer */}
+      <span style={{
+        position: 'absolute', bottom: 'clamp(6px, 1vw, 14px)',
+        left: '50%', transform: 'translateX(-50%)',
+        fontSize: 'clamp(0.45rem, 0.8vw, 0.6rem)', color: 'var(--sm-muted)',
+        opacity: 0.35, letterSpacing: '0.05em', whiteSpace: 'nowrap',
+        zIndex: 10, pointerEvents: 'none',
+      }}>
+        Confidential — DigitalSaber INC
+      </span>
+    </>
+  );
+}
 
 const slides = [
-
-  /* ── 1. HERO ── */
+  // ── s1: HERO — North Star ──────────────────────────────────────
   <Slide key="s1" layout="center" bg="mesh">
-    <Badge>Digital Saber · Pre-Seed · MVP Strategy</Badge>
-    <GradientText size="hero" style={{ marginTop: 'clamp(1.5rem, 4vh, 2.5rem)' }}>SaberAlert</GradientText>
-    <Text style={{ fontSize: 'clamp(1.1rem, 2.5vw, 1.75rem)', color: 'var(--sm-success)', marginTop: 'clamp(1rem, 3vh, 2rem)', maxWidth: '28ch', lineHeight: 1.4, fontWeight: 300 }}>
-      Camera-free presence detection for the modern home
+    <Brand />
+    <Badge>Digital Saber · Pre-Seed · 2026</Badge>
+    <Spacer size="sm" />
+    <GradientText size="hero">SaberAlert</GradientText>
+    <Text muted style={{ maxWidth: '38ch', textAlign: 'center' }}>
+      Camera-free presence detection. Push notification in
     </Text>
-    <div className="flex gap-[clamp(1.5rem,3vw,2.5rem)]" style={{ marginTop: 'clamp(2rem, 5vh, 3.5rem)' }}>
-      {[
-        { icon: Radio, label: 'Passive' },
-        { icon: Brain, label: 'Learns' },
-        { icon: Bell, label: 'Alerts' },
-      ].map(({ icon, label }) => (
-        <div key={label} className="flex flex-col items-center gap-[clamp(0.3rem,0.6vh,0.5rem)]">
-          <IconCircle icon={icon} size="md" />
-          <span style={{ fontSize: 'clamp(0.6rem, 0.9vw, 0.75rem)', color: 'var(--sm-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</span>
-        </div>
-      ))}
-    </div>
+    <motion.div
+      initial={{ opacity: 0, scale: 0.6 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ type: 'spring', damping: 12, delay: 0.4 }}
+      style={{
+        fontSize: 'clamp(4rem, 10vw, 7rem)',
+        fontWeight: 800,
+        color: 'var(--sm-primary)',
+        lineHeight: 1,
+      }}
+    >
+      ~<CountUp to={5} duration={1.5} />s
+    </motion.div>
+    <Text muted size="sm" style={{ maxWidth: '42ch', textAlign: 'center' }}>
+      when an untrusted presence appears at your property — after
+      the system learns what "normal" looks like.
+    </Text>
+    <Spacer size="sm" />
+    <Text size="xs" style={{ color: 'var(--sm-muted)', opacity: 0.5 }}>
+      Presented by Eric Kittelson
+    </Text>
   </Slide>,
 
-  /* ── 2. NORTH STAR — Giant metric + manifesto ── */
-  <Slide key="s2" layout="split">
-    <div className="flex flex-col justify-center" style={{ flex: '0 0 45%' }}>
-      <Text size="xs" style={{ color: 'var(--sm-primary)', textTransform: 'uppercase', letterSpacing: '0.15em', fontWeight: 500, marginBottom: 'clamp(0.5rem, 1vh, 0.75rem)' }}>
-        North Star Outcome
-      </Text>
-      <GradientText size="stat" as="div" style={{ fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 0.85 }}>~5s</GradientText>
-      <Text muted style={{ fontSize: 'clamp(0.9rem, 1.5vw, 1.2rem)', marginTop: 'clamp(0.5rem, 1.5vh, 1rem)' }}>
-        from detection to notificrwerwation
-      </Text>
-    </div>
-    <div className="flex flex-col justify-center flex-1" style={{ paddingLeft: 'clamp(2rem, 4vw, 4rem)' }}>
-      <Card pad="lg" style={{ position: 'relative' }}>
-        <div style={{ position: 'absolute', top: 0, left: 0, width: 3, height: '100%', background: 'linear-gradient(180deg, var(--sm-primary), var(--sm-secondary))', borderRadius: 2 }} />
-        <Text style={{ fontSize: 'clamp(1rem, 1.8vw, 1.4rem)', lineHeight: 1.6, fontWeight: 400 }}>
-          A beta user receives a push notification within ~5 seconds when an untrusted presence appears at their property — after the system learns what "normal" looks like.
-        </Text>
-        <Text style={{ fontSize: 'clamp(0.8rem, 1.2vw, 1rem)', color: 'var(--sm-secondary)', marginTop: 'clamp(1rem, 2vh, 1.5rem)', fontStyle: 'italic', fontWeight: 500 }}>
-          If we can't do this end-to-end, we don't have a product.
-        </Text>
-      </Card>
-    </div>
-  </Slide>,
-
-  /* ── 3. WHAT IS SABERALERT — 2x2 card grid ── */
-  <Slide key="s3" layout="grid">
-    <Heading>What SaberAlert Is</Heading>
-    <Text muted style={{ marginBottom: 'clamp(1.5rem, 3vh, 2.5rem)', maxWidth: '50ch' }}>
-      No cameras. No subscriptions. Just invisible awareness.
-    </Text>
-    <div className="grid grid-cols-2 gap-[clamp(0.75rem,1.5vw,1.25rem)] flex-1">
-      {([
-        { icon: Radio, title: 'Passive Listening', desc: 'Hardware sniffs Wi-Fi + Bluetooth signals devices naturally emit — phones, cars, wearables, IoT', color: 'var(--sm-primary)' },
-        { icon: Brain, title: 'Pattern of Life', desc: 'Cloud learns the normal rhythm of each property — who belongs and what\'s baseline', color: 'var(--sm-secondary)' },
-        { icon: Bell, title: 'Instant Alerts', desc: 'Unfamiliar presence triggers a push notification to the homeowner\'s phone within seconds', color: 'var(--sm-accent)' },
-        { icon: ShieldCheck, title: 'Trust / Ignore', desc: 'One-tap feedback trains the system — each action shapes future alert behavior', color: 'var(--sm-success)' },
-      ] as const).map(({ icon: Icon, title, desc, color }) => (
-        <Card key={title} pad="md" className="flex flex-col justify-between">
-          <Icon size={40} style={{ color }} />
-          <div>
-            <Heading size="md" as="h3" style={{ marginTop: 'clamp(0.75rem, 1.5vh, 1rem)' }}>{title}</Heading>
-            <Text size="xs" muted style={{ marginTop: '0.5rem' }}>{desc}</Text>
-          </div>
+  // ── s2: CONTEXT — What SaberAlert Is ───────────────────────────
+  <Slide key="s2" layout="free">
+    <Brand />
+    <GhostNumber n="?" style={{ opacity: 0.03 }} />
+    <Stack gap="lg" style={{ maxWidth: '88%', margin: '0 auto', justifyContent: 'center', flex: 1 }}>
+      <Badge>The Product</Badge>
+      <Heading size="lg">What Is SaberAlert?</Heading>
+      <Divider />
+      <Split ratio="60/40">
+        <Stack gap="md">
+          {[
+            { icon: Radio, color: 'var(--sm-primary)', title: 'Passive Listening', desc: 'Hardware captures Wi-Fi + Bluetooth signals devices naturally emit — phones, cars, wearables, IoT.' },
+            { icon: Brain, color: 'var(--sm-secondary)', title: 'Pattern of Life', desc: 'Cloud system learns your property\'s "normal" — who belongs, who\'s a drive-by, what\'s routine.' },
+            { icon: Bell, color: 'var(--sm-accent)', title: 'Instant Alert', desc: 'When something new shows up, your phone buzzes. No cameras. No footage. Just awareness.' },
+          ].map(({ icon, color, title, desc }) => (
+            <Row key={title} gap="sm" align="start">
+              <IconCircle icon={icon} color={color} />
+              <Stack gap="xs">
+                <Text style={{ fontWeight: 600 }}>{title}</Text>
+                <Text muted size="sm">{desc}</Text>
+              </Stack>
+            </Row>
+          ))}
+        </Stack>
+        <Card pad="lg" style={{
+          display: 'flex', flexDirection: 'column', alignItems: 'center',
+          justifyContent: 'center', textAlign: 'center',
+        }}>
+          <motion.div
+            animate={{ rotate: [0, 5, -5, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <Eye size={64} style={{ color: 'var(--sm-primary)', opacity: 0.7, marginBottom: '0.75rem' }} />
+          </motion.div>
+          <Heading size="md">No Cameras</Heading>
+          <Text muted size="sm" style={{ maxWidth: '24ch' }}>
+            Privacy-first presence detection using RF signals only
+          </Text>
         </Card>
-      ))}
-    </div>
+      </Split>
+    </Stack>
   </Slide>,
 
-  /* ── 4. MVP LIFECYCLE — Numbered steps with connector ── */
-  <Slide key="s4" layout="split">
-    <div className="flex flex-col justify-center" style={{ flex: '0 0 35%', paddingRight: 'clamp(1.5rem, 3vw, 3rem)' }}>
-      <Heading>MVP =<br />Full Lifecycle</Heading>
-      <Text muted style={{ marginTop: 'clamp(0.75rem, 1.5vh, 1rem)' }}>
-        Eight steps from download to action. Every one must work end-to-end.
+  // ── s3: STATEMENT — The Line in the Sand ───────────────────────
+  <Slide key="s3" layout="statement" bg="mesh">
+    <Brand />
+    <Stack gap="lg" align="center">
+      <IconCircle icon={Target} size="lg" active color="var(--sm-primary)" />
+      <Heading size="lg" style={{ maxWidth: '22ch', textAlign: 'center' }}>
+        If we can't do that end-to-end, we don't have a product.
+      </Heading>
+      <Divider width="clamp(4rem, 8vw, 6rem)" />
+      <Text muted style={{ maxWidth: '44ch', textAlign: 'center' }}>
+        Ship hardware. Provision. Learn. Alert.
+        That's the full lifecycle — and every piece has to work.
       </Text>
-      <Divider style={{ marginTop: 'clamp(1.25rem, 2.5vh, 2rem)' }} />
-    </div>
-    <div className="flex flex-col justify-center flex-1 relative">
-      <div className="absolute" style={{ left: 'clamp(14px,1.8vw,20px)', top: 'clamp(14px,1.8vw,20px)', bottom: 'clamp(14px,1.8vw,20px)', width: 2, background: 'var(--sm-border)' }} />
-      {[
-        'Download app & create account',
-        'Provision hardware to Wi-Fi',
-        'Link device to property',
-        'Stream telemetry to cloud',
-        'Learn baseline pattern of life',
-        'Trigger "new presence" event',
-        'Push notification to phone',
-        'User acts: Trust or Ignore',
-      ].map((text, i) => (
-        <Step key={i} n={i + 1} active={i === 7} style={{ marginBottom: i < 7 ? 'clamp(0.35rem, 0.8vh, 0.5rem)' : 0 }}>
-          {text}
-        </Step>
-      ))}
-    </div>
+    </Stack>
   </Slide>,
 
-  /* ── 5. DETECTION PIPELINE — Horizontal nodes ── */
-  <Slide key="s5" layout="center">
-    <Heading>How Detection Works</Heading>
-    <Text muted style={{ marginBottom: 'clamp(3rem, 6vh, 4rem)' }}>
-      Ship hardware → provision → learn → alert
+  // ── s4: MVP LIFECYCLE — The 8 Steps (staggered) ───────────────
+  <Slide key="s4" layout="free">
+    <Brand />
+    <GhostNumber n={8} />
+    <Stack gap="md" style={{ maxWidth: '78%', margin: '0 auto', justifyContent: 'center', flex: 1 }}>
+      <Badge>MVP Definition</Badge>
+      <Heading size="lg">Full Lifecycle Works</Heading>
+      <Spacer size="sm" />
+      <Stagger interval={0.12} effect="fade-up">
+        <Step n={1} active>User downloads mobile app and creates account</Step>
+        <Step n={2}>User provisions hardware to Wi-Fi and links to account</Step>
+        <Step n={3}>Device streams telemetry reliably to cloud</Step>
+        <Step n={4}>System learns baseline — "pattern of life"</Step>
+        <Step n={5}>System triggers "new presence detected" event</Step>
+        <Step n={6} active>User receives push notification reliably</Step>
+        <Step n={7}>User can Trust / Ignore — action affects future alerts</Step>
+        <Step n={8}>Gateway OTA updates for post-ship iteration</Step>
+      </Stagger>
+    </Stack>
+  </Slide>,
+
+  // ── s5: NOT MVP — Scope Discipline ─────────────────────────────
+  <Slide key="s5" layout="free">
+    <Brand />
+    <Stack gap="lg" style={{ maxWidth: '88%', margin: '0 auto', justifyContent: 'center', flex: 1 }}>
+      <Badge>Scope Discipline</Badge>
+      <Heading size="lg">What We're Not Building</Heading>
+      <Divider />
+      <Grid cols={3} gap="md">
+        {[
+          { icon: Fingerprint, label: 'Persona Modeling', desc: 'No identity profiling' },
+          { icon: AlertTriangle, label: 'Stalker Scoring', desc: 'No threat levels' },
+          { icon: BarChart3, label: 'Advanced Dashboards', desc: 'No analytics views' },
+          { icon: Settings, label: 'Perfect UI Polish', desc: 'Functional over beautiful' },
+          { icon: Home, label: 'Multi-Property', desc: 'One property per user' },
+          { icon: Activity, label: 'Raw MACs / RSSI', desc: 'No raw signal data exposed' },
+        ].map(({ icon: Icon, label, desc }) => (
+          <Card key={label} pad="sm" style={{ position: 'relative', overflow: 'hidden' }}>
+            <ColorBar color="var(--sm-danger)" position="left" thickness={3} />
+            <Stack gap="xs" style={{ paddingLeft: '0.75rem' }}>
+              <Row gap="sm">
+                <Icon size={18} style={{ color: 'var(--sm-danger)', flexShrink: 0 }} />
+                <Text style={{ fontWeight: 600 }}>{label}</Text>
+              </Row>
+              <Text muted size="sm">{desc}</Text>
+            </Stack>
+          </Card>
+        ))}
+      </Grid>
+      <Text muted size="sm" style={{ textAlign: 'center', fontStyle: 'italic' }}>
+        Post-MVP intelligence layer — not required to validate the core.
+      </Text>
+    </Stack>
+  </Slide>,
+
+  // ── s6: SECTION BREAK — Architecture ───────────────────────────
+  <Slide key="s6" layout="center" bg="mesh">
+    <Brand />
+    <GhostNumber n={6} style={{ opacity: 0.03, left: 'clamp(1rem, 3vw, 2rem)', right: 'auto' }} />
+    <Badge>Platform</Badge>
+    <Spacer size="sm" />
+    <Heading size="hero" style={{ fontSize: 'clamp(3.5rem, 8vw, 6rem)' }}>
+      Tech Stack
+    </Heading>
+    <Spacer size="sm" />
+    <Text muted style={{ maxWidth: '42ch', textAlign: 'center' }}>
+      Hardware, cloud, real-time brain, storage, and mobile — how each piece connects.
     </Text>
-    <Pipeline items={[
-      { icon: Wifi, label: 'Sniffers', sub: 'Wi-Fi + BLE capture' },
-      { icon: Layers, label: 'Gateway', sub: 'Aggregates & forwards' },
-      { icon: Zap, label: 'EMQX', sub: 'MQTT routing' },
-      { icon: Eye, label: 'Watcher', sub: 'Real-time analysis' },
-      { icon: BellRing, label: 'Alert', sub: 'Push to phone' },
-    ]} />
-    <Card pad="sm" className="flex items-center gap-3" style={{ marginTop: 'clamp(2.5rem,5vh,3.5rem)' }}>
-      <Clock size={18} style={{ color: 'var(--sm-accent)' }} />
-      <Text size="sm" style={{ lineHeight: 1.3 }}>
-        End-to-end target: <strong style={{ color: 'var(--sm-primary)' }}>~5 seconds</strong>
-      </Text>
-    </Card>
   </Slide>,
 
-  /* ── 6. SECTION BREAK — Platform (ghost 01) ── */
-  <Slide key="s6" layout="center">
-    <GhostNumber n="01" style={{ color: 'var(--sm-primary)', left: '50%', right: 'auto', transform: 'translate(-50%, -50%)', fontSize: 'clamp(12rem,30vw,22rem)' }} />
-    <Heading style={{ fontSize: 'clamp(3rem,7vw,5rem)' }}>Platform</Heading>
-    <Text muted style={{ fontSize: 'clamp(1rem,1.8vw,1.35rem)', fontWeight: 300 }}>Six layers from edge to experience</Text>
-    <Divider width="clamp(3rem,8vw,5rem)" />
+  // ── s7: DATA PIPELINE — Animated Flow ──────────────────────────
+  <Slide key="s7" layout="free">
+    <Brand />
+    <Stack gap="lg" align="center" style={{ justifyContent: 'center', flex: 1 }}>
+      <Badge>Telemetry Pipeline</Badge>
+      <Heading size="lg">From Signal to Alert</Heading>
+      <Spacer size="sm" />
+      <Animate effect="fade-up" duration={0.8}>
+        <Pipeline items={[
+          { icon: Radio, label: 'Sniffer', sub: 'Wi-Fi + BLE' },
+          { icon: Cpu, label: 'Gateway', sub: 'ESP32' },
+          { icon: Server, label: 'EMQX', sub: 'MQTT Broker' },
+          { icon: Brain, label: 'Watcher', sub: 'Python' },
+          { icon: Bell, label: 'Alert', sub: '~5 seconds' },
+        ]} />
+      </Animate>
+      <Spacer size="sm" />
+      <Row gap="lg" style={{ justifyContent: 'center' }}>
+        <Tooltip content="Fast buffer for clustering + fingerprinting. Enables sub-second decisions.">
+          <Card pad="sm">
+            <Row gap="sm">
+              <Zap size={16} style={{ color: 'var(--sm-accent)' }} />
+              <Text size="sm">Redis — sub-second state</Text>
+            </Row>
+          </Card>
+        </Tooltip>
+        <Tooltip content="System of record: events, aggregates, users, properties, devices, alerts.">
+          <Card pad="sm">
+            <Row gap="sm">
+              <Database size={16} style={{ color: 'var(--sm-chart-3)' }} />
+              <Text size="sm">Postgres — durable store</Text>
+            </Row>
+          </Card>
+        </Tooltip>
+      </Row>
+    </Stack>
   </Slide>,
 
-  /* ── 7. ARCHITECTURE — 3x3 grid ── */
-  <Slide key="s7" layout="grid" style={{ padding: 'clamp(1.5rem, 3vw, 3rem)' }}>
-    <Heading style={{ fontSize: 'clamp(2rem,4vw,3rem)' }}>System Architecture</Heading>
-    <Text muted size="sm" style={{ marginTop: '0.35rem', marginBottom: 'clamp(1.25rem,2.5vh,2rem)' }}>Every layer has a clear owner and boundary</Text>
-    <div className="grid grid-cols-3 gap-[clamp(0.5rem,1vw,0.75rem)] flex-1" style={{ gridTemplateRows: 'repeat(3, 1fr)' }}>
-      {([
-        { icon: Wifi, label: 'ESP32 Sniffers + Gateway', desc: 'Capture Wi-Fi/BLE, forward via MQTT', color: '--sm-chart-1', span: 2 },
-        { icon: Lock, label: 'AWS IoT Core', desc: 'Certs, shadows, OTA', color: '--sm-chart-2' },
-        { icon: Zap, label: 'EMQX Broker', desc: 'High-vol MQTT routing', color: '--sm-chart-3' },
-        { icon: Eye, label: 'Python Watcher', desc: 'Real-time brain', color: '--sm-chart-4' },
-        { icon: Database, label: 'Redis', desc: 'Sub-second state store', color: '--sm-chart-5' },
-        { icon: Server, label: 'Neon Postgres', desc: 'System of record', color: '--sm-chart-6' },
-        { icon: Cloud, label: 'Backend API', desc: 'Auth, linking, alerts', color: '--sm-chart-1' },
-        { icon: Smartphone, label: 'Mobile App', desc: 'Setup + alerts + actions', color: '--sm-chart-2' },
-      ] as { icon: typeof Wifi; label: string; desc: string; color: string; span?: number }[]).map(({ icon: Icon, label, desc, color, span }) => (
-        <Card key={label} pad="sm" className="flex items-center" style={{ gap: 'clamp(0.5rem,1vw,0.75rem)', gridColumn: span ? `span ${span}` : undefined }}>
-          <Icon size={span ? 22 : 20} style={{ color: `var(${color})`, flexShrink: 0 }} />
-          <div>
-            <span className="font-semibold" style={{ fontSize: `clamp(${span ? '0.85rem' : '0.75rem'}, ${span ? '1.3vw' : '1.1vw'}, ${span ? '1.05rem' : '0.9rem'})`, color: 'var(--sm-text)' }}>{label}</span>
-            <p style={{ fontSize: 'clamp(0.55rem,0.8vw,0.7rem)', color: 'var(--sm-muted)', marginTop: '0.1rem' }}>{desc}</p>
-          </div>
-        </Card>
-      ))}
-    </div>
-  </Slide>,
-
-  /* ── 8. DATA FLOW — Vertical cascade with color bars ── */
+  // ── s8: ARCHITECTURE — Tabbed Layers ───────────────────────────
   <Slide key="s8" layout="free">
-    <div className="flex items-end justify-between" style={{ marginBottom: 'clamp(2rem,4vh,3rem)' }}>
-      <div>
-        <Heading style={{ fontSize: 'clamp(2rem,4vw,3rem)' }}>Telemetry Path</Heading>
-        <Text muted size="sm" style={{ marginTop: '0.35rem' }}>From radio capture to user action</Text>
-      </div>
-      <Card pad="sm" className="flex items-center gap-2">
-        <Activity size={16} style={{ color: 'var(--sm-accent)' }} />
-        <Text size="xs" style={{ color: 'var(--sm-danger)' }}>Real-time pipeline</Text>
-      </Card>
-    </div>
-    <div className="flex flex-col gap-[clamp(0.4rem,0.8vh,0.6rem)] flex-1 justify-center">
-      {([
-        { icon: Wifi, label: 'Wi-Fi / BLE Sniffers', desc: 'Capture probe requests and BLE advertisements from nearby devices', color: '--sm-chart-1' },
-        { icon: Layers, label: 'ESP32 Gateway', desc: 'Aggregates sniffer data, forwards upstream via MQTT with reconnect logic', color: '--sm-chart-2' },
-        { icon: Zap, label: 'EMQX Broker', desc: 'High-volume MQTT routing to consumers — Watcher and rules engine', color: '--sm-chart-3' },
-        { icon: Eye, label: 'Python Watcher + Redis', desc: 'Normalizes, clusters, fingerprints — decides in sub-seconds whether to alert', color: '--sm-chart-4' },
-        { icon: BellRing, label: 'Alert → Push Notification', desc: 'New/untrusted presence creates event → queues push → phone buzzes', color: '--sm-primary' },
-      ] as const).map(({ icon: Icon, label, desc, color }) => (
-        <div key={label} className="flex items-stretch gap-[clamp(0.5rem,1vw,0.75rem)]">
-          <div style={{ width: 4, borderRadius: 2, background: `var(${color})`, flexShrink: 0 }} />
-          <Card pad="sm" className="flex items-center flex-1" style={{ gap: 'clamp(0.75rem,1.5vw,1rem)' }}>
-            <Icon size={22} style={{ color: `var(${color})`, flexShrink: 0 }} />
-            <div>
-              <span className="font-semibold" style={{ fontSize: 'clamp(0.8rem,1.3vw,1rem)', color: 'var(--sm-text)' }}>{label}</span>
-              <p style={{ fontSize: 'clamp(0.6rem,0.9vw,0.78rem)', color: 'var(--sm-muted)', marginTop: '0.15rem', lineHeight: 1.4 }}>{desc}</p>
-            </div>
-          </Card>
-        </div>
-      ))}
-    </div>
+    <Brand />
+    <Stack gap="md" style={{ maxWidth: '92%', margin: '0 auto', justifyContent: 'center', flex: 1 }}>
+      <Badge>Platform Components</Badge>
+      <Heading size="lg">Architecture by Layer</Heading>
+      <Tabs items={[
+        {
+          label: 'Hardware',
+          content: (
+            <Grid cols={2} gap="md">
+              <Card pad="md">
+                <Row gap="sm" align="start">
+                  <IconCircle icon={Radio} color="var(--sm-chart-1)" />
+                  <Stack gap="xs">
+                    <Text style={{ fontWeight: 600 }}>ESP32 Sniffers (2x)</Text>
+                    <Text muted size="sm">Capture nearby Wi-Fi + BLE broadcasts. The telemetry source for the entire system.</Text>
+                  </Stack>
+                </Row>
+              </Card>
+              <Card pad="md">
+                <Row gap="sm" align="start">
+                  <IconCircle icon={Cpu} color="var(--sm-chart-2)" />
+                  <Stack gap="xs">
+                    <Text style={{ fontWeight: 600 }}>ESP32 Gateway (1x)</Text>
+                    <Text muted size="sm">Forwards telemetry upstream. Supports OTA updates so we can iterate after shipping boards.</Text>
+                  </Stack>
+                </Row>
+              </Card>
+            </Grid>
+          ),
+        },
+        {
+          label: 'Cloud',
+          content: (
+            <Grid cols={2} gap="md">
+              <Card pad="md">
+                <Row gap="sm" align="start">
+                  <IconCircle icon={Cloud} color="var(--sm-chart-3)" />
+                  <Stack gap="xs">
+                    <Text style={{ fontWeight: 600 }}>AWS IoT Core</Text>
+                    <Text muted size="sm">Secure device identity, provisioning metadata, online/offline shadows, OTA workflow.</Text>
+                  </Stack>
+                </Row>
+              </Card>
+              <Card pad="md">
+                <Row gap="sm" align="start">
+                  <IconCircle icon={Server} color="var(--sm-chart-4)" />
+                  <Stack gap="xs">
+                    <Text style={{ fontWeight: 600 }}>EMQX (MQTT Broker)</Text>
+                    <Text muted size="sm">Receives device telemetry at high volume. Routes to Watcher and rule consumers.</Text>
+                  </Stack>
+                </Row>
+              </Card>
+            </Grid>
+          ),
+        },
+        {
+          label: 'Brain',
+          content: (
+            <Grid cols={2} gap="md">
+              <Card pad="md">
+                <Row gap="sm" align="start">
+                  <IconCircle icon={Brain} color="var(--sm-chart-5)" />
+                  <Stack gap="xs">
+                    <Text style={{ fontWeight: 600 }}>MQTT Watcher (Python)</Text>
+                    <Text muted size="sm">Subscribes, normalizes, analyzes in near real-time. Writes events and aggregates to Postgres.</Text>
+                  </Stack>
+                </Row>
+              </Card>
+              <Card pad="md">
+                <Row gap="sm" align="start">
+                  <IconCircle icon={Zap} color="var(--sm-chart-6)" />
+                  <Stack gap="xs">
+                    <Text style={{ fontWeight: 600 }}>Redis (In-Memory)</Text>
+                    <Text muted size="sm">Fast buffer + state store for clustering and fingerprinting. Enables sub-second decisions.</Text>
+                  </Stack>
+                </Row>
+              </Card>
+            </Grid>
+          ),
+        },
+        {
+          label: 'Storage + API',
+          content: (
+            <Grid cols={2} gap="md">
+              <Card pad="md">
+                <Row gap="sm" align="start">
+                  <IconCircle icon={Database} color="var(--sm-primary)" />
+                  <Stack gap="xs">
+                    <Text style={{ fontWeight: 600 }}>Neon Postgres</Text>
+                    <Text muted size="sm">System of record: users, properties, devices, alerts. Aggregates, not raw packet firehose.</Text>
+                  </Stack>
+                </Row>
+              </Card>
+              <Card pad="md">
+                <Row gap="sm" align="start">
+                  <IconCircle icon={Lock} color="var(--sm-secondary)" />
+                  <Stack gap="xs">
+                    <Text style={{ fontWeight: 600 }}>Backend API (Python)</Text>
+                    <Text muted size="sm">Auth, device registration, alert history, Trust/Ignore writeback, push notification triggers.</Text>
+                  </Stack>
+                </Row>
+              </Card>
+            </Grid>
+          ),
+        },
+      ]} />
+    </Stack>
   </Slide>,
 
-  /* ── 9. SECTION BREAK — Roadmap (ghost 02) ── */
-  <Slide key="s9" layout="center">
-    <GhostNumber n="02" style={{ color: 'var(--sm-secondary)', left: '50%', right: 'auto', transform: 'translate(-50%, -50%)', fontSize: 'clamp(12rem,30vw,22rem)' }} />
-    <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 60% 40% at 50% 80%, var(--sm-gradient-mesh-2), transparent)', opacity: 0.1 }} />
-    <Heading style={{ fontSize: 'clamp(3rem,7vw,5rem)', color: 'var(--sm-success)' }}>Roadmap</Heading>
-    <Text style={{ fontSize: 'clamp(1rem,1.8vw,1.35rem)', marginTop: 'clamp(0.5rem,1.5vh,1rem)', fontWeight: 300 }}>Four gates from lab bench to beta homes</Text>
-    <Divider width="clamp(3rem,8vw,5rem)" style={{ background: 'linear-gradient(90deg, var(--sm-secondary), var(--sm-accent))' }} />
-  </Slide>,
-
-  /* ── 10. GATE SEQUENCE — 4-col cards ── */
-  <Slide key="s10" layout="grid">
-    <Heading style={{ fontSize: 'clamp(2rem,4vw,3rem)' }}>MVP Gate Sequence</Heading>
-    <Text muted size="sm" style={{ marginTop: '0.35rem', marginBottom: 'clamp(1.5rem,3vh,2.5rem)' }}>Each gate unlocks the next level of product readiness</Text>
-    <div className="grid grid-cols-4 gap-[clamp(0.5rem,1vw,0.75rem)] flex-1">
-      {([
-        { gate: '0', title: 'Lab Validation', desc: 'End-to-end pipeline proven in controlled environment', state: 'Engineering system', color: '--sm-primary' },
-        { gate: '1', title: 'Mobile Provisioning', desc: 'Non-technical user sets up hardware in <10 minutes', state: 'Installable system', color: '--sm-chart-3' },
-        { gate: '2', title: 'Baseline Learning', desc: 'System learns normal, filters drive-by noise', state: 'Learning product', color: '--sm-chart-4' },
-        { gate: '3', title: 'Real-Time Alerts', desc: 'Phone buzzes for unfamiliar presence', state: 'True beta product', color: '--sm-chart-5' },
-      ] as const).map(({ gate, title, desc, state, color }) => (
-        <Card key={gate} pad="sm" className="flex flex-col" style={{ position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: `var(${color})` }} />
-          <span className="font-mono" style={{ fontSize: 'clamp(2rem,4vw,3rem)', fontWeight: 800, color: `var(${color})`, opacity: 0.2, lineHeight: 1 }}>{gate}</span>
-          <Heading size="md" as="h3" style={{ fontSize: 'clamp(0.9rem,1.4vw,1.15rem)', marginTop: 'clamp(0.25rem,0.5vh,0.5rem)' }}>{title}</Heading>
-          <Text size="xs" muted style={{ marginTop: '0.35rem', flex: 1 }}>{desc}</Text>
-          <Badge style={{ marginTop: 'clamp(0.5rem,1vh,0.75rem)', fontSize: 'clamp(0.5rem,0.75vw,0.65rem)', letterSpacing: '0.05em', padding: '0.3rem 0.6rem' }}>{state}</Badge>
-        </Card>
-      ))}
-    </div>
-  </Slide>,
-
-  /* ── 11. GATES 0 & 1 — Split with checklist ── */
-  <Slide key="s11" layout="split" className="gap-[clamp(1.5rem,3vw,3rem)]">
-    <div className="flex flex-col justify-center" style={{ flex: '0 0 38%' }}>
-      <div style={{ fontSize: 'clamp(4rem,8vw,6rem)', fontWeight: 900, color: 'var(--sm-primary)', opacity: 0.15, lineHeight: 0.9 }}>0–1</div>
-      <Heading style={{ fontSize: 'clamp(2rem,3.5vw,2.75rem)', marginTop: 'clamp(0.25rem,0.5vh,0.5rem)' }}>Foundation</Heading>
-      <Text muted size="sm" style={{ marginTop: '0.5rem' }}>Prove the pipeline works, then make it installable by real humans</Text>
-      <div className="flex gap-[clamp(0.5rem,1vw,0.75rem)] mt-[clamp(1rem,2vh,1.5rem)]">
-        {([Cpu, Server, Cloud, Smartphone] as const).map((icon, i) => (
-          <IconCircle key={i} icon={icon} size="sm" style={{ width: 'clamp(36px,4.5vw,48px)', height: 'clamp(36px,4.5vw,48px)' }} />
-        ))}
-      </div>
-    </div>
-    <div className="flex flex-col justify-center gap-[clamp(0.5rem,1vh,0.75rem)] flex-1">
-      {[
-        { text: 'Telemetry flows Sniffer → Gateway → EMQX → Watcher → Postgres', done: true },
-        { text: 'Simulated "new device" consistently produces alert events', done: true },
-        { text: 'Watcher restarts safely; no Redis memory runaway', done: true },
-        { text: 'Latency measured end-to-end — target ~5 seconds', done: false },
-        { text: 'Non-technical beta tester completes setup in <10 minutes', done: false },
-        { text: 'Device securely associated to correct user/property', done: false },
-        { text: 'Online/offline status visible in app', done: false },
-      ].map(({ text, done }, i) => (
-        <Card key={i} pad="sm" className="flex items-start gap-[clamp(0.5rem,1vw,0.75rem)]">
-          {done ? <CheckCircle2 size={16} style={{ color: 'var(--sm-success)', marginTop: '0.2em', flexShrink: 0 }} /> : <Circle size={16} style={{ color: 'var(--sm-border)', marginTop: '0.2em', flexShrink: 0 }} />}
-          <span style={{ fontSize: 'clamp(0.7rem,1.1vw,0.9rem)', color: done ? 'var(--sm-text)' : 'var(--sm-muted)', lineHeight: 1.45 }}>{text}</span>
-        </Card>
-      ))}
-    </div>
-  </Slide>,
-
-  /* ── 12. GATES 2 & 3 — Split reversed ── */
-  <Slide key="s12" layout="split" className="gap-[clamp(1.5rem,3vw,3rem)]">
-    <div className="flex flex-col justify-center gap-[clamp(0.5rem,1vh,0.75rem)] flex-1">
-      {[
-        'System enters "Learning Mode" for 3–7 days per property',
-        'Builds trusted device list, filters drive-by noise',
-        'Baseline completion logic is explicit ("Learning Mode complete")',
-        'New/untrusted presence → alert event → push notification',
-        'User can Trust/Ignore and it changes future behavior',
-        'Alerts mostly accurate across 10–20 beta homes',
-        'Push reliability is high — can\'t "sometimes" deliver alerts',
-      ].map((text, i) => (
-        <Card key={i} pad="sm" className="flex items-start gap-[clamp(0.5rem,1vw,0.75rem)]">
-          <Target size={16} style={{ color: 'var(--sm-secondary)', marginTop: '0.2em', flexShrink: 0 }} />
-          <span style={{ fontSize: 'clamp(0.7rem,1.1vw,0.9rem)', color: 'var(--sm-text)', lineHeight: 1.45 }}>{text}</span>
-        </Card>
-      ))}
-    </div>
-    <div className="flex flex-col justify-center items-end text-right" style={{ flex: '0 0 38%' }}>
-      <div style={{ fontSize: 'clamp(4rem,8vw,6rem)', fontWeight: 900, color: 'var(--sm-secondary)', opacity: 0.15, lineHeight: 0.9 }}>2–3</div>
-      <Heading style={{ fontSize: 'clamp(2rem,3.5vw,2.75rem)', marginTop: 'clamp(0.25rem,0.5vh,0.5rem)' }}>Intelligence</Heading>
-      <Text muted size="sm" style={{ marginTop: '0.5rem' }}>Learn what's normal, then alert on what isn't</Text>
-      <div className="flex gap-[clamp(0.5rem,1vw,0.75rem)] mt-[clamp(1rem,2vh,1.5rem)]">
-        {([Brain, Filter, BellRing, ThumbsUp] as const).map((icon, i) => (
-          <IconCircle key={i} icon={icon} size="sm" color="var(--sm-secondary)" style={{ width: 'clamp(36px,4.5vw,48px)', height: 'clamp(36px,4.5vw,48px)' }} />
-        ))}
-      </div>
-    </div>
-  </Slide>,
-
-  /* ── 13. SUCCESS METRICS — Big numbers ── */
-  <Slide key="s13" layout="center">
-    <Badge style={{ marginBottom: 'clamp(0.5rem,1vh,0.75rem)' }}>Beta Reality Check</Badge>
-    <Heading style={{ marginBottom: 'clamp(2.5rem,5vh,4rem)' }}>Success Criteria</Heading>
-    <div className="grid grid-cols-4 gap-[clamp(0.75rem,1.5vw,1.25rem)] w-full">
-      {([
-        { value: '<5s', label: 'Alert Latency', color: 'var(--sm-chart-1)', icon: Clock },
-        { value: '20', label: 'Beta Homes', color: 'var(--sm-chart-2)', icon: Home },
-        { value: '99%', label: 'Push Delivery', color: 'var(--sm-chart-3)', icon: BellRing },
-        { value: '<10m', label: 'Setup Time', color: 'var(--sm-chart-4)', icon: Rocket },
-      ] as const).map(({ value, label, color, icon }) => (
-        <StatBox key={label} value={value} label={label} icon={icon} color={color} />
-      ))}
-    </div>
-  </Slide>,
-
-  /* ── 14. WORKSTREAM STATUS — Traffic-light rows ── */
-  <Slide key="s14" layout="free">
-    <div className="flex items-end justify-between" style={{ marginBottom: 'clamp(1.5rem,3vh,2.5rem)' }}>
-      <div>
-        <Heading style={{ fontSize: 'clamp(2rem,4vw,3rem)' }}>Workstream Readiness</Heading>
-        <Text muted size="sm" style={{ marginTop: '0.35rem' }}>Current status across all delivery tracks</Text>
-      </div>
-      <div className="flex gap-[clamp(0.75rem,1.5vw,1.25rem)]">
-        {[{ color: '--sm-success', label: 'On Track' }, { color: '--sm-warning', label: 'In Progress' }, { color: '--sm-danger', label: 'Not Started' }].map(({ color, label }) => (
-          <div key={label} className="flex items-center gap-1.5">
-            <div style={{ width: 8, height: 8, borderRadius: '50%', background: `var(${color})` }} />
-            <span style={{ fontSize: 'clamp(0.55rem,0.85vw,0.7rem)', color: 'var(--sm-muted)' }}>{label}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-    <div className="flex flex-col gap-[clamp(0.35rem,0.7vh,0.5rem)] flex-1 justify-center">
-      {([
-        { label: 'Firmware & ddrdwgfdgdare', status: 'yellow' as const, note: 'Sniffer capture stable · OTA in progress', icon: Cpu },
-        { label: 'Backend API', status: 'yellow' as const, note: 'Core endpoints built · provisioning flow next', icon: Server },
-        { label: 'Watcher & Analytics', status: 'red' as const, note: 'Baseline learning logic not started · critical path', icon: Eye },
-        { label: 'Mobile App', status: 'red' as const, note: 'Framework TBD · minimum screens designed', icon: Smartphone },
-        { label: 'DevOps / Platform', status: 'green' as const, note: 'EMQX + Postgres + Redis hosted and healthy', icon: Cloud },
-        { label: 'Beta Ops', status: 'yellow' as const, note: '20 homes targeted · recruiting underway', icon: Users },
-      ]).map(({ label, status, note, icon }) => {
-        const StatusIcon = status === 'green' ? CheckCircle2 : status === 'yellow' ? AlertCircle : Circle;
-        const dotColor = status === 'green' ? 'var(--sm-success)' : status === 'yellow' ? 'var(--sm-warning)' : 'var(--sm-danger)';
-        return (
-          <Card key={label} pad="sm" className="flex items-center gap-[clamp(0.5rem,1vw,0.75rem)]">
-            <IconCircle icon={icon} size="sm" color="var(--sm-muted)" style={{ border: '1px solid var(--sm-border)' }} />
-            <span className="font-semibold" style={{ fontSize: 'clamp(0.8rem,1.3vw,1rem)', color: 'var(--sm-text)', flex: '0 0 auto', minWidth: 'clamp(8rem,14vw,12rem)' }}>{label}</span>
-            <span style={{ fontSize: 'clamp(0.65rem,1vw,0.85rem)', color: 'var(--sm-muted)', flex: 1 }}>{note}</span>
-            <StatusIcon size={18} style={{ color: dotColor, flexShrink: 0 }} />
-          </Card>
-        );
-      })}
-    </div>
-  </Slide>,
-
-  /* ── 15. CLOSING CTA ── */
-  <Slide key="s15" layout="center" bg="mesh">
-    <Badge>Next Steps</Badge>
-    <GradientText size="lg" as="h2" style={{ fontSize: 'clamp(3.5rem,8vw,6rem)', marginTop: 'clamp(1.5rem,3vh,2rem)' }}>Let's Build It</GradientText>
-    <Text muted style={{ fontSize: 'clamp(1rem,2vw,1.5rem)', marginTop: 'clamp(1rem,2vh,1.5rem)', maxWidth: '36ch', fontWeight: 300 }}>
-      Align on gates. Unblock owners. Ship the MVP.
+  // ── s9: SECTION BREAK — Gates ──────────────────────────────────
+  <Slide key="s9" layout="center" bg="mesh">
+    <Brand />
+    <GhostNumber n={4} style={{ opacity: 0.04 }} />
+    <Badge>Execution</Badge>
+    <Spacer size="sm" />
+    <Heading size="hero" style={{ fontSize: 'clamp(3.5rem, 8vw, 6rem)' }}>
+      MVP Gates
+    </Heading>
+    <Spacer size="sm" />
+    <Text muted style={{ maxWidth: '42ch', textAlign: 'center' }}>
+      Four phases from lab validation to real beta product. Each gate has owners, exit criteria, and a clear product state.
     </Text>
-    <div className="flex gap-[clamp(0.75rem,1.5vw,1rem)]" style={{ marginTop: 'clamp(2rem,4vh,3rem)' }}>
-      {[
-        { icon: Target, label: 'Agree on Gate 0 exit criteria' },
-        { icon: Users, label: 'Assign workstream owners' },
-        { icon: Rocket, label: 'Set beta launch target date' },
-      ].map(({ icon: Icon, label }) => (
-        <Card key={label} pad="sm" className="flex items-center gap-[clamp(0.5rem,1vw,0.75rem)]">
-          <Icon size={18} style={{ color: 'var(--sm-primary)' }} />
-          <span style={{ fontSize: 'clamp(0.7rem,1.1vw,0.9rem)', color: 'var(--sm-text)', fontWeight: 500 }}>{label}</span>
+  </Slide>,
+
+  // ── s10: GATE 0 + GATE 1 — Side by Side ────────────────────────
+  <Slide key="s10" layout="free">
+    <Brand />
+    <Stack gap="md" style={{ maxWidth: '92%', margin: '0 auto', justifyContent: 'center', flex: 1 }}>
+      <Heading size="lg">Gates 0 & 1</Heading>
+      <Split ratio="50/50">
+        {/* Gate 0 */}
+        <Card pad="md" style={{ position: 'relative', overflow: 'hidden' }}>
+          <ColorBar color="var(--sm-chart-1)" />
+          <Stack gap="sm">
+            <Row gap="sm">
+              <Badge style={{ background: 'var(--sm-chart-1)', color: 'var(--sm-bg)', border: 'none' }}>Gate 0</Badge>
+              <Badge>Engineering System</Badge>
+            </Row>
+            <Heading size="md">Lab Validation</Heading>
+            <Text muted size="sm">Prove end-to-end pipeline + alert event in a controlled environment.</Text>
+            <Divider />
+            <Text size="sm" style={{ fontWeight: 600 }}>Exit Criteria</Text>
+            <Text muted size="xs">Telemetry flows Sniffer → Gateway → EMQX → Watcher → Postgres</Text>
+            <Text muted size="xs">Controlled "new device" produces alert event consistently</Text>
+            <Text muted size="xs">Watcher restarts safely; no Redis memory runaway</Text>
+            <Text muted size="xs">End-to-end latency measured (target ~5s)</Text>
+            <Spacer size="xs" />
+            <Row gap="sm" wrap>
+              {['Firmware', 'Backend', 'DevOps', 'Analytics'].map(t => (
+                <Badge key={t} style={{ fontSize: '0.6rem' }}>{t}</Badge>
+              ))}
+            </Row>
+          </Stack>
         </Card>
-      ))}
-    </div>
+        {/* Gate 1 */}
+        <Card pad="md" style={{ position: 'relative', overflow: 'hidden' }}>
+          <ColorBar color="var(--sm-chart-2)" />
+          <Stack gap="sm">
+            <Row gap="sm">
+              <Badge style={{ background: 'var(--sm-chart-2)', color: 'var(--sm-bg)', border: 'none' }}>Gate 1</Badge>
+              <Badge>Installable System</Badge>
+            </Row>
+            <Heading size="md">Mobile Provisioning</Heading>
+            <Text muted size="sm">Real user can get hardware online and linked to their account.</Text>
+            <Divider />
+            <Text size="sm" style={{ fontWeight: 600 }}>Required User Flow</Text>
+            <Pipeline items={[
+              { icon: Users, label: 'Account', sub: 'Sign Up' },
+              { icon: Home, label: 'Property', sub: 'Add' },
+              { icon: Cpu, label: 'Device', sub: 'Add' },
+              { icon: Wifi, label: 'Wi-Fi', sub: 'Provision' },
+              { icon: CheckCircle, label: 'Online', sub: 'Verified' },
+            ]} />
+            <Spacer size="xs" />
+            <Row gap="sm" wrap>
+              {['Mobile', 'Firmware', 'Backend', 'DevOps'].map(t => (
+                <Badge key={t} style={{ fontSize: '0.6rem' }}>{t}</Badge>
+              ))}
+            </Row>
+          </Stack>
+        </Card>
+      </Split>
+    </Stack>
+  </Slide>,
+
+  // ── s11: GATE 2 — Baseline Learning ────────────────────────────
+  <Slide key="s11" layout="free">
+    <Brand />
+    <GhostNumber n={2} />
+    <Stack gap="md" style={{ maxWidth: '88%', margin: '0 auto', justifyContent: 'center', flex: 1 }}>
+      <Row gap="sm">
+        <Badge style={{ background: 'var(--sm-chart-3)', color: 'var(--sm-bg)', border: 'none' }}>Gate 2</Badge>
+        <Badge>Learning Product</Badge>
+      </Row>
+      <Heading size="lg">Pattern of Life</Heading>
+      <Text muted>System enters "Learning Mode" for 3–7 days. Builds what "normal" looks like.</Text>
+      <Divider />
+      <Split ratio="50/50">
+        <Card pad="md" style={{ textAlign: 'center' }}>
+          <Text style={{ fontWeight: 600, marginBottom: '0.75rem' }}>Signal Identification</Text>
+          <ProgressReveal value={85} label="Home Devices Recognized" color="var(--sm-success)" />
+          <Spacer size="sm" />
+          <ProgressReveal value={92} label="Drive-By Traffic Filtered" color="var(--sm-chart-3)" />
+        </Card>
+        <Card pad="md" style={{ position: 'relative', overflow: 'hidden' }}>
+          <ColorBar color="var(--sm-chart-3)" />
+          <Stack gap="xs">
+            <Text style={{ fontWeight: 600 }}>Exit Criteria</Text>
+            <Text muted size="sm">Identify high-frequency home devices vs noise</Text>
+            <Text muted size="sm">Drive-by traffic suppressed to tolerable level</Text>
+            <Text muted size="sm">Baseline completion logic explicit and visible</Text>
+            <Spacer size="sm" />
+            <Badge style={{ background: 'var(--sm-success)', color: 'var(--sm-bg)', border: 'none' }}>
+              "Learning Mode Complete"
+            </Badge>
+          </Stack>
+        </Card>
+      </Split>
+    </Stack>
+  </Slide>,
+
+  // ── s12: GATE 3 — Real-Time Alert (climactic) ──────────────────
+  <Slide key="s12" layout="free" bg="mesh">
+    <Brand />
+    <GhostNumber n={3} />
+    <Stack gap="lg" align="center" style={{ justifyContent: 'center', flex: 1 }}>
+      <Row gap="sm">
+        <Badge style={{ background: 'var(--sm-primary)', color: 'var(--sm-bg)', border: 'none' }}>Gate 3</Badge>
+        <Badge>True Beta Product</Badge>
+      </Row>
+      <Animate effect="scale" duration={0.6}>
+        <Heading size="lg" style={{ textAlign: 'center' }}>
+          Phone Buzzes for Unfamiliar Presence
+        </Heading>
+      </Animate>
+      <Divider width="clamp(4rem, 8vw, 6rem)" />
+      <Grid cols={3} gap="lg" style={{ maxWidth: '90%' }}>
+        <StatBox icon={Bell} value="~5s" label="Alert Latency" color="var(--sm-primary)" />
+        <StatBox icon={Home} value="10–20" label="Beta Homes" color="var(--sm-chart-2)" />
+        <StatBox icon={ShieldCheck} value="Trust / Ignore" label="User Action" color="var(--sm-success)" />
+      </Grid>
+      <Text muted size="sm" style={{ maxWidth: '52ch', textAlign: 'center' }}>
+        Alerts are mostly accurate and understandable. Push reliability is high —
+        you can't "sometimes" deliver alerts. User actions change future alerting behavior.
+      </Text>
+    </Stack>
+  </Slide>,
+
+  // ── s13: DELIVERABLES — ClickReveal Per Team ───────────────────
+  <Slide key="s13" layout="free">
+    <Brand />
+    <Stack gap="md" style={{ maxWidth: '92%', margin: '0 auto', justifyContent: 'center', flex: 1 }}>
+      <Badge>Deliverables</Badge>
+      <Heading size="lg">What Each Team Ships</Heading>
+      <Spacer size="sm" />
+      <Grid cols={3} gap="md">
+        <ClickReveal prompt="Mobile App">
+          <Card pad="md" style={{ position: 'relative', overflow: 'hidden' }}>
+            <ColorBar color="var(--sm-chart-1)" />
+            <Stack gap="xs">
+              <Row gap="sm">
+                <Smartphone size={20} style={{ color: 'var(--sm-chart-1)' }} />
+                <Text style={{ fontWeight: 600 }}>Mobile App</Text>
+              </Row>
+              <Text muted size="sm">Auth, add property, provision device, push notifications, alert screen + Trust/Ignore</Text>
+            </Stack>
+          </Card>
+        </ClickReveal>
+        <ClickReveal prompt="Firmware">
+          <Card pad="md" style={{ position: 'relative', overflow: 'hidden' }}>
+            <ColorBar color="var(--sm-chart-2)" />
+            <Stack gap="xs">
+              <Row gap="sm">
+                <Cpu size={20} style={{ color: 'var(--sm-chart-2)' }} />
+                <Text style={{ fontWeight: 600 }}>Firmware</Text>
+              </Row>
+              <Text muted size="sm">Provisioning handshake, stable capture, gateway forwarding + reconnect, OTA, remote logging</Text>
+            </Stack>
+          </Card>
+        </ClickReveal>
+        <ClickReveal prompt="Backend / API">
+          <Card pad="md" style={{ position: 'relative', overflow: 'hidden' }}>
+            <ColorBar color="var(--sm-chart-3)" />
+            <Stack gap="xs">
+              <Row gap="sm">
+                <Server size={20} style={{ color: 'var(--sm-chart-3)' }} />
+                <Text style={{ fontWeight: 600 }}>Backend / API</Text>
+              </Row>
+              <Text muted size="sm">User/property management, device linking, alert creation, Trust/Ignore writeback, baseline status</Text>
+            </Stack>
+          </Card>
+        </ClickReveal>
+        <ClickReveal prompt="Watcher + Analytics">
+          <Card pad="md" style={{ position: 'relative', overflow: 'hidden' }}>
+            <ColorBar color="var(--sm-chart-5)" />
+            <Stack gap="xs">
+              <Row gap="sm">
+                <Brain size={20} style={{ color: 'var(--sm-chart-5)' }} />
+                <Text style={{ fontWeight: 600 }}>Watcher + Analytics</Text>
+              </Row>
+              <Text muted size="sm">Real-time filtering, fingerprint logic, baseline learning, "new presence" detection, alert rules</Text>
+            </Stack>
+          </Card>
+        </ClickReveal>
+        <ClickReveal prompt="DevOps / Platform">
+          <Card pad="md" style={{ position: 'relative', overflow: 'hidden' }}>
+            <ColorBar color="var(--sm-chart-4)" />
+            <Stack gap="xs">
+              <Row gap="sm">
+                <Settings size={20} style={{ color: 'var(--sm-chart-4)' }} />
+                <Text style={{ fontWeight: 600 }}>DevOps / Platform</Text>
+              </Row>
+              <Text muted size="sm">EMQX hosting, Watcher + API deploy, Redis + Postgres, secrets, monitoring + logs, OTA pipeline</Text>
+            </Stack>
+          </Card>
+        </ClickReveal>
+        <ClickReveal prompt="Beta Ops">
+          <Card pad="md" style={{ position: 'relative', overflow: 'hidden' }}>
+            <ColorBar color="var(--sm-accent)" />
+            <Stack gap="xs">
+              <Row gap="sm">
+                <Users size={20} style={{ color: 'var(--sm-accent)' }} />
+                <Text style={{ fontWeight: 600 }}>Beta Ops</Text>
+              </Row>
+              <Text muted size="sm">20 beta homes recruited, install guide, troubleshooting page, feedback loop, demo videos</Text>
+            </Stack>
+          </Card>
+        </ClickReveal>
+      </Grid>
+    </Stack>
+  </Slide>,
+
+  // ── s14: MARKETING WEBSITE — Beta Signup ────────────────────────
+  <Slide key="s14" layout="free">
+    <Brand />
+    <Stack gap="lg" style={{ maxWidth: '90%', margin: '0 auto', justifyContent: 'center', flex: 1 }}>
+      <Row gap="sm" align="center">
+        <IconCircle icon={Globe} color="var(--sm-chart-2)" />
+        <Stack gap="xs">
+          <Badge>Beta Launch</Badge>
+          <Heading size="md">Marketing Website</Heading>
+        </Stack>
+      </Row>
+      <Text muted style={{ maxWidth: '60ch' }}>
+        Once MVP is complete, we drive beta signups through the marketing site.
+        Goal: 20 beta homes recruited and active.
+      </Text>
+      <Card pad="sm" style={{
+        overflow: 'hidden', display: 'flex', justifyContent: 'center',
+        maxHeight: 'clamp(200px, 35vh, 380px)',
+      }}>
+        <img
+          src="/__api/decks/saberalert-mvp/assets/Screenshot_2026-03-01_at_11.58.16___AM.png"
+          alt="SaberAlert Marketing Website"
+          style={{
+            width: '100%', objectFit: 'contain', borderRadius: '4px',
+          }}
+        />
+      </Card>
+      <Row gap="md" style={{ justifyContent: 'center' }}>
+        <Card pad="sm">
+          <Row gap="sm">
+            <Users size={16} style={{ color: 'var(--sm-chart-2)' }} />
+            <Text size="sm">20 beta homes target</Text>
+          </Row>
+        </Card>
+        <Card pad="sm">
+          <Row gap="sm">
+            <Rocket size={16} style={{ color: 'var(--sm-primary)' }} />
+            <Text size="sm">Install guide + troubleshooting</Text>
+          </Row>
+        </Card>
+      </Row>
+    </Stack>
+  </Slide>,
+
+  // ── s15: ASK — Call to Action ──────────────────────────────────
+  <Slide key="s15" layout="center" bg="mesh">
+    <Brand />
+    <GradientText size="lg" style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)' }}>
+      Ship. Provision. Learn. Alert.
+    </GradientText>
+    <Spacer size="md" />
+    <Text muted style={{ maxWidth: '48ch', textAlign: 'center' }}>
+      Every team owns a gate. Every gate has clear exit criteria.
+      Let's align on owners and timelines — and get to Gate 0.
+    </Text>
+    <Spacer size="md" />
+    <Row gap="md" style={{ justifyContent: 'center' }}>
+      <Card pad="sm" style={{ borderColor: 'var(--sm-primary)' }}>
+        <Row gap="sm">
+          <ArrowRight size={16} style={{ color: 'var(--sm-primary)' }} />
+          <Text size="sm" style={{ fontWeight: 600 }}>Assign Gate Owners</Text>
+        </Row>
+      </Card>
+      <Card pad="sm" style={{ borderColor: 'var(--sm-secondary)' }}>
+        <Row gap="sm">
+          <ArrowRight size={16} style={{ color: 'var(--sm-secondary)' }} />
+          <Text size="sm" style={{ fontWeight: 600 }}>Set Gate 0 Deadline</Text>
+        </Row>
+      </Card>
+      <Card pad="sm" style={{ borderColor: 'var(--sm-accent)' }}>
+        <Row gap="sm">
+          <Upload size={16} style={{ color: 'var(--sm-accent)' }} />
+          <Text size="sm" style={{ fontWeight: 600 }}>Recruit 20 Beta Homes</Text>
+        </Row>
+      </Card>
+    </Row>
+    <Spacer size="lg" />
+    <Text size="xs" style={{ color: 'var(--sm-muted)', opacity: 0.5 }}>
+      Eric Kittelson · Digital Saber · Pre-Seed 2026
+    </Text>
   </Slide>,
 ];
 

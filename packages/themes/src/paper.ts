@@ -17,7 +17,7 @@ export const paper: ThemeConfig = {
     gradientStart: '#1e3a5f',
     gradientEnd: '#b91c1c',
     chart: ['#1e3a5f', '#b91c1c', '#047857', '#d97706', '#7c3aed', '#0891b2'],
-    glass: 'rgba(255,255,255,0.7)',
+    glass: 'rgba(255,251,235,0.85)',
   },
   typography: {
     headingFont: "'Inter', system-ui, sans-serif",

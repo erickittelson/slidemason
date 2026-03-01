@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDeck } from '@slidemason/renderer';
 
 interface TableOfContentsProps {
@@ -8,6 +8,13 @@ interface TableOfContentsProps {
 export function TableOfContents({ slideLabels }: TableOfContentsProps) {
   const { currentSlide, slideCount, goTo } = useDeck();
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [open]);
 
   return (
     <>
@@ -29,6 +36,9 @@ export function TableOfContents({ slideLabels }: TableOfContentsProps) {
       {/* Overlay panel */}
       {open && (
         <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Table of contents"
           style={{
             position: 'fixed', inset: 0, zIndex: 45,
             backgroundColor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)',

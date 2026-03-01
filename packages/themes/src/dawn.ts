@@ -17,7 +17,7 @@ export const dawn: ThemeConfig = {
     gradientStart: '#c2410c',
     gradientEnd: '#059669',
     chart: ['#c2410c', '#059669', '#7c3aed', '#2563eb', '#d97706', '#dc2626'],
-    glass: 'rgba(255,255,255,0.7)',
+    glass: 'rgba(255,247,237,0.85)',
   },
   typography: {
     headingFont: "'Inter', system-ui, sans-serif",

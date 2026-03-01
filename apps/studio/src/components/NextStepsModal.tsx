@@ -1,22 +1,36 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface NextStepsModalProps {
+  slug: string;
   onClose: () => void;
 }
 
-const PROMPT_TEXT = `Read the brief at generated/brief.json and the source files in data/. Follow the design principles in CLAUDE.md to create cinematic, custom-designed slides. Each slide should be unique — bespoke layouts with Tailwind, Framer Motion animations, and Lucide icons.`;
+function getPromptText(slug: string) {
+  return `Read the brief at decks/${slug}/generated/brief.json and the source files in decks/${slug}/data/. Follow the design principles in CLAUDE.md to create cinematic, custom-designed slides in decks/${slug}/slides.tsx. Each slide should be unique — bespoke layouts with Tailwind, Framer Motion animations, and Lucide icons.`;
+}
 
-export function NextStepsModal({ onClose }: NextStepsModalProps) {
+export function NextStepsModal({ slug, onClose }: NextStepsModalProps) {
   const [copied, setCopied] = useState(false);
 
+  const promptText = getPromptText(slug);
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [onClose]);
+
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(PROMPT_TEXT);
+    await navigator.clipboard.writeText(promptText);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Next steps"
       onClick={onClose}
       style={{
         position: 'fixed', inset: 0, zIndex: 1000,
@@ -62,7 +76,7 @@ export function NextStepsModal({ onClose }: NextStepsModalProps) {
             fontFamily: 'monospace', fontSize: '0.75rem', color: '#a78bfa',
             border: '1px solid rgba(255,255,255,0.06)',
           }}>
-            cd your-project-directory
+            cd /path/to/slidemason
           </div>
         </div>
 
@@ -77,7 +91,7 @@ export function NextStepsModal({ onClose }: NextStepsModalProps) {
             fontSize: '0.7rem', color: '#ccc', lineHeight: 1.5,
             border: '1px solid rgba(255,255,255,0.06)', position: 'relative',
           }}>
-            <div style={{ paddingRight: '60px' }}>{PROMPT_TEXT}</div>
+            <div style={{ paddingRight: '60px' }}>{promptText}</div>
             <button
               onClick={handleCopy}
               style={{

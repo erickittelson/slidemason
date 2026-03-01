@@ -30,7 +30,7 @@ export function Stagger({
   children,
 }: StaggerProps) {
   const pptx = isPptxMode();
-  const { initial, animate } = EFFECTS[effect];
+  const { initial, animate } = EFFECTS[effect] ?? EFFECTS['fade-up'];
 
   if (pptx) {
     return <div className={className} style={style} data-pptx-type="passthrough">{children}</div>;

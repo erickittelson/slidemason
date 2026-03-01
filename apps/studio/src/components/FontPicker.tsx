@@ -1,33 +1,15 @@
-import { HEADING_FONTS, BODY_FONTS, FONT_PAIRINGS, loadGoogleFont } from '../lib/fonts';
+import { FONT_PAIRINGS, loadGoogleFont } from '../lib/fonts';
 
 interface FontPickerProps {
   headingFont: string;
   bodyFont: string;
-  onChangeHeading: (font: string) => void;
-  onChangeBody: (font: string) => void;
   onChangePairing: (heading: string, body: string) => void;
 }
 
-const selectStyle: React.CSSProperties = {
-  width: '100%', padding: '8px 10px', fontSize: '0.8rem',
-  backgroundColor: '#2a2a3e', color: '#fff', border: '1px solid rgba(255,255,255,0.1)',
-  borderRadius: '6px', outline: 'none', boxSizing: 'border-box',
-};
-
-const labelStyle: React.CSSProperties = {
-  color: '#aaa', fontSize: '0.75rem', fontWeight: 500, display: 'block', marginBottom: '4px',
-};
-
-export function FontPicker({ headingFont, bodyFont, onChangeHeading, onChangeBody, onChangePairing }: FontPickerProps) {
-  const activePairing = FONT_PAIRINGS.find(p => p.heading === headingFont && p.body === bodyFont);
-
+export function FontPicker({ headingFont, bodyFont, onChangePairing }: FontPickerProps) {
   return (
     <div>
-      {/* Recommended pairings */}
-      <label style={labelStyle}>Recommended Pairings</label>
-      <div style={{
-        display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px', marginBottom: '10px',
-      }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '10px' }}>
         {FONT_PAIRINGS.map(p => {
           const isActive = p.heading === headingFont && p.body === bodyFont;
           return (
@@ -43,41 +25,38 @@ export function FontPicker({ headingFont, bodyFont, onChangeHeading, onChangeBod
                 loadGoogleFont(p.body);
               }}
               style={{
-                padding: '8px', textAlign: 'left', cursor: 'pointer',
+                padding: '10px 12px', textAlign: 'left', cursor: 'pointer',
                 backgroundColor: isActive ? 'rgba(139,92,246,0.25)' : '#2a2a3e',
                 border: `1px solid ${isActive ? 'rgba(139,92,246,0.5)' : 'rgba(255,255,255,0.08)'}`,
-                borderRadius: '6px', color: '#fff', lineHeight: 1.2, overflow: 'hidden',
+                borderRadius: '6px', color: '#fff', lineHeight: 1.2,
               }}
-              title={`${p.heading} + ${p.body}`}
             >
-              <span style={{
-                display: 'block', fontFamily: `'${p.heading}', sans-serif`,
-                fontWeight: 700, fontSize: '0.9rem', lineHeight: 1.1, marginBottom: '3px',
-                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#fff',
-              }}>
-                Aa Heading
-              </span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                <span style={{
+                  fontFamily: `'${p.heading}', sans-serif`,
+                  fontWeight: 700, fontSize: '0.95rem',
+                }}>
+                  {p.name}
+                </span>
+                <span style={{ fontSize: '0.6rem', color: '#666' }}>
+                  {p.heading === p.body ? p.heading : `${p.heading} + ${p.body}`}
+                </span>
+              </div>
               <span style={{
                 display: 'block', fontFamily: `'${p.body}', sans-serif`,
-                fontSize: '0.65rem', lineHeight: 1.2, color: '#bbb', marginBottom: '4px',
+                fontSize: '0.7rem', color: '#888', marginTop: '2px',
               }}>
-                Body text sample here
-              </span>
-              <span style={{
-                display: 'block', fontSize: '0.55rem', color: '#666',
-                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-              }}>
-                {p.heading} + {p.body}
+                {p.vibe}
               </span>
             </button>
           );
         })}
       </div>
 
-      {/* Preview of current pairing */}
+      {/* Preview of current selection */}
       <div style={{
         backgroundColor: '#1a1a2e', borderRadius: '6px', padding: '10px',
-        border: '1px solid rgba(255,255,255,0.08)', marginBottom: '10px',
+        border: '1px solid rgba(255,255,255,0.08)',
       }}>
         <p style={{
           color: '#fff', fontSize: '1.1rem', fontWeight: 700, margin: '0 0 4px',
@@ -91,26 +70,6 @@ export function FontPicker({ headingFont, bodyFont, onChangeHeading, onChangeBod
         }}>
           Body text looks like this. The quick brown fox jumps over the lazy dog.
         </p>
-        {activePairing && (
-          <p style={{ color: '#8b5cf6', fontSize: '0.6rem', margin: '6px 0 0', fontStyle: 'italic' }}>
-            {activePairing.name} — {activePairing.heading} + {activePairing.body}
-          </p>
-        )}
-      </div>
-
-      {/* Custom heading/body overrides */}
-      <label style={labelStyle}>Custom Heading</label>
-      <div style={{ marginBottom: '8px' }}>
-        <select style={selectStyle} value={headingFont} onChange={e => onChangeHeading(e.target.value)}>
-          {HEADING_FONTS.map(f => <option key={f} value={f}>{f}</option>)}
-        </select>
-      </div>
-
-      <label style={labelStyle}>Custom Body</label>
-      <div style={{ marginBottom: '8px' }}>
-        <select style={selectStyle} value={bodyFont} onChange={e => onChangeBody(e.target.value)}>
-          {BODY_FONTS.map(f => <option key={f} value={f}>{f}</option>)}
-        </select>
       </div>
     </div>
   );

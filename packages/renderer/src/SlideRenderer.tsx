@@ -1,6 +1,6 @@
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import html2canvas from 'html2canvas';
+import { toBlob } from 'html-to-image';
 import { SlideLayout } from './SlideLayout';
 import { useDeck } from './DeckProvider';
 
@@ -37,37 +37,6 @@ const ShrinkIcon = () => (
   </svg>
 );
 
-/* ── Screenshot helper: inline computed styles onto cloned DOM ── */
-
-function copyComputedStylesToClone(original: Element, clone: Element) {
-  if (!(original instanceof HTMLElement) || !(clone instanceof HTMLElement)) return;
-
-  const computed = window.getComputedStyle(original);
-  const props = [
-    'color', 'background-color', 'background-image', 'background',
-    'border-color', 'border-top-color', 'border-right-color',
-    'border-bottom-color', 'border-left-color',
-    'box-shadow', 'text-shadow', 'outline-color',
-    'fill', 'stroke', 'opacity',
-    '-webkit-text-fill-color', '-webkit-background-clip',
-  ];
-
-  for (const prop of props) {
-    try {
-      const value = computed.getPropertyValue(prop);
-      if (value && value !== 'none' && value !== 'normal') {
-        clone.style.setProperty(prop, value);
-      }
-    } catch { /* skip unsupported props */ }
-  }
-
-  const origChildren = Array.from(original.children);
-  const cloneChildren = Array.from(clone.children);
-  for (let i = 0; i < Math.min(origChildren.length, cloneChildren.length); i++) {
-    copyComputedStylesToClone(origChildren[i], cloneChildren[i]);
-  }
-}
-
 /* ── Animation variants (direction-aware vertical) ── */
 
 const slideVariants = {
@@ -85,10 +54,13 @@ const slideVariants = {
   }),
 };
 
-const slideTransition = {
-  duration: 0.7,
-  ease: [0.22, 1, 0.36, 1] as const,
-};
+const prefersReducedMotion =
+  typeof window !== 'undefined' &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const slideTransition = prefersReducedMotion
+  ? { duration: 0 }
+  : { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const };
 
 /* ── Glass button style helper ── */
 
@@ -117,13 +89,18 @@ export function SlideRenderer({
   const { currentSlide, slideCount, direction, next, prev, theme } = useDeck();
 
   const slideRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const screenshotTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   // UI state
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [screenshotDone, setScreenshotDone] = useState(false);
 
   const isPrintMode =
-    typeof window !== 'undefined' && window.location.search.includes('print');
+    typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('print');
+
+  // Cleanup screenshot timer on unmount
+  useEffect(() => () => clearTimeout(screenshotTimerRef.current), []);
 
   const isFirst = currentSlide === 0;
   const isLast = currentSlide === slideCount - 1;
@@ -131,27 +108,22 @@ export function SlideRenderer({
 
   // ── Screenshot ──
   const captureScreenshot = useCallback(async () => {
-    if (!slideRef.current) return;
+    const target = contentRef.current ?? slideRef.current;
+    if (!target) return;
     try {
-      const canvas = await html2canvas(slideRef.current, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        onclone: (_doc, clonedElement) => {
-          copyComputedStylesToClone(slideRef.current!, clonedElement);
-        },
+      const blob = await toBlob(target, {
+        pixelRatio: 2,
+        skipFonts: true,
       });
-
-      const blob = await new Promise<Blob>((resolve) =>
-        canvas.toBlob((b) => resolve(b!), 'image/png'),
-      );
+      if (!blob) throw new Error('toBlob returned null');
 
       await navigator.clipboard.write([
         new ClipboardItem({ 'image/png': blob }),
       ]);
 
       setScreenshotDone(true);
-      setTimeout(() => setScreenshotDone(false), 1500);
+      clearTimeout(screenshotTimerRef.current);
+      screenshotTimerRef.current = setTimeout(() => setScreenshotDone(false), 1500);
     } catch (err) {
       console.error('Screenshot failed:', err);
     }
@@ -197,14 +169,16 @@ export function SlideRenderer({
           transition={slideTransition}
           className="w-full h-full"
         >
-          <SlideLayout theme={theme} fullWidth={false}>
-            {slides[currentSlide]}
-          </SlideLayout>
+          <div ref={contentRef} className="w-full h-full">
+            <SlideLayout theme={theme} fullWidth={false}>
+              {slides[currentSlide]}
+            </SlideLayout>
+          </div>
         </motion.div>
       </AnimatePresence>
 
       {!isPrintMode && (
-        <>
+        <nav aria-label="Slide controls">
           {/* ── Top-right: Fullscreen ── */}
           <button
             onClick={toggleFullscreen}
@@ -218,6 +192,7 @@ export function SlideRenderer({
               borderRadius: '8px',
               zIndex: 10,
             }}
+            aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
             title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
           >
             {isFullscreen ? <ShrinkIcon /> : <ExpandIcon />}
@@ -231,6 +206,8 @@ export function SlideRenderer({
             <span
               className="font-mono text-sm tracking-wider"
               style={{ color: 'var(--sm-muted)', opacity: 0.6 }}
+              aria-live="polite"
+              aria-atomic="true"
             >
               {String(currentSlide + 1).padStart(2, '0')}{' '}
               <span style={{ opacity: 0.4 }}>/</span>{' '}
@@ -246,6 +223,7 @@ export function SlideRenderer({
                 height: '32px',
                 borderRadius: '6px',
               }}
+              aria-label="Copy slide screenshot to clipboard"
               title="Copy slide screenshot to clipboard"
             >
               {screenshotDone ? (
@@ -264,7 +242,7 @@ export function SlideRenderer({
             style={{
               backgroundColor: 'var(--sm-glass-bg)',
               border: '1px solid var(--sm-border)',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+              boxShadow: 'var(--sm-shadow-lg)',
               padding: '6px',
               zIndex: 10,
             }}
@@ -323,7 +301,7 @@ export function SlideRenderer({
               }}
             />
           </div>
-        </>
+        </nav>
       )}
     </div>
   );

@@ -7,6 +7,8 @@
   --sm-secondary: #d97706;
   --sm-accent: #059669;
   --sm-border: #e7e5e4;
+  --sm-heading-font: 'Inter', system-ui, sans-serif;
+  --sm-body-font: 'Inter', system-ui, sans-serif;
   --sm-mono-font: 'JetBrains Mono', ui-monospace, monospace;
   --sm-radius: 0.5rem;
   --sm-shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
@@ -27,5 +29,5 @@
   --sm-chart-4: #dc2626;
   --sm-chart-5: #2563eb;
   --sm-chart-6: #7c3aed;
-  --sm-glass-bg: rgba(255,255,255,0.7);
+  --sm-glass-bg: rgba(245,245,244,0.85);
 }

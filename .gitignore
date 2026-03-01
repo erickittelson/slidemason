@@ -8,5 +8,8 @@ generated/
 data/*
 !data/.gitkeep
 !data/example/
+coverage/
+pnpm-debug.log*
+*.log
 .env
 .env.*

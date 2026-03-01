@@ -5,6 +5,6 @@ export default defineConfig({
     exclude: ['**/dist/**', '**/node_modules/**'],
     include: ['packages/*/src/**/*.test.{ts,tsx}'],
     environment: 'jsdom',
-    setupFiles: ['./packages/components/src/__tests__/setup.ts'],
+    setupFiles: ['./packages/primitives/src/__tests__/setup.ts'],
   },
 });

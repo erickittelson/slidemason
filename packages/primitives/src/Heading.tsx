@@ -25,7 +25,7 @@ export function Heading({
       data-pptx-size={size}
       className={`font-bold ${className}`}
       style={{
-        fontSize: SIZES[size],
+        fontSize: SIZES[size] ?? SIZES['lg'],
         color: 'var(--sm-text)',
         lineHeight: size === 'hero' ? 0.9 : 1.1,
         ...style,

@@ -36,6 +36,7 @@ export function BeforeAfter({
       <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
         <button
           onClick={() => setShowAfter(false)}
+          aria-pressed={!showAfter}
           style={{
             ...buttonBase,
             background: !showAfter ? 'var(--sm-primary)' : 'var(--sm-glass-bg)',
@@ -47,6 +48,7 @@ export function BeforeAfter({
         </button>
         <button
           onClick={() => setShowAfter(true)}
+          aria-pressed={showAfter}
           style={{
             ...buttonBase,
             background: showAfter ? 'var(--sm-primary)' : 'var(--sm-glass-bg)',

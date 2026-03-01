@@ -7,7 +7,7 @@ export const forest: ThemeConfig = {
     surface: '#14532d',
     text: '#f0fdf4',
     muted: '#86efac',
-    primary: '#86efac',
+    primary: '#4ade80',
     secondary: '#fbbf24',
     accent: '#f9a8d4',
     border: '#166534',

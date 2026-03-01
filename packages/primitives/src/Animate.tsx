@@ -46,7 +46,7 @@ export function Animate({
   children,
 }: AnimateProps) {
   const pptx = isPptxMode();
-  const { initial, animate } = EFFECTS[effect];
+  const { initial, animate } = EFFECTS[effect] ?? EFFECTS['fade-up'];
   const transition = { duration, delay, ease: ease as Easing };
 
   if (pptx) {

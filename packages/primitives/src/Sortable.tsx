@@ -12,7 +12,7 @@ interface SortableProps {
 }
 
 export function Sortable({
-  items: initialItems,
+  items: initialItems = [],
   style,
   className = '',
 }: SortableProps) {

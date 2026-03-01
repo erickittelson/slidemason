@@ -31,48 +31,19 @@ const charCountStyle: React.CSSProperties = {
 
 // Dropdown presets
 const AUDIENCES = [
-  // Internal — leadership
   'Executive leadership (C-suite)',
-  'Board of directors',
-  'Skip-level / senior leadership',
-  'Project sponsors & stakeholders',
-  // Internal — teams
   'Your direct team',
-  'Cross-functional partners',
-  'Engineering peers',
-  'Product & design review',
-  'Sales & account team',
-  'All-hands / company-wide',
-  'New hires / onboarding',
-  // External
   'Investors / VCs',
   'Clients / customers',
-  'Prospects / leads',
-  'External partners / vendors',
   'Conference attendees',
-  'General public',
 ];
 
 const GOALS = [
-  // Decision & approval
-  'Get budget or resource approval',
-  'Get sign-off on a proposal',
-  'Pitch for investment',
-  'Close a deal',
-  // Alignment & communication
-  'Align team on strategy or direction',
+  'Get approval (budget / resources / proposal)',
   'Share progress, results, or metrics',
-  'Kick off a new project or initiative',
-  'Wrap up / close out a project',
-  // Knowledge & enablement
-  'Demo a product or feature',
+  'Pitch for investment',
+  'Align team on strategy or direction',
   'Educate or train the audience',
-  'Onboard new team members',
-  'Run a retrospective or post-mortem',
-  // Influence & inspiration
-  'Inspire action or rally the team',
-  'Propose a new idea or POC',
-  'Compare options and recommend one',
 ];
 
 const SLIDE_COUNTS = [
@@ -80,7 +51,7 @@ const SLIDE_COUNTS = [
 ];
 
 const DURATIONS = [
-  '5 minutes', '10 minutes', '15 minutes', '20 minutes', '30 minutes', '45 minutes', '60 minutes',
+  '5 minutes', '10 minutes', '15 minutes', '30 minutes', '60 minutes',
 ];
 
 const DATA_STYLES = [
@@ -93,7 +64,6 @@ const DATA_STYLES = [
 
 const VISUAL_STYLES = [
   'Minimal & clean — lots of whitespace',
-  'Image-heavy — photos and visuals',
   'Diagram-focused — flows and architecture',
   'Icon-driven — icons illustrate each point',
   'Text-forward — content-dense slides',
@@ -106,8 +76,6 @@ const CONTENT_FOCUSES = [
   'Educational — teach concepts step by step',
   'Persuasive — build a compelling argument',
   'Status update — progress & metrics',
-  'Comparative — evaluate options side by side',
-  'Narrative — tell a story arc',
 ];
 
 // Field config
@@ -117,7 +85,7 @@ const FIELDS: {
   tooltip: string;
   placeholder: string;
   maxLength: number;
-  type: 'text' | 'select' | 'dropdown-or-text' | 'textarea' | 'date';
+  type: 'text' | 'select' | 'dropdown-or-text' | 'date';
   options?: string[];
 }[] = [
   {
@@ -184,11 +152,6 @@ const FIELDS: {
     options: CONTENT_FOCUSES,
   },
   {
-    key: 'extraConstraints', label: 'Other constraints', type: 'text', maxLength: 300,
-    tooltip: 'Anything else the AI should know — brand rules, must-include topics, etc.',
-    placeholder: 'e.g. Include ROI section, no competitor names',
-  },
-  {
     key: 'infoCutoff', label: 'Information cutoff', type: 'date', maxLength: 0,
     tooltip: 'Latest date the data should cover. Helps the AI avoid outdated info.',
     placeholder: '',
@@ -202,6 +165,11 @@ function Tooltip({ text }: { text: string }) {
       style={{ position: 'relative', cursor: 'help', display: 'inline-flex' }}
       onMouseEnter={() => setShow(true)}
       onMouseLeave={() => setShow(false)}
+      onFocus={() => setShow(true)}
+      onBlur={() => setShow(false)}
+      tabIndex={0}
+      role="img"
+      aria-label={text}
     >
       <span style={{
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
@@ -281,7 +249,7 @@ export function BriefForm({ brief, onChange }: BriefFormProps) {
     <div>
       {FIELDS.map(f => (
         <div key={f.key} style={{ marginBottom: '8px' }}>
-          <label style={labelStyle}>
+          <label htmlFor={`brief-${f.key}`} style={labelStyle}>
             {f.label}
             <Tooltip text={f.tooltip} />
           </label>
@@ -289,6 +257,7 @@ export function BriefForm({ brief, onChange }: BriefFormProps) {
           {f.type === 'text' && (
             <>
               <input
+                id={`brief-${f.key}`}
                 style={inputStyle}
                 value={(brief[f.key] as string) ?? ''}
                 onChange={e => update(f.key, e.target.value.slice(0, f.maxLength))}
@@ -305,6 +274,7 @@ export function BriefForm({ brief, onChange }: BriefFormProps) {
 
           {f.type === 'select' && f.options && (
             <select
+              id={`brief-${f.key}`}
               style={inputStyle}
               value={(brief[f.key] as string) ?? ''}
               onChange={e => update(f.key, e.target.value)}
@@ -335,25 +305,9 @@ export function BriefForm({ brief, onChange }: BriefFormProps) {
             </>
           )}
 
-          {f.type === 'textarea' && (
-            <>
-              <textarea
-                style={{ ...inputStyle, minHeight: '60px', resize: 'vertical' }}
-                value={(brief[f.key] as string) ?? ''}
-                onChange={e => update(f.key, e.target.value.slice(0, f.maxLength))}
-                placeholder={f.placeholder}
-                maxLength={f.maxLength}
-              />
-              {f.maxLength > 0 && (
-                <div style={charCountStyle}>
-                  {((brief[f.key] as string) ?? '').length}/{f.maxLength}
-                </div>
-              )}
-            </>
-          )}
-
           {f.type === 'date' && (
             <input
+              id={`brief-${f.key}`}
               type="date"
               style={inputStyle}
               value={(brief[f.key] as string) ?? ''}

@@ -20,7 +20,7 @@ export function Grid({ cols = 2, gap = 'md', style, className = '', children }: 
       style={{
         display: 'grid',
         gridTemplateColumns: `repeat(${cols}, 1fr)`,
-        gap: gapSizes[gap],
+        gap: gapSizes[gap] ?? gapSizes['md'],
         ...style,
       }}
     >
