@@ -52,22 +52,3 @@ body {
 .sidebar-scroll::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.25);
 }
-
-/* Sidebar form inputs */
-.sidebar-input:focus {
-  border-color: rgba(139, 92, 246, 0.5) !important;
-  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.15);
-}
-
-.sidebar-input::placeholder {
-  color: rgba(255, 255, 255, 0.25);
-}
-
-/* Sidebar buttons */
-.sidebar-btn:hover {
-  opacity: 0.9;
-}
-
-.sidebar-btn:active {
-  transform: scale(0.98);
-}
