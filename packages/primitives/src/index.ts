@@ -31,3 +31,4 @@ export { Flipcard } from './Flipcard';
 export { BeforeAfter } from './BeforeAfter';
 export { Sortable } from './Sortable';
 export { Spotlight } from './Spotlight';
+export { Chart } from './Chart';
