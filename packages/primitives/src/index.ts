@@ -16,3 +16,8 @@ export { Stack } from './Stack';
 export { Row } from './Row';
 export { Spacer } from './Spacer';
 export { ColorBar } from './ColorBar';
+export { Animate } from './Animate';
+export { CountUp } from './CountUp';
+export { TypeWriter } from './TypeWriter';
+export { Stagger } from './Stagger';
+export { ProgressReveal } from './ProgressReveal';
