@@ -6,8 +6,17 @@ function storageKey(): string {
   return hash ? `slidemason-pos-${hash}` : 'slidemason-pos-default';
 }
 
-function readStoredSlide(max: number): number {
+function readInitialSlide(max: number): number {
   try {
+    // ?slide=N takes priority (used by PDF/PPTX export via Playwright)
+    if (typeof window !== 'undefined') {
+      const param = new URLSearchParams(window.location.search).get('slide');
+      if (param != null) {
+        const n = parseInt(param, 10);
+        if (!isNaN(n) && n >= 0) return Math.min(n, max);
+      }
+    }
+    // Fall back to session storage for normal browsing
     const stored = sessionStorage.getItem(storageKey());
     if (stored != null) {
       const n = parseInt(stored, 10);
@@ -19,7 +28,7 @@ function readStoredSlide(max: number): number {
 
 export function useNavigation(slideCount: number) {
   const [currentSlide, setCurrentSlide] = useState(() =>
-    readStoredSlide(slideCount - 1),
+    readInitialSlide(slideCount - 1),
   );
   const prevSlideRef = useRef(currentSlide);
 
