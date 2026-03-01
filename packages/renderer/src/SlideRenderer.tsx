@@ -3,9 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import html2canvas from 'html2canvas';
 import { SlideLayout } from './SlideLayout';
 import { useDeck } from './DeckProvider';
-import { useSlideEditor, EDIT_MODE_STYLES } from './useSlideEditor';
-import { EditorToolbar } from './EditorToolbar';
-import { SaveIndicator } from './SaveIndicator';
 
 /* ── SVG Icons ── */
 
@@ -25,12 +22,6 @@ const CameraIcon = () => (
   <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="M3 6a1 1 0 011-1h1.5l1.2-1.8h4.6l1.2 1.8H14a1 1 0 011 1v7a1 1 0 01-1 1H4a1 1 0 01-1-1z" />
     <circle cx="9" cy="9.5" r="2.5" />
-  </svg>
-);
-
-const PencilIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M11.5 1.5a2.12 2.12 0 013 3L5.5 13.5 1 15l1.5-4.5z" />
   </svg>
 );
 
@@ -117,15 +108,11 @@ const glassButton: React.CSSProperties = {
 interface SlideRendererProps {
   slides: ReactNode[];
   fullWidth?: boolean;
-  editable?: boolean;
-  deckSlug?: string | null;
 }
 
 export function SlideRenderer({
   slides,
   fullWidth = true,
-  editable = false,
-  deckSlug,
 }: SlideRendererProps) {
   const { currentSlide, slideCount, direction, next, prev, theme } = useDeck();
 
@@ -141,20 +128,6 @@ export function SlideRenderer({
   const isFirst = currentSlide === 0;
   const isLast = currentSlide === slideCount - 1;
   const progress = slideCount > 1 ? (currentSlide / (slideCount - 1)) * 100 : 0;
-
-  // ── Edit mode (extracted hook) ──
-  const {
-    editMode,
-    saveStatus,
-    toolbarPos,
-    setToolbarPos,
-    handleSlideClick,
-    startTextEdit,
-    handleColorSelect,
-    handleReorder,
-    handleDelete,
-    toggleEditMode,
-  } = useSlideEditor({ deckSlug, currentSlide, slideRef });
 
   // ── Screenshot ──
   const captureScreenshot = useCallback(async () => {
@@ -209,13 +182,9 @@ export function SlideRenderer({
     <div
       ref={slideRef}
       data-theme={theme}
-      data-edit-mode={editMode || undefined}
       className={`relative ${fullWidth ? 'w-screen h-screen' : 'w-full h-full'} overflow-hidden`}
       style={{ backgroundColor: 'var(--sm-bg)' }}
     >
-      {/* Edit mode hover styles */}
-      {editMode && <style>{EDIT_MODE_STYLES}</style>}
-
       {/* ── Animated slide content ── */}
       <AnimatePresence mode="wait" custom={direction}>
         <motion.div
@@ -229,57 +198,13 @@ export function SlideRenderer({
           className="w-full h-full"
         >
           <SlideLayout theme={theme} fullWidth={false}>
-            <div
-              onClick={editMode ? handleSlideClick : undefined}
-              style={{ display: 'contents' }}
-            >
-              {slides[currentSlide]}
-            </div>
+            {slides[currentSlide]}
           </SlideLayout>
         </motion.div>
       </AnimatePresence>
 
-      {/* ── Editor toolbar ── */}
-      {editMode && toolbarPos && (
-        <EditorToolbar
-          x={toolbarPos.x}
-          y={toolbarPos.y}
-          themeRoot={slideRef.current}
-          onTextEdit={startTextEdit}
-          onColorSelect={handleColorSelect}
-          onReorder={handleReorder}
-          onDelete={handleDelete}
-          onClose={() => setToolbarPos(null)}
-        />
-      )}
-
-      {/* ── Save status indicator ── */}
-      <SaveIndicator status={saveStatus} />
-
       {!isPrintMode && (
         <>
-          {/* ── Top-left: Edit mode toggle (only when editable) ── */}
-          {editable && (
-            <button
-              onClick={toggleEditMode}
-              className="absolute top-5 left-6"
-              style={{
-                ...glassButton,
-                color: editMode ? 'var(--sm-primary)' : 'var(--sm-muted)',
-                opacity: editMode ? 1 : 0.5,
-                width: '36px',
-                height: '36px',
-                borderRadius: '8px',
-                backgroundColor: editMode ? 'rgba(99, 102, 241, 0.15)' : 'transparent',
-                border: editMode ? '1px solid rgba(99, 102, 241, 0.3)' : '1px solid transparent',
-                zIndex: 10,
-              }}
-              title={editMode ? 'Exit edit mode' : 'Edit slides'}
-            >
-              <PencilIcon />
-            </button>
-          )}
-
           {/* ── Top-right: Fullscreen ── */}
           <button
             onClick={toggleFullscreen}

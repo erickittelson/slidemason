@@ -14,7 +14,7 @@ const slides = [
   <Slide key="s1" layout="center" bg="mesh">
     <Badge>Digital Saber · Pre-Seed · MVP Strategy</Badge>
     <GradientText size="hero" style={{ marginTop: 'clamp(1.5rem, 4vh, 2.5rem)' }}>SaberAlert</GradientText>
-    <Text style={{ fontSize: 'clamp(1.1rem, 2.5vw, 1.75rem)', color: 'var(--sm-danger)', marginTop: 'clamp(1rem, 3vh, 2rem)', maxWidth: '28ch', lineHeight: 1.4, fontWeight: 300 }}>
+    <Text style={{ fontSize: 'clamp(1.1rem, 2.5vw, 1.75rem)', color: 'var(--sm-success)', marginTop: 'clamp(1rem, 3vh, 2rem)', maxWidth: '28ch', lineHeight: 1.4, fontWeight: 300 }}>
       Camera-free presence detection for the modern home
     </Text>
     <div className="flex gap-[clamp(1.5rem,3vw,2.5rem)]" style={{ marginTop: 'clamp(2rem, 5vh, 3.5rem)' }}>
@@ -39,7 +39,7 @@ const slides = [
       </Text>
       <GradientText size="stat" as="div" style={{ fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 0.85 }}>~5s</GradientText>
       <Text muted style={{ fontSize: 'clamp(0.9rem, 1.5vw, 1.2rem)', marginTop: 'clamp(0.5rem, 1.5vh, 1rem)' }}>
-        from detection to notification
+        from detection to notificrwerwation
       </Text>
     </div>
     <div className="flex flex-col justify-center flex-1" style={{ paddingLeft: 'clamp(2rem, 4vw, 4rem)' }}>
@@ -321,7 +321,7 @@ const slides = [
     </div>
     <div className="flex flex-col gap-[clamp(0.35rem,0.7vh,0.5rem)] flex-1 justify-center">
       {([
-        { label: 'Firmware & Hardware', status: 'yellow' as const, note: 'Sniffer capture stable · OTA in progress', icon: Cpu },
+        { label: 'Firmware & ddrdwgfdgdare', status: 'yellow' as const, note: 'Sniffer capture stable · OTA in progress', icon: Cpu },
         { label: 'Backend API', status: 'yellow' as const, note: 'Core endpoints built · provisioning flow next', icon: Server },
         { label: 'Watcher & Analytics', status: 'red' as const, note: 'Baseline learning logic not started · critical path', icon: Eye },
         { label: 'Mobile App', status: 'red' as const, note: 'Framework TBD · minimum screens designed', icon: Smartphone },

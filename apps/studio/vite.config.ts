@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 import mdx from '@mdx-js/rollup';
 import tailwindcss from '@tailwindcss/vite';
 import { resolve } from 'node:path';
-import { studioApiPlugin, recentApiEdits } from './vite-plugin-studio-api';
+import { studioApiPlugin } from './vite-plugin-studio-api';
 
 const MONO_ROOT = resolve(__dirname, '../..');
 
@@ -24,18 +24,27 @@ function monorepoResolvePlugin(): Plugin {
 
   return {
     name: 'slidemason-monorepo-resolve',
-    handleHotUpdate({ file, server }) {
-      // When any deck's slides.tsx changes, force a full page reload
-      // because import.meta.glob eager cache can't be HMR'd.
-      // BUT skip the reload if the change came from the studio's inline
-      // editor — the DOM already has the update and reloading would
-      // reset slide position and disrupt the editing flow.
+    handleHotUpdate({ file, server, modules }) {
+      // When a deck's slides.tsx changes, invalidate the module and
+      // notify the client via a custom HMR event. The client does a
+      // dynamic re-import with a cache-busting timestamp — no full
+      // page reload needed.
       if (file.includes('/decks/') && file.endsWith('/slides.tsx')) {
-        if (recentApiEdits.has(file)) {
-          return []; // suppress reload — inline edit already in DOM
+        const match = file.match(/\/decks\/([^/]+)\/slides\.tsx$/);
+        const slug = match?.[1];
+
+        for (const mod of modules) {
+          server.moduleGraph.invalidateModule(mod);
         }
-        server.ws.send({ type: 'full-reload' });
-        return [];
+
+        if (slug) {
+          server.ws.send({
+            type: 'custom',
+            event: 'slidemason:slides-updated',
+            data: { slug, moduleUrl: modules[0]?.url, t: Date.now() },
+          });
+        }
+        return []; // prevent default HMR cascade
       }
     },
     async resolveId(source, importer, options) {

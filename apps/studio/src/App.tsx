@@ -1,23 +1,19 @@
-import { useState, useEffect, useCallback, ReactNode } from 'react';
+import { useState, useEffect, useCallback, useRef, ReactNode } from 'react';
 import { DeckProvider, SlideRenderer } from '@slidemason/renderer';
 import { getMode } from './lib/mode';
 import defaultSlides from './slides';
 import { applyFonts } from './lib/fonts';
 
-/* ── Dynamic deck slide loading via Vite glob ── */
-const deckModules = import.meta.glob<{ default: ReactNode[] }>(
+/* ── Lazy deck imports (NOT eager — allows hot re-import) ── */
+const deckImporters = import.meta.glob<{ default: ReactNode[] }>(
   '../../../decks/*/slides.tsx',
-  { eager: true },
 );
 
-function getDeckSlides(slug: string | null): ReactNode[] {
-  if (!slug) return defaultSlides;
-  for (const [path, mod] of Object.entries(deckModules)) {
-    if (path.includes(`/decks/${slug}/slides.tsx`)) {
-      return mod.default;
-    }
+function findImporterForSlug(slug: string) {
+  for (const [path, importer] of Object.entries(deckImporters)) {
+    if (path.includes(`/decks/${slug}/slides.tsx`)) return importer;
   }
-  return defaultSlides;
+  return null;
 }
 import { Sidebar } from './components/Sidebar';
 import { CollapsibleSection } from './components/CollapsibleSection';
@@ -50,9 +46,46 @@ export function App() {
   const [showNextSteps, setShowNextSteps] = useState(false);
   const [openStep, setOpenStep] = useState(1); // which step is expanded (1-5, 0=none)
   const [stepError, setStepError] = useState('');
+  const [slides, setSlides] = useState<ReactNode[]>(defaultSlides);
 
-  // Resolve slides for the active deck (or fallback to default)
-  const slides = getDeckSlides(activeDeck);
+  const activeDeckRef = useRef(activeDeck);
+  activeDeckRef.current = activeDeck;
+
+  // Load slides when active deck changes (lazy dynamic import)
+  useEffect(() => {
+    if (!activeDeck) { setSlides(defaultSlides); return; }
+    const importer = findImporterForSlug(activeDeck);
+    if (importer) {
+      importer().then((mod) => setSlides(mod.default));
+    } else {
+      setSlides(defaultSlides);
+    }
+  }, [activeDeck]);
+
+  // Hot-reload slides when the file changes (custom HMR event from Vite plugin)
+  useEffect(() => {
+    if (!import.meta.hot) return;
+    const handler = async (data: { slug: string; moduleUrl?: string; t: number }) => {
+      if (data.slug !== activeDeckRef.current) return;
+      if (data.moduleUrl) {
+        try {
+          const mod = await import(/* @vite-ignore */ `${data.moduleUrl}?t=${data.t}`);
+          setSlides(mod.default);
+        } catch {
+          window.location.reload(); // fallback
+        }
+      } else {
+        // Module not in Vite's graph yet — use the glob importer
+        const importer = findImporterForSlug(data.slug);
+        if (importer) {
+          const mod = await importer();
+          setSlides(mod.default);
+        }
+      }
+    };
+    import.meta.hot.on('slidemason:slides-updated', handler);
+    return () => { import.meta.hot!.off('slidemason:slides-updated', handler); };
+  }, []);
 
   // Listen for hash changes
   useEffect(() => {
@@ -270,7 +303,7 @@ export function App() {
         {showNextSteps && <NextStepsModal onClose={() => setShowNextSteps(false)} />}
         <main style={{ flex: 1, overflow: 'hidden' }}>
           <DeckProvider slideCount={slides.length} theme={theme}>
-            <SlideRenderer slides={slides} fullWidth={false} editable deckSlug={activeDeck} />
+            <SlideRenderer slides={slides} fullWidth={false} />
           </DeckProvider>
         </main>
       </div>
