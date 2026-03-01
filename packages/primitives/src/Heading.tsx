@@ -21,6 +21,8 @@ export function Heading({
 }: HeadingProps) {
   return (
     <Tag
+      data-pptx-type="heading"
+      data-pptx-size={size}
       className={`font-bold ${className}`}
       style={{
         fontSize: SIZES[size],

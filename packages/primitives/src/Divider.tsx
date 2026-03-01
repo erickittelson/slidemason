@@ -6,6 +6,7 @@ interface DividerProps {
 export function Divider({ width = 'clamp(2.5rem, 5vw, 3.5rem)', style }: DividerProps) {
   return (
     <div
+      data-pptx-type="divider"
       style={{
         width,
         height: 3,

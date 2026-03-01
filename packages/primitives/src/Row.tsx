@@ -17,6 +17,7 @@ const gapSizes = {
 export function Row({ gap = 'md', align = 'center', wrap = false, style, className = '', children }: RowProps) {
   return (
     <div
+      data-pptx-type="row"
       className={className}
       style={{
         display: 'flex',

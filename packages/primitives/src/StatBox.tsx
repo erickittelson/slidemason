@@ -11,6 +11,9 @@ interface StatBoxProps {
 export function StatBox({ value, label, icon: Icon, color, style }: StatBoxProps) {
   return (
     <div
+      data-pptx-type="statbox"
+      data-pptx-value={value}
+      data-pptx-label={label}
       style={{
         background: 'var(--sm-glass-bg)',
         backdropFilter: 'blur(12px)',

@@ -21,6 +21,8 @@ export function Text({
 }: TextProps) {
   return (
     <p
+      data-pptx-type="text"
+      {...(muted ? { 'data-pptx-muted': '' } : {})}
       className={className}
       style={{
         fontSize: SIZES[size],

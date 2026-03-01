@@ -8,6 +8,9 @@ interface StepProps {
 export function Step({ n, children, active = false, style }: StepProps) {
   return (
     <div
+      data-pptx-type="step"
+      data-pptx-n={n}
+      {...(active ? { 'data-pptx-active': '' } : {})}
       className="flex items-center"
       style={{ gap: 'clamp(0.75rem,1.5vw,1.25rem)', position: 'relative', zIndex: 1, ...style }}
     >

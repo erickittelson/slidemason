@@ -6,6 +6,7 @@ interface GhostNumberProps {
 export function GhostNumber({ n, style }: GhostNumberProps) {
   return (
     <div
+      data-pptx-type="ghost"
       style={{
         position: 'absolute',
         right: 'clamp(1rem, 3vw, 2rem)',

@@ -26,6 +26,7 @@ export function Split({
   const [left, right] = ratioMap[ratio];
   return (
     <div
+      data-pptx-type="split"
       className={className}
       style={{
         display: 'flex',

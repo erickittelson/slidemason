@@ -22,6 +22,8 @@ export function GradientText({
 }: GradientTextProps) {
   return (
     <Tag
+      data-pptx-type="gradient-text"
+      data-pptx-size={size}
       className={`font-extrabold ${className}`}
       style={{
         background: 'linear-gradient(135deg, var(--sm-primary), var(--sm-secondary))',

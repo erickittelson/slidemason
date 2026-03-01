@@ -25,6 +25,7 @@ export function IconCircle({
 
   return (
     <div
+      data-pptx-type="icon"
       style={{
         width: s.box,
         height: s.box,

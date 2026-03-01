@@ -14,6 +14,7 @@ export function ColorBar({
   const isHorizontal = position === 'top' || position === 'bottom';
   return (
     <div
+      data-pptx-type="colorbar"
       style={{
         position: 'absolute',
         background: color,

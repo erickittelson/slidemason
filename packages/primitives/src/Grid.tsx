@@ -15,6 +15,7 @@ const gapSizes = {
 export function Grid({ cols = 2, gap = 'md', style, className = '', children }: GridProps) {
   return (
     <div
+      data-pptx-type="grid"
       className={className}
       style={{
         display: 'grid',

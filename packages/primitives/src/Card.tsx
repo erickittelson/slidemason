@@ -21,6 +21,7 @@ export function Card({
 }: CardProps) {
   return (
     <div
+      data-pptx-type="card"
       className={className}
       style={{
         ...(glass

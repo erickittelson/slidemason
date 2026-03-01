@@ -17,6 +17,7 @@ const gapSizes = {
 export function Stack({ gap = 'md', align = 'stretch', style, className = '', children }: StackProps) {
   return (
     <div
+      data-pptx-type="stack"
       className={className}
       style={{
         display: 'flex',

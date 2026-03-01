@@ -14,6 +14,7 @@ interface PipelineProps {
 export function Pipeline({ items, style }: PipelineProps) {
   return (
     <div
+      data-pptx-type="pipeline"
       className="flex items-center justify-center w-full relative"
       style={{ maxWidth: '90%', gap: 0, ...style }}
     >

@@ -7,6 +7,7 @@ interface BadgeProps {
 export function Badge({ children, style, className = '' }: BadgeProps) {
   return (
     <div
+      data-pptx-type="badge"
       className={className}
       style={{
         background: 'var(--sm-glass-bg)',

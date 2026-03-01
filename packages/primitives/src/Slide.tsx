@@ -30,6 +30,9 @@ export function Slide({
 }: SlideProps) {
   return (
     <div
+      data-pptx-type="slide"
+      data-pptx-layout={layout}
+      data-pptx-bg={bg}
       className={`${layoutClasses[layout]} relative overflow-hidden ${className}`}
       style={{ padding: PAD, ...style }}
     >
