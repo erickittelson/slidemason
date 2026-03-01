@@ -1,5 +1,3 @@
-import { motion } from 'framer-motion';
-import { useStagger } from './StaggerContext';
 import type { ComponentType } from 'react';
 
 const SIZES = {
@@ -7,8 +5,6 @@ const SIZES = {
   md: { box: 'clamp(40px,5vw,52px)', icon: 20 },
   lg: { box: 'clamp(52px,6.5vw,72px)', icon: 24 },
 } as const;
-
-const EASE = [0.22, 1, 0.36, 1] as const;
 
 interface IconCircleProps {
   icon: ComponentType<{ size?: number; style?: React.CSSProperties }>;
@@ -25,11 +21,10 @@ export function IconCircle({
   color = 'var(--sm-primary)',
   style,
 }: IconCircleProps) {
-  const i = useStagger();
   const s = SIZES[size];
 
   return (
-    <motion.div
+    <div
       style={{
         width: s.box,
         height: s.box,
@@ -42,11 +37,8 @@ export function IconCircle({
         flexShrink: 0,
         ...style,
       }}
-      initial={{ opacity: 0, scale: 0.85 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: 0.15 * i, duration: 0.6, ease: EASE }}
     >
       <Icon size={s.icon} style={{ color: active ? 'var(--sm-bg)' : color }} />
-    </motion.div>
+    </div>
   );
 }

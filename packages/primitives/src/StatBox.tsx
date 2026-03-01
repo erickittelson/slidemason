@@ -1,8 +1,4 @@
-import { motion } from 'framer-motion';
-import { useStagger } from './StaggerContext';
 import type { ComponentType } from 'react';
-
-const EASE = [0.22, 1, 0.36, 1] as const;
 
 interface StatBoxProps {
   value: string;
@@ -13,10 +9,8 @@ interface StatBoxProps {
 }
 
 export function StatBox({ value, label, icon: Icon, color, style }: StatBoxProps) {
-  const i = useStagger();
-
   return (
-    <motion.div
+    <div
       style={{
         background: 'var(--sm-glass-bg)',
         backdropFilter: 'blur(12px)',
@@ -26,9 +20,6 @@ export function StatBox({ value, label, icon: Icon, color, style }: StatBoxProps
         textAlign: 'center',
         ...style,
       }}
-      initial={{ opacity: 0, scale: 0.85 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: 0.15 * i, duration: 0.6, ease: EASE }}
     >
       {Icon && (
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 'clamp(0.75rem, 1.5vh, 1rem)' }}>
@@ -66,6 +57,6 @@ export function StatBox({ value, label, icon: Icon, color, style }: StatBoxProps
       >
         {label}
       </div>
-    </motion.div>
+    </div>
   );
 }

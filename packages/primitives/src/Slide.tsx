@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react';
-import { StaggerProvider } from './StaggerContext';
 
 type Layout = 'center' | 'split' | 'grid' | 'statement' | 'free';
 type Bg = 'none' | 'mesh';
@@ -30,23 +29,21 @@ export function Slide({
   style,
 }: SlideProps) {
   return (
-    <StaggerProvider>
-      <div
-        className={`${layoutClasses[layout]} relative overflow-hidden ${className}`}
-        style={{ padding: PAD, ...style }}
-      >
-        {bg === 'mesh' && (
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background:
-                'radial-gradient(ellipse 70% 50% at 50% 55%, var(--sm-gradient-mesh-1), transparent)',
-              opacity: 0.12,
-            }}
-          />
-        )}
-        {children}
-      </div>
-    </StaggerProvider>
+    <div
+      className={`${layoutClasses[layout]} relative overflow-hidden ${className}`}
+      style={{ padding: PAD, ...style }}
+    >
+      {bg === 'mesh' && (
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              'radial-gradient(ellipse 70% 50% at 50% 55%, var(--sm-gradient-mesh-1), transparent)',
+            opacity: 0.12,
+          }}
+        />
+      )}
+      {children}
+    </div>
   );
 }

@@ -1,8 +1,3 @@
-import { motion } from 'framer-motion';
-import { useStagger } from './StaggerContext';
-
-const EASE = [0.22, 1, 0.36, 1] as const;
-
 interface BadgeProps {
   children: React.ReactNode;
   style?: React.CSSProperties;
@@ -10,10 +5,8 @@ interface BadgeProps {
 }
 
 export function Badge({ children, style, className = '' }: BadgeProps) {
-  const i = useStagger();
-
   return (
-    <motion.div
+    <div
       className={className}
       style={{
         background: 'var(--sm-glass-bg)',
@@ -29,11 +22,8 @@ export function Badge({ children, style, className = '' }: BadgeProps) {
         display: 'inline-block',
         ...style,
       }}
-      initial={{ opacity: 0, y: 25 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.15 * i, duration: 0.7, ease: EASE }}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }

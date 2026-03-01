@@ -1,8 +1,3 @@
-import { motion } from 'framer-motion';
-import { useStagger } from './StaggerContext';
-
-const EASE = [0.22, 1, 0.36, 1] as const;
-
 interface StepProps {
   n: number;
   children: React.ReactNode;
@@ -11,15 +6,10 @@ interface StepProps {
 }
 
 export function Step({ n, children, active = false, style }: StepProps) {
-  const i = useStagger();
-
   return (
-    <motion.div
+    <div
       className="flex items-center"
       style={{ gap: 'clamp(0.75rem,1.5vw,1.25rem)', position: 'relative', zIndex: 1, ...style }}
-      initial={{ opacity: 0, y: 25 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.1 * i, duration: 0.7, ease: EASE }}
     >
       <div
         style={{
@@ -49,6 +39,6 @@ export function Step({ n, children, active = false, style }: StepProps) {
       >
         {children}
       </span>
-    </motion.div>
+    </div>
   );
 }

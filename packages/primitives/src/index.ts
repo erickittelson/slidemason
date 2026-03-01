@@ -1,5 +1,4 @@
 export { Slide } from './Slide';
-export { StaggerProvider, useStagger } from './StaggerContext';
 export { Heading } from './Heading';
 export { Text } from './Text';
 export { Badge } from './Badge';

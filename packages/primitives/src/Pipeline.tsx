@@ -1,8 +1,4 @@
-import { motion } from 'framer-motion';
-import { useStagger } from './StaggerContext';
 import type { ComponentType } from 'react';
-
-const EASE = [0.22, 1, 0.36, 1] as const;
 
 interface PipelineItem {
   icon: ComponentType<{ size?: number; style?: React.CSSProperties }>;
@@ -16,14 +12,12 @@ interface PipelineProps {
 }
 
 export function Pipeline({ items, style }: PipelineProps) {
-  const baseIndex = useStagger();
-
   return (
     <div
       className="flex items-center justify-center w-full relative"
       style={{ maxWidth: '90%', gap: 0, ...style }}
     >
-      <motion.div
+      <div
         className="absolute"
         style={{
           left: '10%',
@@ -35,25 +29,15 @@ export function Pipeline({ items, style }: PipelineProps) {
           opacity: 0.4,
           zIndex: 0,
         }}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.4 }}
-        transition={{ delay: 0.15 * baseIndex, duration: 0.8, ease: EASE }}
       />
 
       {items.map(({ icon: Icon, label, sub }, idx) => {
         const isLast = idx === items.length - 1;
         return (
-          <motion.div
+          <div
             key={label}
             className="flex flex-col items-center text-center relative z-10"
             style={{ flex: 1 }}
-            initial={{ opacity: 0, scale: 0.85 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{
-              delay: 0.15 * (baseIndex + idx + 1),
-              duration: 0.6,
-              ease: EASE,
-            }}
           >
             <div
               style={{
@@ -90,7 +74,7 @@ export function Pipeline({ items, style }: PipelineProps) {
                 {sub}
               </span>
             )}
-          </motion.div>
+          </div>
         );
       })}
     </div>
